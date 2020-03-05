@@ -22,11 +22,11 @@ namespace Ooze.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery]OozeModel model)
         {
             IQueryable<Post> query = _db.Posts;
 
-            query = _resolver.Apply(query, null);
+            query = _resolver.Apply(query, model);
 
             return Ok(query.ToList());
         }

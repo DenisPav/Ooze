@@ -79,8 +79,8 @@ namespace Ooze.Web
                 post => post.Enabled;
 
             builder.Entity<Post>()
-                .Sort(post => post.Enabled);
-
+                .Sort("enabled", post => post.Enabled)
+                .Sort("id", post => post.Id);
         }
     }
 }

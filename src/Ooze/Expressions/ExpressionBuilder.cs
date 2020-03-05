@@ -46,11 +46,17 @@ namespace Ooze.Expressions
         OozeEntityConfiguration Build();
     }
 
+    internal class SorterExpression
+    {
+        public string Name { get; set; }
+        public Expression Sorter { get; set; }
+    }
+
     public class OozeEntityConfigurationBuilder<TEntity> : IOozeEntityConfigurationBuilder
         where TEntity : class
     {
         readonly ParameterExpression Parameter = Parameter(typeof(TEntity), nameof(TEntity));
-        readonly IList<Expression> _sorters = new List<Expression>();
+        readonly IList<SorterExpression> _sorters = new List<SorterExpression>();
 
         private OozeEntityConfigurationBuilder()
         {
@@ -63,9 +69,14 @@ namespace Ooze.Expressions
         }
 
         public OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
+            string sorterName,
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
-            _sorters.Add(sortExpression);
+            _sorters.Add(new SorterExpression
+            {
+                Name = sorterName,
+                Sorter = sortExpression
+            });
 
             return this;
         }
@@ -83,11 +94,11 @@ namespace Ooze.Expressions
             };
         }
 
-        IEnumerable<(LambdaExpression, Type)> CreateSorters()
+        IEnumerable<(string, LambdaExpression, Type)> CreateSorters()
         {
             foreach (var sorter in _sorters)
             {
-                var lambdaSorter = sorter as LambdaExpression;
+                var lambdaSorter = sorter.Sorter as LambdaExpression;
 
                 if (!(lambdaSorter.Body is MemberExpression))
                 {
@@ -101,7 +112,7 @@ namespace Ooze.Expressions
                 var memberAccess = MakeMemberAccess(Parameter, prop);
                 var lambda = Lambda(memberAccess, Parameter);
 
-                yield return (lambda, propType);
+                yield return (sorter.Name, lambda, propType);
             }
         }
     }
@@ -115,6 +126,6 @@ namespace Ooze.Expressions
     public class Expressions
     {
         public ParameterExpression Param { get; internal set; }
-        public IEnumerable<(LambdaExpression, Type)> LambdaExpressions { get; internal set; }
+        public IEnumerable<(string, LambdaExpression, Type)> LambdaExpressions { get; internal set; }
     }
 }
