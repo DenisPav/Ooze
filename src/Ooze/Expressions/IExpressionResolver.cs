@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Expressions
@@ -17,6 +15,8 @@ namespace Ooze.Expressions
     {
         const string OrderBy = nameof(OrderBy);
         const string ThenBy = nameof(ThenBy);
+        const string ThenByDescending = nameof(ThenByDescending);
+        const string OrderByDescending = nameof(OrderByDescending);
         static readonly Type QueryableType = typeof(Queryable);
 
         private readonly OozeConfiguration _config;
@@ -43,13 +43,18 @@ namespace Ooze.Expressions
                 return query;
 
             var modelSorters = sorters.Split(',').Select(sorter => sorter.Trim())
+                .Select(sorter => new
+                {
+                    Ascending = !sorter.StartsWith('-') ? true : false,
+                    Sorter = sorter.StartsWith('-') ? new string(sorter.Skip(1).ToArray()) : sorter
+                })
                 .ToList();
 
             var appliedSorters = modelSorters.Join(
                 configuration.Sorters.LambdaExpressions,
-                x => x,
+                x => x.Sorter,
                 x => x.Item1,
-                (x, y) => y,
+                (x, y) => (y.Item1, y.Item2, y.Item3, x.Ascending),
                 StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
 
@@ -63,11 +68,13 @@ namespace Ooze.Expressions
 
                 if (i == 0)
                 {
-                    callExpr = Call(QueryableType, OrderBy, typings, expr, quoteExpr);
+                    var method = sorter.Ascending ? OrderBy : OrderByDescending;
+                    callExpr = Call(QueryableType, method, typings, expr, quoteExpr);
                 }
                 else
                 {
-                    callExpr = Call(QueryableType, ThenBy, typings, expr, quoteExpr);
+                    var method = sorter.Ascending ? ThenBy : ThenByDescending;
+                    callExpr = Call(QueryableType, method, typings, expr, quoteExpr);
                 }
 
                 query = query.Provider

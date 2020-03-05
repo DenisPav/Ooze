@@ -89,13 +89,21 @@ namespace Ooze.Expressions
         public OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
-            if (!(sortExpression.Body is MemberExpression))
+            string memberName = GetExpressionName(sortExpression, "Sorter definition not correct");
+            return Sort(memberName, sortExpression);
+        }
+
+        private static string GetExpressionName<TTarget>(
+            Expression<Func<TEntity, TTarget>> expression,
+            string error)
+        {
+            if (!(expression.Body is MemberExpression))
             {
-                throw new Exception("Sorter definition not correct");
+                throw new Exception(error);
             }
 
-            var memberName = (sortExpression.Body as MemberExpression).Member.Name;
-            return Sort(memberName, sortExpression);
+            var memberName = (expression.Body as MemberExpression).Member.Name;
+            return memberName;
         }
 
         public OozeEntityConfiguration Build()
