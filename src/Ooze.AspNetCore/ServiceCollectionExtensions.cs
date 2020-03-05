@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Ooze.Expressions;
+using Ooze.Configuration;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +8,9 @@ namespace Ooze.AspNetCore
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOoze(this IServiceCollection services, Assembly configurationsAssembly)
+        public static IServiceCollection AddOoze(
+            this IServiceCollection services,
+            Assembly configurationsAssembly)
         {
             var configBuilder = new OozeConfigurationBuilder();
 
@@ -21,8 +23,8 @@ namespace Ooze.AspNetCore
 
             var configuration = configBuilder.Build();
 
-            services.Configure<OozeConfiguration>(instance => instance.EntityConfigurations = configuration.EntityConfigurations);
-            services.AddScoped<IExpressionResolver, ExpressionResolver>();
+            services.AddSingleton(configuration);
+            services.AddScoped<IOozeResolver, OozeResolver>();
 
             return services;
         }

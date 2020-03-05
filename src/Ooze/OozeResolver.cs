@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Ooze.Configuration;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using static System.Linq.Expressions.Expression;
 
-namespace Ooze.Expressions
+namespace Ooze
 {
-    public interface IExpressionResolver
-    {
-        IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model);
-    }
-
-    public class ExpressionResolver : IExpressionResolver
+    public class OozeResolver : IOozeResolver
     {
         const string OrderBy = nameof(OrderBy);
         const string ThenBy = nameof(ThenBy);
@@ -21,10 +16,10 @@ namespace Ooze.Expressions
 
         private readonly OozeConfiguration _config;
 
-        public ExpressionResolver(
-            IOptions<OozeConfiguration> config)
+        public OozeResolver(
+            OozeConfiguration config)
         {
-            _config = config.Value;
+            _config = config;
         }
 
         public IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model)
@@ -83,10 +78,5 @@ namespace Ooze.Expressions
 
             return query;
         }
-    }
-
-    public class OozeModel
-    {
-        public string Sorters { get; set; }
     }
 }

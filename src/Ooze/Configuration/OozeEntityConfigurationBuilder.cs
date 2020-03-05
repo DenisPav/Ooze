@@ -4,60 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using static System.Linq.Expressions.Expression;
 
-namespace Ooze.Expressions
+namespace Ooze.Configuration
 {
-    public interface IOozeConfiguration
-    {
-        void Configure(OozeConfigurationBuilder builder);
-    }
-
-    public class OozeConfigurationBuilder
-    {
-        readonly IList<IOozeEntityConfigurationBuilderInternal> _entityConfigurationBuilders =
-            new List<IOozeEntityConfigurationBuilderInternal>();
-
-        public IOozeEntityConfigurationBuilder<TEntity> Entity<TEntity>()
-            where TEntity : class
-        {
-            var configurationInstance = OozeEntityConfigurationBuilder<TEntity>.Create();
-            _entityConfigurationBuilders.Add(configurationInstance);
-
-            return configurationInstance;
-        }
-
-        public OozeConfiguration Build()
-        {
-            return new OozeConfiguration
-            {
-                EntityConfigurations = _entityConfigurationBuilders.Select(config => config.Build())
-                    .ToList()
-            };
-        }
-    }
-
-    public class OozeConfiguration
-    {
-        public IEnumerable<OozeEntityConfiguration> EntityConfigurations { get; set; }
-    }
-
-    internal interface IOozeEntityConfigurationBuilderInternal
-    {
-        OozeEntityConfiguration Build();
-    }
-
-    public interface IOozeEntityConfigurationBuilder<TEntity>
-        where TEntity : class
-    {
-        OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(string sorterName, Expression<Func<TEntity, TTarget>> sortExpression);
-        OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(Expression<Func<TEntity, TTarget>> sortExpression);
-    }
-
-    internal class SorterExpression
-    {
-        public string Name { get; set; }
-        public Expression Sorter { get; set; }
-    }
-
     public class OozeEntityConfigurationBuilder<TEntity>
         : IOozeEntityConfigurationBuilderInternal, IOozeEntityConfigurationBuilder<TEntity>
         where TEntity : class
@@ -140,17 +88,5 @@ namespace Ooze.Expressions
                 yield return (sorter.Name, lambda, propType);
             }
         }
-    }
-
-    public class OozeEntityConfiguration
-    {
-        public Type Type { get; set; }
-        public Expressions Sorters { get; internal set; }
-    }
-
-    public class Expressions
-    {
-        public ParameterExpression Param { get; internal set; }
-        public IEnumerable<(string, LambdaExpression, Type)> LambdaExpressions { get; internal set; }
     }
 }

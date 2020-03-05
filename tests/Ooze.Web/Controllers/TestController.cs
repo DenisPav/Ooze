@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Ooze.Expressions;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Ooze.Web.Controllers
 {
@@ -11,11 +7,11 @@ namespace Ooze.Web.Controllers
     public class TestController : ControllerBase
     {
         readonly DatabaseContext _db;
-        readonly IExpressionResolver _resolver;
+        readonly IOozeResolver _resolver;
 
         public TestController(
             DatabaseContext db,
-            IExpressionResolver resolver)
+            IOozeResolver resolver)
         {
             _db = db;
             _resolver = resolver;

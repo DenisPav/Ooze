@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Ooze.Expressions;
 using Ooze.AspNetCore;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Ooze.Configuration;
 
 namespace Ooze.Web
 {
@@ -24,7 +18,6 @@ namespace Ooze.Web
             services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext db)
         {
             db.Database.EnsureCreated();
@@ -77,6 +70,7 @@ namespace Ooze.Web
         {
            builder.Entity<Post>()
                 .Sort(post => post.Enabled)
+                .Sort(post => post.Name)
                 .Sort("id2", post => post.Id);
         }
     }
