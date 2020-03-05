@@ -75,12 +75,9 @@ namespace Ooze.Web
     {
         public void Configure(OozeConfigurationBuilder builder)
         {
-            Expression<Func<Post, bool>> sort =
-                post => post.Enabled;
-
-            builder.Entity<Post>()
-                .Sort("enabled", post => post.Enabled)
-                .Sort("id", post => post.Id);
+           builder.Entity<Post>()
+                .Sort(post => post.Enabled)
+                .Sort("id2", post => post.Id);
         }
     }
 }

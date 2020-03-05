@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Expressions
@@ -14,10 +13,10 @@ namespace Ooze.Expressions
 
     public class OozeConfigurationBuilder
     {
-        readonly IList<IOozeEntityConfigurationBuilder> _entityConfigurationBuilders =
-            new List<IOozeEntityConfigurationBuilder>();
+        readonly IList<IOozeEntityConfigurationBuilderInternal> _entityConfigurationBuilders =
+            new List<IOozeEntityConfigurationBuilderInternal>();
 
-        public OozeEntityConfigurationBuilder<TEntity> Entity<TEntity>()
+        public IOozeEntityConfigurationBuilder<TEntity> Entity<TEntity>()
             where TEntity : class
         {
             var configurationInstance = OozeEntityConfigurationBuilder<TEntity>.Create();
@@ -41,9 +40,16 @@ namespace Ooze.Expressions
         public IEnumerable<OozeEntityConfiguration> EntityConfigurations { get; set; }
     }
 
-    public interface IOozeEntityConfigurationBuilder
+    internal interface IOozeEntityConfigurationBuilderInternal
     {
         OozeEntityConfiguration Build();
+    }
+
+    public interface IOozeEntityConfigurationBuilder<TEntity>
+        where TEntity : class
+    {
+        OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(string sorterName, Expression<Func<TEntity, TTarget>> sortExpression);
+        OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(Expression<Func<TEntity, TTarget>> sortExpression);
     }
 
     internal class SorterExpression
@@ -52,16 +58,15 @@ namespace Ooze.Expressions
         public Expression Sorter { get; set; }
     }
 
-    public class OozeEntityConfigurationBuilder<TEntity> : IOozeEntityConfigurationBuilder
+    public class OozeEntityConfigurationBuilder<TEntity>
+        : IOozeEntityConfigurationBuilderInternal, IOozeEntityConfigurationBuilder<TEntity>
         where TEntity : class
     {
         readonly ParameterExpression Parameter = Parameter(typeof(TEntity), nameof(TEntity));
         readonly IList<SorterExpression> _sorters = new List<SorterExpression>();
 
         private OozeEntityConfigurationBuilder()
-        {
-
-        }
+        { }
 
         public static OozeEntityConfigurationBuilder<TEntity> Create()
         {
@@ -79,6 +84,18 @@ namespace Ooze.Expressions
             });
 
             return this;
+        }
+
+        public OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
+            Expression<Func<TEntity, TTarget>> sortExpression)
+        {
+            if (!(sortExpression.Body is MemberExpression))
+            {
+                throw new Exception("Sorter definition not correct");
+            }
+
+            var memberName = (sortExpression.Body as MemberExpression).Member.Name;
+            return Sort(memberName, sortExpression);
         }
 
         public OozeEntityConfiguration Build()
