@@ -58,7 +58,7 @@ namespace Ooze.Configuration
         public OozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
-            string memberName = GetExpressionName(sortExpression, "Sorter definition not correct");
+            string memberName = GetExpressionName(sortExpression, "Filter definition not correct");
             return Filter(memberName, sortExpression);
         }
 
@@ -123,7 +123,7 @@ namespace Ooze.Configuration
 
                 if (!(lambdaSorter.Body is MemberExpression))
                 {
-                    throw new Exception("Sorter definition not correct");
+                    throw new Exception("Filter definition not correct");
                 }
 
                 var memberName = (lambdaSorter.Body as MemberExpression).Member.Name;
@@ -131,7 +131,6 @@ namespace Ooze.Configuration
                 var propType = prop.PropertyType;
 
                 var memberAccess = MakeMemberAccess(Parameter, prop);
-                //var lambda = Lambda(memberAccess, Parameter);
 
                 yield return (filter.Name, memberAccess, propType);
             }
