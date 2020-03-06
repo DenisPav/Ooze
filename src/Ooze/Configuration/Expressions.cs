@@ -7,6 +7,6 @@ namespace Ooze.Configuration
     public class Expressions
     {
         public ParameterExpression Param { get; internal set; }
-        public IEnumerable<(string, LambdaExpression, Type)> LambdaExpressions { get; internal set; }
+        public IEnumerable<(string, Expression, Type)> LambdaExpressions { get; internal set; }
     }
 }

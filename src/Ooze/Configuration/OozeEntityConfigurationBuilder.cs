@@ -93,7 +93,7 @@ namespace Ooze.Configuration
             };
         }
 
-        IEnumerable<(string, LambdaExpression, Type)> CreateSorters()
+        IEnumerable<(string, Expression, Type)> CreateSorters()
         {
             foreach (var sorter in _sorters)
             {
@@ -115,7 +115,7 @@ namespace Ooze.Configuration
             }
         }
 
-        IEnumerable<(string, LambdaExpression, Type)> CreateFilters()
+        IEnumerable<(string, Expression, Type)> CreateFilters()
         {
             foreach (var filter in _filters)
             {
@@ -131,9 +131,9 @@ namespace Ooze.Configuration
                 var propType = prop.PropertyType;
 
                 var memberAccess = MakeMemberAccess(Parameter, prop);
-                var lambda = Lambda(memberAccess, Parameter);
+                //var lambda = Lambda(memberAccess, Parameter);
 
-                yield return (filter.Name, lambda, propType);
+                yield return (filter.Name, memberAccess, propType);
             }
         }
     }
