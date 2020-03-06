@@ -12,6 +12,7 @@ namespace Ooze.Configuration
     {
         readonly ParameterExpression Parameter = Parameter(typeof(TEntity), nameof(TEntity));
         readonly IList<SorterExpression> _sorters = new List<SorterExpression>();
+        readonly IList<FilterExpression> _filters = new List<FilterExpression>();
 
         private OozeEntityConfigurationBuilder()
         { }
@@ -41,6 +42,26 @@ namespace Ooze.Configuration
             return Sort(memberName, sortExpression);
         }
 
+        public OozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
+            string filterName,
+            Expression<Func<TEntity, TTarget>> sortExpression)
+        {
+            _filters.Add(new FilterExpression
+            {
+                Name = filterName,
+                Filter = sortExpression
+            });
+
+            return this;
+        }
+
+        public OozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
+            Expression<Func<TEntity, TTarget>> sortExpression)
+        {
+            string memberName = GetExpressionName(sortExpression, "Filter definition not correct");
+            return Filter(memberName, sortExpression);
+        }
+
         private static string GetExpressionName<TTarget>(
             Expression<Func<TEntity, TTarget>> expression,
             string error)
@@ -63,11 +84,16 @@ namespace Ooze.Configuration
                 {
                     Param = Parameter,
                     LambdaExpressions = CreateSorters().ToList()
+                },
+                Filters = new Expressions
+                {
+                    Param = Parameter,
+                    LambdaExpressions = CreateFilters().ToList()
                 }
             };
         }
 
-        IEnumerable<(string, LambdaExpression, Type)> CreateSorters()
+        IEnumerable<(string, Expression, Type)> CreateSorters()
         {
             foreach (var sorter in _sorters)
             {
@@ -86,6 +112,27 @@ namespace Ooze.Configuration
                 var lambda = Lambda(memberAccess, Parameter);
 
                 yield return (sorter.Name, lambda, propType);
+            }
+        }
+
+        IEnumerable<(string, Expression, Type)> CreateFilters()
+        {
+            foreach (var filter in _filters)
+            {
+                var lambdaSorter = filter.Filter as LambdaExpression;
+
+                if (!(lambdaSorter.Body is MemberExpression))
+                {
+                    throw new Exception("Filter definition not correct");
+                }
+
+                var memberName = (lambdaSorter.Body as MemberExpression).Member.Name;
+                var prop = typeof(TEntity).GetProperty(memberName);
+                var propType = prop.PropertyType;
+
+                var memberAccess = MakeMemberAccess(Parameter, prop);
+
+                yield return (filter.Name, memberAccess, propType);
             }
         }
     }

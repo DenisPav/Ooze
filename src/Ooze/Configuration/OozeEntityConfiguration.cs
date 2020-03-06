@@ -6,5 +6,6 @@ namespace Ooze.Configuration
     {
         public Type Type { get; set; }
         public Expressions Sorters { get; internal set; }
+        public Expressions Filters { get; internal set; }
     }
 }

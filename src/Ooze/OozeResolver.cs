@@ -1,4 +1,7 @@
 ﻿using Ooze.Configuration;
+using Superpower;
+using Superpower.Model;
+using Superpower.Parsers;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,6 +15,8 @@ namespace Ooze
         const string ThenBy = nameof(ThenBy);
         const string ThenByDescending = nameof(ThenByDescending);
         const string OrderByDescending = nameof(OrderByDescending);
+        const string Where = nameof(Where);
+
         static readonly Type QueryableType = typeof(Queryable);
 
         private readonly OozeConfiguration _config;
@@ -25,6 +30,60 @@ namespace Ooze
         public IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model)
         {
             query = HandleSorters(query, model.Sorters);
+            query = HandleFilters(query, model.Filters);
+
+            return query;
+        }
+
+        IQueryable<TEntity> HandleFilters<TEntity>(IQueryable<TEntity> query, string filters)
+        {
+            var entity = typeof(TEntity);
+            var configuration = _config.EntityConfigurations.FirstOrDefault(config => config.Type.Equals(entity));
+
+            var propertyParsers = configuration.Filters.LambdaExpressions.Select(def => Span.EqualToIgnoreCase(def.Item1)).ToList();
+            var propertyParser = propertyParsers.Aggregate((TextParser<TextSpan>)null, (accumulator, singlePropertyParser) =>
+            {
+                if (accumulator == null)
+                    return singlePropertyParser;
+
+                return accumulator.Or(singlePropertyParser);
+            }).OptionalOrDefault(new TextSpan(string.Empty));
+
+            var operationParser = Character.EqualTo('=').Optional();
+            var valueParser = Span.WithAll(_ => true).OptionalOrDefault(new TextSpan(string.Empty));
+            var filterParser = (from property in propertyParser
+                                from operation in operationParser
+                                from value in valueParser
+                                select (property, operation, value));
+
+            var splittedFilters = filters.Split(',').ToList();
+            var parsedFilters = splittedFilters.Select(filterParser.Parse).ToList();
+
+            var appliedFilters = parsedFilters.Join(
+                configuration.Filters.LambdaExpressions,
+                x => x.property.ToString(),
+                x => x.Item1,
+                (x, y) => (parsed: x, def: y),
+                StringComparer.InvariantCultureIgnoreCase)
+                .ToList();
+
+            foreach (var (parsed, def) in appliedFilters)
+            {
+                var expr = query.Expression;
+                var typings = new[] { entity };
+
+                var value = System.Convert.ChangeType(parsed.value.ToString(), def.Item3);
+                var constValueExpr = Constant(value);
+                var equalExpr = Equal(def.Item2, constValueExpr);
+                var lambda = Lambda(equalExpr, configuration.Filters.Param);
+
+                var quoteExpr = Quote(lambda);
+
+                var callExpr = Call(QueryableType, Where, typings, expr, quoteExpr);
+
+                query = query.Provider
+                    .CreateQuery<TEntity>(callExpr);
+            }
 
             return query;
         }
