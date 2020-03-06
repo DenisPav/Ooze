@@ -68,10 +68,11 @@ namespace Ooze.Web
     {
         public void Configure(OozeConfigurationBuilder builder)
         {
-           builder.Entity<Post>()
-                .Sort(post => post.Enabled)
-                .Sort(post => post.Name)
-                .Sort("id2", post => post.Id);
+            builder.Entity<Post>()
+                 .Sort(post => post.Enabled)
+                 .Sort(post => post.Name)
+                 .Sort("id2", post => post.Id)
+                 .Filter(post => post.Id);
         }
     }
 }

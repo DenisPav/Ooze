@@ -7,4 +7,10 @@ namespace Ooze.Configuration
         public string Name { get; set; }
         public Expression Sorter { get; set; }
     }
+
+    internal class FilterExpression
+    {
+        public string Name { get; set; }
+        public Expression Filter { get; set; }
+    }
 }

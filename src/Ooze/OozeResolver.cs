@@ -25,7 +25,13 @@ namespace Ooze
         public IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model)
         {
             query = HandleSorters(query, model.Sorters);
+            query = HandleFilters(query, model.Filters);
 
+            return query;
+        }
+
+        IQueryable<TEntity> HandleFilters<TEntity>(IQueryable<TEntity> query, string filters)
+        {
             return query;
         }
 
