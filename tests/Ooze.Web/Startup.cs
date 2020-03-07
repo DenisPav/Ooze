@@ -66,7 +66,7 @@ namespace Ooze.Web
 
     public class PostConfiguration : IOozeConfiguration
     {
-        public void Configure(OozeConfigurationBuilder builder)
+        public void Configure(IOozeConfigurationBuilder builder)
         {
             builder.Entity<Post>()
                  .Sort(post => post.Enabled)

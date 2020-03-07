@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Ooze.Configuration
 {
-    public class OozeConfigurationBuilder
+    public class OozeConfigurationBuilder : IOozeConfigurationBuilder
     {
         readonly IList<IOozeEntityConfigurationBuilderInternal> _entityConfigurationBuilders =
             new List<IOozeEntityConfigurationBuilderInternal>();

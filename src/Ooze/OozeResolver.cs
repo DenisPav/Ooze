@@ -17,7 +17,7 @@ namespace Ooze
         const string OrderByDescending = nameof(OrderByDescending);
         const string Where = nameof(Where);
 
-        static readonly Type QueryableType = typeof(Queryable);
+        static readonly Type _queryableType = typeof(Queryable);
 
         private readonly OozeConfiguration _config;
 
@@ -89,7 +89,7 @@ namespace Ooze
 
                 var quoteExpr = Quote(lambda);
 
-                var callExpr = Call(QueryableType, Where, typings, expr, quoteExpr);
+                var callExpr = Call(_queryableType, Where, typings, expr, quoteExpr);
 
                 query = query.Provider
                     .CreateQuery<TEntity>(callExpr);
@@ -133,12 +133,12 @@ namespace Ooze
                 if (i == 0)
                 {
                     var method = sorter.Ascending ? OrderBy : OrderByDescending;
-                    callExpr = Call(QueryableType, method, typings, expr, quoteExpr);
+                    callExpr = Call(_queryableType, method, typings, expr, quoteExpr);
                 }
                 else
                 {
                     var method = sorter.Ascending ? ThenBy : ThenByDescending;
-                    callExpr = Call(QueryableType, method, typings, expr, quoteExpr);
+                    callExpr = Call(_queryableType, method, typings, expr, quoteExpr);
                 }
 
                 query = query.Provider
