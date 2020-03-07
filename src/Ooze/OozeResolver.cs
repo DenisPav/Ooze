@@ -36,7 +36,5 @@ namespace Ooze
 
             return query;
         }
-
-
     }
 }

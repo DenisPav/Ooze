@@ -25,8 +25,9 @@ namespace Ooze.Filters
         {
             var entity = typeof(TEntity);
             var configuration = _config.EntityConfigurations.FirstOrDefault(config => config.Type.Equals(entity));
+            var whiteSpaceParser = Character.WhiteSpace.Many();
 
-            var propertyParsers = configuration.Filters.Select(def => Span.EqualToIgnoreCase(def.Name)).ToList();
+            var propertyParsers = configuration.Filters.Select(def => Span.EqualToIgnoreCase(def.Name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
             var propertyParser = propertyParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
                 if (accumulator == null)
