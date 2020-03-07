@@ -41,7 +41,7 @@ namespace Ooze
             var configuration = _config.EntityConfigurations.FirstOrDefault(config => config.Type.Equals(entity));
 
             var propertyParsers = configuration.Filters.LambdaExpressions.Select(def => Span.EqualToIgnoreCase(def.Item1)).ToList();
-            var propertyParser = propertyParsers.Aggregate((TextParser<TextSpan>)null, (accumulator, singlePropertyParser) =>
+            var propertyParser = propertyParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
                 if (accumulator == null)
                     return singlePropertyParser;
@@ -49,7 +49,17 @@ namespace Ooze
                 return accumulator.Or(singlePropertyParser);
             }).OptionalOrDefault(new TextSpan(string.Empty));
 
-            var operationParser = Character.EqualTo('=').Optional();
+            var operationParsers = _config.OperationsMap.Keys.Select(Span.EqualToIgnoreCase).ToList();
+            var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
+            {
+                if (accumulator == null)
+                    return singlePropertyParser;
+
+                return accumulator
+                    .Try()
+                    .Or(singlePropertyParser);
+            });
+
             var valueParser = Span.WithAll(_ => true).OptionalOrDefault(new TextSpan(string.Empty));
             var filterParser = (from property in propertyParser
                                 from operation in operationParser
@@ -74,8 +84,8 @@ namespace Ooze
 
                 var value = System.Convert.ChangeType(parsed.value.ToString(), def.Item3);
                 var constValueExpr = Constant(value);
-                var equalExpr = Equal(def.Item2, constValueExpr);
-                var lambda = Lambda(equalExpr, configuration.Filters.Param);
+                var operationExpr = _config.OperationsMap[parsed.operation.ToString()](def.Item2, constValueExpr);
+                var lambda = Lambda(operationExpr, configuration.Filters.Param);
 
                 var quoteExpr = Quote(lambda);
 

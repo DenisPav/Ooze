@@ -73,7 +73,8 @@ namespace Ooze.Web
                  .Sort(post => post.Name)
                  .Sort("id2", post => post.Id)
                  .Filter(post => post.Id)
-                 .Filter(post => post.Name);
+                 .Filter(post => post.Name)
+                 .Filter("bool", post => post.Enabled);
         }
     }
 }

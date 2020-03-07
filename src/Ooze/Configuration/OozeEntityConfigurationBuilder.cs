@@ -22,7 +22,7 @@ namespace Ooze.Configuration
             return new OozeEntityConfigurationBuilder<TEntity>();
         }
 
-        public OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
+        public IOozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
             string sorterName,
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
@@ -35,14 +35,14 @@ namespace Ooze.Configuration
             return this;
         }
 
-        public OozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
+        public IOozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
             string memberName = GetExpressionName(sortExpression, "Sorter definition not correct");
             return Sort(memberName, sortExpression);
         }
 
-        public OozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
+        public IOozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
             string filterName,
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
@@ -55,7 +55,7 @@ namespace Ooze.Configuration
             return this;
         }
 
-        public OozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
+        public IOozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
             string memberName = GetExpressionName(sortExpression, "Filter definition not correct");
