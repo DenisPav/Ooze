@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Configuration;
 using Ooze.Filters;
+using Ooze.Sorters;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,7 @@ namespace Ooze.AspNetCore
 
             services.AddSingleton(configuration);
             services.AddScoped<IOozeFilterHandler, OozeFilterHandler>();
+            services.AddScoped<IOozeSorterHandler, OozeSorterHandler>();
             services.AddScoped<IOozeResolver, OozeResolver>();
 
             return services;
