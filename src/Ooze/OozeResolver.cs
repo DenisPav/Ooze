@@ -1,5 +1,6 @@
 ﻿using Ooze.Filters;
 using Ooze.Sorters;
+using Ooze.Validation;
 using System.Linq;
 
 namespace Ooze
@@ -8,6 +9,8 @@ namespace Ooze
     {
         readonly IOozeFilterHandler _filterHandler;
         readonly IOozeSorterHandler _sorterHandler;
+
+        static readonly OozeModelValidator _modelValidator = new OozeModelValidator();
 
         public OozeResolver(
             IOozeFilterHandler filterHandler,
@@ -19,8 +22,17 @@ namespace Ooze
 
         public IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model)
         {
-            query = _sorterHandler.Handle(query, model.Sorters);
-            query = _filterHandler.Handle(query, model.Filters);
+            var (sortersValid, filtersValid) = _modelValidator.Validate(model);
+
+            if (sortersValid)
+            {
+                query = _sorterHandler.Handle(query, model.Sorters);
+            }
+
+            if (filtersValid)
+            {
+                query = _filterHandler.Handle(query, model.Filters);
+            }
 
             return query;
         }
