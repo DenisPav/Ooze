@@ -66,14 +66,15 @@ namespace Ooze.Web
 
     public class PostConfiguration : IOozeConfiguration
     {
-        public void Configure(OozeConfigurationBuilder builder)
+        public void Configure(IOozeConfigurationBuilder builder)
         {
             builder.Entity<Post>()
                  .Sort(post => post.Enabled)
                  .Sort(post => post.Name)
                  .Sort("id2", post => post.Id)
                  .Filter(post => post.Id)
-                 .Filter(post => post.Name);
+                 .Filter(post => post.Name)
+                 .Filter("bool", post => post.Enabled);
         }
     }
 }

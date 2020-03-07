@@ -2,6 +2,6 @@
 {
     public interface IOozeConfiguration
     {
-        void Configure(OozeConfigurationBuilder builder);
+        void Configure(IOozeConfigurationBuilder builder);
     }
 }
