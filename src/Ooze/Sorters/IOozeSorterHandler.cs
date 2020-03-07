@@ -17,6 +17,8 @@ namespace Ooze.Sorters
         const string ThenBy = nameof(ThenBy);
         const string ThenByDescending = nameof(ThenByDescending);
         const string OrderByDescending = nameof(OrderByDescending);
+        const char NegativeOrderChar = '-';
+
         static readonly Type _queryableType = typeof(Queryable);
 
         readonly OozeConfiguration _config;
@@ -35,16 +37,16 @@ namespace Ooze.Sorters
             var modelSorters = sorters.Split(',').Select(sorter => sorter.Trim())
                 .Select(sorter => new
                 {
-                    Ascending = !sorter.StartsWith('-') ? true : false,
-                    Sorter = sorter.StartsWith('-') ? new string(sorter.Skip(1).ToArray()) : sorter
+                    Ascending = !sorter.StartsWith(NegativeOrderChar) ? true : false,
+                    Sorter = sorter.StartsWith(NegativeOrderChar) ? new string(sorter.Skip(1).ToArray()) : sorter
                 })
                 .ToList();
 
             var appliedSorters = modelSorters.Join(
-                configuration.Sorters.LambdaExpressions,
+                configuration.Sorters,
                 x => x.Sorter,
-                x => x.Item1,
-                (x, y) => (y.Item1, y.Item2, y.Item3, x.Ascending),
+                x => x.Name,
+                (x, y) => (y.Name, y.Expression, y.Type, x.Ascending),
                 StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
 

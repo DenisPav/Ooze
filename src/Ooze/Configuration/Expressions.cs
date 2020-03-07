@@ -4,9 +4,10 @@ using System.Linq.Expressions;
 
 namespace Ooze.Configuration
 {
-    public class Expressions
+    public class ParsedExpressionDefinition
     {
-        public ParameterExpression Param { get; internal set; }
-        public IEnumerable<(string, Expression, Type)> LambdaExpressions { get; internal set; }
+        public string Name { get; internal set; }
+        public Expression Expression { get; internal set; }
+        public Type Type { get; internal set; }
     }
 }

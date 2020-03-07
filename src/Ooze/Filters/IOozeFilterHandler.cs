@@ -31,7 +31,7 @@ namespace Ooze.Filters
             var entity = typeof(TEntity);
             var configuration = _config.EntityConfigurations.FirstOrDefault(config => config.Type.Equals(entity));
 
-            var propertyParsers = configuration.Filters.LambdaExpressions.Select(def => Span.EqualToIgnoreCase(def.Item1)).ToList();
+            var propertyParsers = configuration.Filters.Select(def => Span.EqualToIgnoreCase(def.Name)).ToList();
             var propertyParser = propertyParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
                 if (accumulator == null)
@@ -61,9 +61,9 @@ namespace Ooze.Filters
             var parsedFilters = splittedFilters.Select(filterParser.Parse).ToList();
 
             var appliedFilters = parsedFilters.Join(
-                configuration.Filters.LambdaExpressions,
+                configuration.Filters,
                 x => x.property.ToString(),
-                x => x.Item1,
+                x => x.Name,
                 (x, y) => (parsed: x, def: y),
                 StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
@@ -73,10 +73,10 @@ namespace Ooze.Filters
                 var expr = query.Expression;
                 var typings = new[] { entity };
 
-                var value = System.Convert.ChangeType(parsed.value.ToString(), def.Item3);
+                var value = System.Convert.ChangeType(parsed.value.ToString(), def.Type);
                 var constValueExpr = Constant(value);
-                var operationExpr = _config.OperationsMap[parsed.operation.ToString()](def.Item2, constValueExpr);
-                var lambda = Lambda(operationExpr, configuration.Filters.Param);
+                var operationExpr = _config.OperationsMap[parsed.operation.ToString()](def.Expression, constValueExpr);
+                var lambda = Lambda(operationExpr, configuration.Param);
 
                 var quoteExpr = Quote(lambda);
 
