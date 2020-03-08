@@ -136,5 +136,25 @@ namespace Ooze.Tests.Intergration
             firstHalf.ForEach(item => Assert.True(!inverted ? item.Id <= 50 : item.Id > 50));
             secondHalf.ForEach(item => Assert.False(!inverted ? item.Id <= 50 : item.Id > 50));
         }
+
+        [Theory]
+        [InlineData("enabled", "id<=50")]
+        public async Task Should_Correctly_Sort_And_Filter_Data(string sorter, string filter)
+        {
+            using var scope = _fixture.CreateScope();
+            var provider = scope.ServiceProvider;
+
+            var context = provider.GetRequiredService<DatabaseContext>();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
+
+            IQueryable<Post> query = context.Posts;
+            query = oozeResolver.Apply(query, new OozeModel { Sorters = sorter, Filters = filter });
+
+            var results = await query.ToListAsync();
+            results.ForEach(item => Assert.True(item.Id <= 50));
+
+            var groups = results.GroupBy(item => item.Enabled, (item, index) => index).ToList();
+            Assert.True(groups.Count == 2);
+        }
     }
 }
