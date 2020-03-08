@@ -1,13 +1,11 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Configuration;
-using System;
-using Ooze.AspNetCore;
 using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Ooze.Tests
+namespace Ooze.Tests.Intergration
 {
     public class DatabaseContext : DbContext
     {
@@ -54,11 +52,11 @@ namespace Ooze.Tests
         }
     }
 
-    public class UnitTest1 : IClassFixture<DbFixture<DatabaseContext>>
+    public class DatabaseIntergrationTests : IClassFixture<DbFixture<DatabaseContext>>
     {
         readonly DbFixture<DatabaseContext> _fixture;
 
-        public UnitTest1(
+        public DatabaseIntergrationTests(
             DbFixture<DatabaseContext> fixture)
         {
             _fixture = fixture;
@@ -74,7 +72,7 @@ namespace Ooze.Tests
         [InlineData("Id>=10", 91)]
         [InlineData("Id<10", 9)]
         [InlineData("Id!=10", 99)]
-        public async Task Test1(string filter, int expectedCount)
+        public async Task Should_Correctly_Filter_Context_Data(string filter, int expectedCount)
         {
             using var scope = _fixture.CreateScope();
             var provider = scope.ServiceProvider;
@@ -88,30 +86,55 @@ namespace Ooze.Tests
             var results = await query.ToListAsync();
             Assert.True(results.Count == expectedCount);
         }
-    }
 
-    public class DbFixture<TContext>
-        where TContext : DbContext
-    {
-        public DbFixture()
+        [Theory]
+        [InlineData("enabled", false)]
+        [InlineData("-enabled", true)]
+        public async Task Should_Correctly_Sort_Context_Data_By_Boolean(string sorter, bool inverted)
         {
-            using var scope = CreateScope();
+            using var scope = _fixture.CreateScope();
             var provider = scope.ServiceProvider;
 
             var context = provider.GetRequiredService<DatabaseContext>();
-            context.Prepare().Wait();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
+
+            IQueryable<Post> query = context.Posts;
+            query = oozeResolver.Apply(query, new OozeModel { Sorters = sorter });
+
+            var results = await query.ToListAsync();
+            var half = results.Count / 2;
+            var firstHalf = results.Take(half)
+                .ToList();
+            var secondHalf = results.Skip(half)
+                .ToList();
+
+            firstHalf.ForEach(item => Assert.False(!inverted ? item.Enabled : !item.Enabled));
+            secondHalf.ForEach(item => Assert.True(!inverted ? item.Enabled : !item.Enabled));
         }
 
-        public IServiceCollection Services = new ServiceCollection()
-            .AddDbContext<TContext>(opts => opts.UseSqlite("Data Source=./database.db;"))
-            .AddOoze(typeof(UnitTest1).Assembly);
+        [Theory]
+        [InlineData("id2", false)]
+        [InlineData("-id2", true)]
+        public async Task Should_Correctly_Sort_Context_Data_By_Id(string sorter, bool inverted)
+        {
+            using var scope = _fixture.CreateScope();
+            var provider = scope.ServiceProvider;
 
-        IServiceProvider ServiceProvider => new DefaultServiceProviderFactory(
-            new ServiceProviderOptions
-            {
-                ValidateScopes = true
-            }).CreateServiceProvider(Services);
+            var context = provider.GetRequiredService<DatabaseContext>();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
 
-        public IServiceScope CreateScope() => ServiceProvider.CreateScope();
+            IQueryable<Post> query = context.Posts;
+            query = oozeResolver.Apply(query, new OozeModel { Sorters = sorter });
+
+            var results = await query.ToListAsync();
+            var half = results.Count / 2;
+            var firstHalf = results.Take(half)
+                .ToList();
+            var secondHalf = results.Skip(half)
+                .ToList();
+
+            firstHalf.ForEach(item => Assert.True(!inverted ? item.Id <= 50 : item.Id > 50));
+            secondHalf.ForEach(item => Assert.False(!inverted ? item.Id <= 50 : item.Id > 50));
+        }
     }
 }
