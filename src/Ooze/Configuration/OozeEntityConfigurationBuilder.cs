@@ -7,11 +7,14 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Configuration
 {
-    public class OozeEntityConfigurationBuilder<TEntity>
+    internal class OozeEntityConfigurationBuilder<TEntity>
         : IOozeEntityConfigurationBuilderInternal, IOozeEntityConfigurationBuilder<TEntity>
         where TEntity : class
     {
-        readonly ParameterExpression Parameter = Parameter(typeof(TEntity), nameof(TEntity));
+        const string _sorterError = "Sorter definition not correct";
+        const string _filterError = "Filter definition not correct";
+
+        readonly ParameterExpression _parameter = Parameter(typeof(TEntity), nameof(TEntity));
         readonly IList<ExpressionDefinition> _sorters = new List<ExpressionDefinition>();
         readonly IList<ExpressionDefinition> _filters = new List<ExpressionDefinition>();
 
@@ -24,6 +27,7 @@ namespace Ooze.Configuration
             string sorterName,
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
+            ValidateExpression(sortExpression, _sorterError);
             _sorters.Add(new ExpressionDefinition
             {
                 Name = sorterName,
@@ -36,18 +40,19 @@ namespace Ooze.Configuration
         public IOozeEntityConfigurationBuilder<TEntity> Sort<TTarget>(
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
-            string memberName = GetExpressionName(sortExpression, "Sorter definition not correct");
+            string memberName = GetExpressionName(sortExpression, _sorterError);
             return Sort(memberName, sortExpression);
         }
 
         public IOozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
             string filterName,
-            Expression<Func<TEntity, TTarget>> sortExpression)
+            Expression<Func<TEntity, TTarget>> filterExpression)
         {
+            ValidateExpression(filterExpression, _filterError);
             _filters.Add(new ExpressionDefinition
             {
                 Name = filterName,
-                Expression = sortExpression
+                Expression = filterExpression
             });
 
             return this;
@@ -56,33 +61,38 @@ namespace Ooze.Configuration
         public IOozeEntityConfigurationBuilder<TEntity> Filter<TTarget>(
             Expression<Func<TEntity, TTarget>> sortExpression)
         {
-            string memberName = GetExpressionName(sortExpression, "Filter definition not correct");
+            string memberName = GetExpressionName(sortExpression, _filterError);
             return Filter(memberName, sortExpression);
         }
 
-        private static string GetExpressionName<TTarget>(
+        public (Type entityType, OozeEntityConfiguration configuration) Build() => (typeof(TEntity), new OozeEntityConfiguration
+        {
+            Param = _parameter,
+            Sorters = CreateSorters(),
+            Filters = CreateFilters()
+        });
+
+        static string GetExpressionName<TTarget>(
             Expression<Func<TEntity, TTarget>> expression,
             string error)
         {
-            if (!(expression.Body is MemberExpression))
-            {
-                throw new Exception(error);
-            }
+            ValidateExpression(expression, error);
 
             var memberName = (expression.Body as MemberExpression).Member.Name;
             return memberName;
         }
 
-        public (Type entityType, OozeEntityConfiguration configuration) Build() => (typeof(TEntity), new OozeEntityConfiguration
+        static void ValidateExpression<TTarget>(Expression<Func<TEntity, TTarget>> expression, string error)
         {
-            Param = Parameter,
-            Sorters = CreateSorters(),
-            Filters = CreateFilters()
-        });
+            if (!(expression.Body is MemberExpression))
+            {
+                throw new Exception(error);
+            }
+        }
 
-        IEnumerable<ParsedExpressionDefinition> CreateSorters() => CreateFor(_sorters, prop => Lambda(MakeMemberAccess(Parameter, prop), Parameter)).ToList();
+        IEnumerable<ParsedExpressionDefinition> CreateSorters() => CreateFor(_sorters, prop => Lambda(MakeMemberAccess(_parameter, prop), _parameter)).ToList();
 
-        IEnumerable<ParsedExpressionDefinition> CreateFilters() => CreateFor(_filters, prop => MakeMemberAccess(Parameter, prop)).ToList();
+        IEnumerable<ParsedExpressionDefinition> CreateFilters() => CreateFor(_filters, prop => MakeMemberAccess(_parameter, prop)).ToList();
 
         IEnumerable<ParsedExpressionDefinition> CreateFor(IEnumerable<ExpressionDefinition> expressionDefinitions, Func<PropertyInfo, Expression> exprSelector)
         {
