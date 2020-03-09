@@ -27,7 +27,7 @@ namespace Ooze.Sorters
         public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string sorters)
         {
             var entity = typeof(TEntity);
-            var configuration = _config.EntityConfigurations.FirstOrDefault(config => config.Type.Equals(entity));
+            var configuration = _config.EntityConfigurations[entity];
 
             var modelSorters = sorters.Split(',').Select(sorter => sorter.Trim())
                 .Select(sorter => new

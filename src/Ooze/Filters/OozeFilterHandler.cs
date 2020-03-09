@@ -1,4 +1,4 @@
-using Ooze.Configuration;
+﻿using Ooze.Configuration;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
@@ -24,7 +24,7 @@ namespace Ooze.Filters
         public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string filters)
         {
             var entity = typeof(TEntity);
-            var configuration = _config.EntityConfigurations.FirstOrDefault(config => config.Type.Equals(entity));
+            var configuration = _config.EntityConfigurations[entity];
             var whiteSpaceParser = Character.WhiteSpace.Many();
 
             var propertyParsers = configuration.Filters.Select(def => Span.EqualToIgnoreCase(def.Name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
@@ -34,7 +34,7 @@ namespace Ooze.Filters
                     return singlePropertyParser;
 
                 return accumulator.Or(singlePropertyParser);
-            }).OptionalOrDefault(new TextSpan(string.Empty));
+            });
 
             var operationParsers = _config.OperationsMap.Keys.Select(Span.EqualToIgnoreCase).ToList();
             var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>

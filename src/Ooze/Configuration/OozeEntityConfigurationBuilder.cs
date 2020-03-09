@@ -73,13 +73,12 @@ namespace Ooze.Configuration
             return memberName;
         }
 
-        public OozeEntityConfiguration Build() => new OozeEntityConfiguration
+        public (Type entityType, OozeEntityConfiguration configuration) Build() => (typeof(TEntity), new OozeEntityConfiguration
         {
-            Type = typeof(TEntity),
             Param = Parameter,
             Sorters = CreateSorters(),
             Filters = CreateFilters()
-        };
+        });
 
         IEnumerable<ParsedExpressionDefinition> CreateSorters() => CreateFor(_sorters, prop => Lambda(MakeMemberAccess(Parameter, prop), Parameter)).ToList();
 

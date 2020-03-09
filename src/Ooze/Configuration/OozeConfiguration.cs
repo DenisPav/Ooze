@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using static System.Linq.Expressions.Expression;
 
@@ -17,6 +18,7 @@ namespace Ooze.Configuration
             { "<", LessThan },
         };
 
-        public IEnumerable<OozeEntityConfiguration> EntityConfigurations { get; set; }
+        //public IEnumerable<OozeEntityConfiguration> EntityConfigurations { get; set; }
+        public IDictionary<Type, OozeEntityConfiguration> EntityConfigurations { get; set; }
     }
 }
