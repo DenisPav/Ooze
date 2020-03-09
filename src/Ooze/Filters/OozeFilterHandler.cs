@@ -1,4 +1,4 @@
-﻿using Ooze.Configuration;
+using Ooze.Configuration;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
@@ -54,7 +54,10 @@ namespace Ooze.Filters
                                 select (property, operation, value));
 
             var splittedFilters = filters.Split(',').ToList();
-            var parsedFilters = splittedFilters.Select(filterParser.Parse).ToList();
+            var parsedFilters = splittedFilters.Select(filterParser.TryParse)
+                .Where(result => result.HasValue)
+                .Select(result => result.Value)
+                .ToList();
 
             var appliedFilters = parsedFilters.Join(
                 configuration.Filters,
