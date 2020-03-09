@@ -31,6 +31,7 @@ namespace Ooze.Tests
         [InlineData("", "filter")]
         [InlineData("sorter", null)]
         [InlineData(null, "filter")]
+        [InlineData(null, null)]
         public void Should_Not_Call_Handlers_If_Any_Model_Property_Is_Invalid(string sorter, string filter)
         {
             var context = new OozeResolverContext();

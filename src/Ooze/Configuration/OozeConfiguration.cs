@@ -18,7 +18,6 @@ namespace Ooze.Configuration
             { "<", LessThan },
         };
 
-        //public IEnumerable<OozeEntityConfiguration> EntityConfigurations { get; set; }
         public IDictionary<Type, OozeEntityConfiguration> EntityConfigurations { get; set; }
     }
 }
