@@ -22,7 +22,7 @@ namespace Ooze.Configuration
             return new OozeConfiguration
             {
                 EntityConfigurations = _entityConfigurationBuilders.Select(config => config.Build())
-                    .ToList()
+                    .ToDictionary(result => result.entityType, result => result.configuration)
             };
         }
     }

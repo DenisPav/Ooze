@@ -1,7 +1,9 @@
-﻿namespace Ooze.Configuration
+﻿using System;
+
+namespace Ooze.Configuration
 {
     internal interface IOozeEntityConfigurationBuilderInternal
     {
-        OozeEntityConfiguration Build();
+        (Type entityType, OozeEntityConfiguration configuration) Build();
     }
 }
