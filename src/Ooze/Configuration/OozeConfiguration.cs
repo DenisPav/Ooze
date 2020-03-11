@@ -16,6 +16,7 @@ namespace Ooze.Configuration
             { ">=", GreaterThanOrEqual },
             { "<=", LessThanOrEqual },
             { "@=", Expressions.StartsWith },
+            { "=@", Expressions.EndsWith },
             { ">", GreaterThan },
             { "<", LessThan },
             { "@", Expressions.Contains },

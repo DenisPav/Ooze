@@ -8,7 +8,11 @@ namespace Ooze.Configuration
     {
         internal static MethodInfo StringContains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
         internal static MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+        internal static MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
+
         internal static Expression Contains(Expression left, Expression right) => Call(left, StringContains, right);
         internal static Expression StartsWith(Expression left, Expression right) => Call(left, StringStartsWith, right);
+        internal static Expression EndsWith(Expression left, Expression right) => Call(left, StringEndsWith, right);
+
     }
 }
