@@ -4,6 +4,7 @@ using Superpower.Model;
 using Superpower.Parsers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using static System.Linq.Expressions.Expression;
@@ -46,15 +47,17 @@ namespace Ooze.Filters
         MethodCallExpression CreateFilterExpression(
             Type entity,
             OozeEntityConfiguration configuration,
-            (TextSpan property, TextSpan operation, TextSpan value) parsed,
+            FilterParserResult parsedFilter,
             ParsedExpressionDefinition def,
             Expression expr)
         {
             var typings = new[] { entity };
-            var value = System.Convert.ChangeType(parsed.value.ToString(), def.Type);
+            //this needs to be updated and checked
+
+            var value = System.Convert.ChangeType(parsedFilter.Value, def.Type);
 
             var constValueExpr = Constant(value);
-            var operationExpr = _config.OperationsMap[parsed.operation.ToString()](def.Expression, constValueExpr);
+            var operationExpr = _config.OperationsMap[parsedFilter.Operation](def.Expression, constValueExpr);
             var lambda = Lambda(operationExpr, configuration.Param);
             var quoteExpr = Quote(lambda);
 
@@ -62,10 +65,10 @@ namespace Ooze.Filters
             return callExpr;
         }
 
-        IEnumerable<((TextSpan property, TextSpan operation, TextSpan value) parsed, ParsedExpressionDefinition def)> GetAppliedFilters(
+        IEnumerable<(FilterParserResult parsed, ParsedExpressionDefinition def)> GetAppliedFilters(
             string filters,
             OozeEntityConfiguration configuration,
-            TextParser<(TextSpan property, TextSpan operation, TextSpan value)> filterParser)
+            TextParser<FilterParserResult> filterParser)
         {
             var splittedFilters = filters.Split(',');
             var parsedFilters = splittedFilters.Select(filterParser.TryParse)
@@ -74,16 +77,16 @@ namespace Ooze.Filters
 
             var appliedFilters = parsedFilters.Join(
                 configuration.Filters,
-                x => x.property.ToString(),
-                x => x.Name,
-                (x, y) => (parsed: x, def: y),
+                parsedFilter => parsedFilter.Property,
+                configuredFilter => configuredFilter.Name,
+                (parsedFilter, configuredFilter) => (parsed: parsedFilter, def: configuredFilter),
                 StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
 
             return appliedFilters;
         }
 
-        TextParser<(TextSpan property, TextSpan operation, TextSpan value)> CreateParser(OozeEntityConfiguration configuration)
+        TextParser<FilterParserResult> CreateParser(OozeEntityConfiguration configuration)
         {
             var whiteSpaceParser = Character.WhiteSpace.Many();
             var propertyParsers = configuration.Filters.Select(def => Span.EqualToIgnoreCase(def.Name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
@@ -110,7 +113,7 @@ namespace Ooze.Filters
             var filterParser = (from property in propertyParser
                                 from operation in operationParser
                                 from value in valueParser
-                                select (property, operation, value));
+                                select new FilterParserResult(property.ToString(), operation.ToString(), value.ToString()));
 
             return filterParser;
         }
