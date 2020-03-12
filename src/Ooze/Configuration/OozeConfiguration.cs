@@ -7,15 +7,18 @@ namespace Ooze.Configuration
 {
     public class OozeConfiguration
     {
-        public delegate BinaryExpression Operation(Expression left, Expression right);
+        public delegate Expression Operation(Expression left, Expression right);
         public readonly IReadOnlyDictionary<string, Operation> OperationsMap = new Dictionary<string, Operation>
         {
             { "==", Equal },
             { "!=", NotEqual },
             { ">=", GreaterThanOrEqual },
             { "<=", LessThanOrEqual },
+            { "@=", Expressions.StartsWith },
+            { "=@", Expressions.EndsWith },
             { ">", GreaterThan },
             { "<", LessThan },
+            { "@", Expressions.Contains },
         };
 
         public IDictionary<Type, OozeEntityConfiguration> EntityConfigurations { get; set; }

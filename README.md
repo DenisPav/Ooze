@@ -1,6 +1,6 @@
 # 🌳💧 Ooze - Sorting and Filtering for ASP.NET Core
 
-# ⚙ Setup
+## ⚙ Setup
 You'll need to add reference to the package (insert link here when it will be available). After that call `.AddOoze()` method on services inside of `ConfigureServices()` method in your startup class.
 
 Create a configuration class for your EF entity class. For example:
@@ -57,3 +57,32 @@ public class TestController : ControllerBase
     }
 }
 ```
+
+## ↕ Sorting
+Sorting can be done by just specifying name of the sorter that was done via configuration. Order can be inversed by using `-` operator before actual sorter name. Example can be seen below:
+```cs
+//ascending
+"?sorters=id"
+
+//descending
+"?sorters=-id"
+```
+
+## 🗡🧀 Filtering
+Filtering can be done by specifying `filter` which is then followed by an `operation` which is then followed by `value` (`filter`->`operation`->`value`). Example of filtering can be seen below:
+```cs
+//filter by id filter where each value is higher then number 2
+?filters=id>2
+```
+
+Supported operations are next:
+
+* Equal - `==`,
+* Not Equal - `!=`,
+* Greater Than Or Equal - `>=`,
+* Less Than Or Equal - `<=`
+* Starts With - `@=`
+* Ends With - `=@`
+* Greater Than - `>`
+* Less Than - `<`
+* Contains - `@`
