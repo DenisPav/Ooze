@@ -15,6 +15,7 @@ namespace Ooze.Filters
     {
         const string Where = nameof(Where);
         static readonly Type _queryableType = typeof(Queryable);
+        static readonly Type _stringType = typeof(string);
 
         readonly OozeConfiguration _config;
 
@@ -52,9 +53,11 @@ namespace Ooze.Filters
             Expression expr)
         {
             var typings = new[] { entity };
-            //this needs to be updated and checked
 
-            var value = System.Convert.ChangeType(parsedFilter.Value, def.Type);
+            var typeConverter = TypeDescriptor.GetConverter(def.Type);
+            var value = typeConverter.CanConvertFrom(_stringType)
+                ? typeConverter.ConvertFrom(parsedFilter.Value)
+                : System.Convert.ChangeType(parsedFilter.Value, def.Type);
 
             var constValueExpr = Constant(value);
             var operationExpr = _config.OperationsMap[parsedFilter.Operation](def.Expression, constValueExpr);

@@ -10,7 +10,6 @@ namespace Ooze.Configuration
         public delegate Expression Operation(Expression left, Expression right);
         public readonly IReadOnlyDictionary<string, Operation> OperationsMap = new Dictionary<string, Operation>
         {
-            //some of these arent available on strings, for example greater than
             { "==", Equal },
             { "!=", NotEqual },
             { ">=", GreaterThanOrEqual },
