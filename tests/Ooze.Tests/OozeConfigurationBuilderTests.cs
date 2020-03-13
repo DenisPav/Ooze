@@ -21,7 +21,7 @@ namespace Ooze.Tests
                 .Entity<Entity3>();
 
             var configuration = context.ConfigurationBuilder
-                .Build();
+                .Build(new OozeOptions());
 
             Assert.True(configuration.EntityConfigurations.Count() == 3);
 
@@ -46,7 +46,7 @@ namespace Ooze.Tests
             context.ConfigurationBuilder
                 .Entity<Entity3>();
 
-            Assert.Throws<ArgumentException>(() => context.ConfigurationBuilder.Build());
+            Assert.Throws<ArgumentException>(() => context.ConfigurationBuilder.Build(new OozeOptions()));
         }
 
         class Entity1 { }

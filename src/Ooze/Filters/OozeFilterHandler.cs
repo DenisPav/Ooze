@@ -11,7 +11,7 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Filters
 {
-    public class OozeFilterHandler : IOozeFilterHandler
+    internal class OozeFilterHandler : IOozeFilterHandler
     {
         const string Where = nameof(Where);
         static readonly Type _queryableType = typeof(Queryable);

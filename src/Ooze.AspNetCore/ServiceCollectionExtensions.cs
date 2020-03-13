@@ -12,8 +12,13 @@ namespace Ooze.AspNetCore
     {
         public static IServiceCollection AddOoze(
             this IServiceCollection services,
-            Assembly configurationsAssembly)
+            Assembly configurationsAssembly,
+            Action<OozeOptions> optionsConfigurator = null)
         {
+            var options = new OozeOptions();
+            optionsConfigurator ??= _ => { };
+            optionsConfigurator(options);
+
             var configBuilder = new OozeConfigurationBuilder();
 
             configurationsAssembly.GetTypes()
@@ -23,7 +28,7 @@ namespace Ooze.AspNetCore
                 .ToList()
                 .ForEach(configurator => configurator.Configure(configBuilder));
 
-            var configuration = configBuilder.Build();
+            var configuration = configBuilder.Build(options);
 
             services.AddSingleton(configuration);
             services.AddScoped<IOozeFilterHandler, OozeFilterHandler>();

@@ -15,7 +15,7 @@ namespace Ooze.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;"), ServiceLifetime.Transient);
-            services.AddOoze(typeof(Startup).Assembly);
+            services.AddOoze(typeof(Startup).Assembly, opts => opts.Operations.GreaterThan = ".");
             services.AddScoped(typeof(OozeFilter<>));
             services.AddControllers();
         }

@@ -7,7 +7,7 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Sorters
 {
-    public class OozeSorterHandler : IOozeSorterHandler
+    internal class OozeSorterHandler : IOozeSorterHandler
     {
         const string OrderBy = nameof(OrderBy);
         const string ThenBy = nameof(ThenBy);
