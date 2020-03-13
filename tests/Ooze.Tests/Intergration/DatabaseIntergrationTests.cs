@@ -4,6 +4,7 @@ using Ooze.Configuration;
 using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace Ooze.Tests.Intergration
 {
@@ -72,6 +73,9 @@ namespace Ooze.Tests.Intergration
         [InlineData("Id>=10", 91)]
         [InlineData("Id<10", 9)]
         [InlineData("Id!=10", 99)]
+        [InlineData("Name@1", 20)]
+        [InlineData("Name@=1", 12)]
+        [InlineData("Name=@1", 10)]
         public async Task Should_Correctly_Filter_Context_Data(string filter, int expectedCount)
         {
             using var scope = _fixture.CreateScope();
@@ -85,6 +89,27 @@ namespace Ooze.Tests.Intergration
 
             var results = await query.ToListAsync();
             Assert.True(results.Count == expectedCount);
+        }
+
+        [Theory]
+        [InlineData("Id@3")]
+        [InlineData("bool@=3")]
+        [InlineData("bool=@3")]
+        [InlineData("Name>3")]
+        [InlineData("Name>=3")]
+        [InlineData("Name<3")]
+        [InlineData("Name<=3")]
+        public void Should_Fail_To_Filter_Context_Data(string filter)
+        {
+            using var scope = _fixture.CreateScope();
+            var provider = scope.ServiceProvider;
+
+            var context = provider.GetRequiredService<DatabaseContext>();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
+
+            IQueryable<Post> query = context.Posts;
+
+            Assert.ThrowsAny<Exception>(() => oozeResolver.Apply(query, new OozeModel { Filters = filter }));
         }
 
         [Theory]
