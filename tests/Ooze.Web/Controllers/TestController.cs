@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Ooze.AspNetCore.Filters;
 using System.Linq;
 
 namespace Ooze.Web.Controllers
@@ -26,5 +27,10 @@ namespace Ooze.Web.Controllers
 
             return Ok(query.ToList());
         }
+
+        [HttpGet("query")]
+        [ServiceFilter(typeof(OozeFilter<Post>))]
+        public IQueryable<Post> GetQuery()
+            => _db.Posts;
     }
 }
