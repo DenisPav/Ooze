@@ -1,4 +1,4 @@
-# 🌳💧 Ooze - Sorting and Filtering for ASP.NET Core
+# 🌳💧 Ooze - Sorting and Filtering for ASP.NET Core and EF Core
 
 ## ⚙ Setup
 You'll need to add reference to the package (insert link here when it will be available). After that call `.AddOoze()` method on services inside of `ConfigureServices()` method in your startup class.
@@ -86,3 +86,22 @@ Supported operations are next:
 * Greater Than - `>`
 * Less Than - `<`
 * Contains - `@`
+
+## ⛓ MVC / Controllers
+`Ooze.AspNetCore` package provides a [Result filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-3.1#result-filters) which can abstract boilerplate code for you. You just need to anotate action on which you want to use `Ooze` and that's it (or you can apply it globally).
+Example of this can be seen below:
+```cs
+//Startup.cs
+
+//register Ooze
+services.AddOoze(typeof(Startup).Assembly);
+//register OozeFilter
+services.AddScoped(typeof(OozeFilter<>));
+
+//TestController.cs
+
+[HttpGet("query")]
+//we register Ooze for this action (action should return IQueryable instance)
+[ServiceFilter(typeof(OozeFilter<Post>))]
+public IQueryable<Post> GetQuery() => _db.Posts;
+```
