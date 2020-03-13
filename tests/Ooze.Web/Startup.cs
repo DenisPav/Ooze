@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Ooze.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Configuration;
+using Ooze.AspNetCore.Filters;
 
 namespace Ooze.Web
 {
@@ -15,6 +16,7 @@ namespace Ooze.Web
         {
             services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;"), ServiceLifetime.Transient);
             services.AddOoze(typeof(Startup).Assembly);
+            services.AddScoped(typeof(OozeFilter<>));
             services.AddControllers();
         }
 
