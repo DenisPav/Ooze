@@ -87,6 +87,17 @@ Supported operations are next:
 * Less Than - `<`
 * Contains - `@`
 
+## ⚒ Configuration
+Currently you can configure operation strings via parameter in `.AddOoze()` extension method. There is a restriction to that though. You can use only symbols and not letters or numbers. Example of that can be seen below:
+```cs
+//register Ooze services
+services.AddOoze(typeof(Startup).Assembly, opts => 
+{
+    //change greater than operation string mapping
+    opts.Operations.GreaterThan = "."
+});
+```
+
 ## ⛓ MVC / Controllers
 `Ooze.AspNetCore` package provides a [Result filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-3.1#result-filters) which can abstract boilerplate code for you. You just need to anotate action on which you want to use `Ooze` and that's it (or you can apply it globally).
 Example of this can be seen below:

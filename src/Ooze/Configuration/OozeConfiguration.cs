@@ -1,25 +1,36 @@
-﻿using System;
+﻿using Ooze.Configuration.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Configuration
 {
-    public class OozeConfiguration
+    internal delegate Expression Operation(Expression left, Expression right);
+
+    internal class OozeConfiguration
     {
-        public delegate Expression Operation(Expression left, Expression right);
-        public readonly IReadOnlyDictionary<string, Operation> OperationsMap = new Dictionary<string, Operation>
+        readonly OozeOptions _options;
+        public readonly IReadOnlyDictionary<string, Operation> OperationsMap;
+
+        public OozeConfiguration(
+            OozeOptions options)
         {
-            { "==", Equal },
-            { "!=", NotEqual },
-            { ">=", GreaterThanOrEqual },
-            { "<=", LessThanOrEqual },
-            { "@=", Expressions.StartsWith },
-            { "=@", Expressions.EndsWith },
-            { ">", GreaterThan },
-            { "<", LessThan },
-            { "@", Expressions.Contains },
-        };
+            _options = options ?? throw new Exception("Ooze options not registered to container");
+
+            OperationsMap = new Dictionary<string, Operation>
+            {
+                { _options.Operations.Equal, Equal },
+                { _options.Operations.NotEqual, NotEqual },
+                { _options.Operations.GreaterThanOrEqual, GreaterThanOrEqual },
+                { _options.Operations.LessThanOrEqual, LessThanOrEqual },
+                { _options.Operations.StartsWith, Expressions.StartsWith },
+                { _options.Operations.EndsWith, Expressions.EndsWith },
+                { _options.Operations.GreaterThan, GreaterThan },
+                { _options.Operations.LessThan, LessThan },
+                { _options.Operations.Contains, Expressions.Contains },
+            };
+        }
 
         public IDictionary<Type, OozeEntityConfiguration> EntityConfigurations { get; set; }
     }

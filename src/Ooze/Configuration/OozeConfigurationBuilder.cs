@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Ooze.Configuration.Options;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Ooze.Configuration
 {
-    public class OozeConfigurationBuilder : IOozeConfigurationBuilder
+    internal class OozeConfigurationBuilder : IOozeConfigurationBuilder
     {
         readonly IList<IOozeEntityConfigurationBuilderInternal> _entityConfigurationBuilders =
             new List<IOozeEntityConfigurationBuilderInternal>();
@@ -17,9 +18,9 @@ namespace Ooze.Configuration
             return configurationInstance;
         }
 
-        public OozeConfiguration Build()
+        public OozeConfiguration Build(OozeOptions options)
         {
-            return new OozeConfiguration
+            return new OozeConfiguration(options)
             {
                 EntityConfigurations = _entityConfigurationBuilders.Select(config => config.Build())
                     .ToDictionary(result => result.entityType, result => result.configuration)
