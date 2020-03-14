@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Configuration;
+using Ooze.Configuration.Options;
 using Ooze.Filters;
 using Ooze.Sorters;
+using Ooze.Validation;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -16,8 +18,14 @@ namespace Ooze.AspNetCore
             Action<OozeOptions> optionsConfigurator = null)
         {
             var options = new OozeOptions();
+            var optionsValidator = new OozeOptionsValidator();
             optionsConfigurator ??= _ => { };
             optionsConfigurator(options);
+
+            if (!optionsValidator.Validate(options))
+            {
+                throw new Exception("Specified option configuration is not valid");
+            }
 
             var configBuilder = new OozeConfigurationBuilder();
 
