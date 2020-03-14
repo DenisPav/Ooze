@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 
-namespace Ooze.Tests.Intergration
+namespace Ooze.Tests.Integration
 {
     public class DatabaseContext : DbContext
     {
@@ -53,11 +53,11 @@ namespace Ooze.Tests.Intergration
         }
     }
 
-    public class DatabaseIntergrationTests : IClassFixture<DbFixture<DatabaseContext>>
+    public class DatabaseIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
     {
         readonly DbFixture<DatabaseContext> _fixture;
 
-        public DatabaseIntergrationTests(
+        public DatabaseIntegrationTests(
             DbFixture<DatabaseContext> fixture)
         {
             _fixture = fixture;

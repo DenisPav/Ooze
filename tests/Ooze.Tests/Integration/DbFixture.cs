@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Ooze.AspNetCore;
 
-namespace Ooze.Tests.Intergration
+namespace Ooze.Tests.Integration
 {
     public class DbFixture<TContext>
         where TContext : DbContext
