@@ -1,4 +1,5 @@
 ﻿using Ooze.Configuration;
+using Ooze.Configuration.Options;
 using System;
 using System.Linq;
 using Xunit;

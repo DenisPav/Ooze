@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Ooze.Configuration.Options
+﻿namespace Ooze.Configuration.Options
 {
     public class OozeOperations
     {
@@ -14,13 +11,5 @@ namespace Ooze.Configuration.Options
         public string GreaterThan = ">";
         public string LessThan = "<";
         public string Contains = "@";
-
-        static void ValidateOperation(string value)
-        {
-            if (value.Where(@char => !char.IsLetterOrDigit(@char)).Count() != value.Count())
-            {
-                throw new Exception("Symbols can only be used as operators");
-            }
-        }
     }
 }
