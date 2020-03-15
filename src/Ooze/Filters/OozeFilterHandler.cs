@@ -16,7 +16,7 @@ namespace Ooze.Filters
         const string Where = nameof(Where);
         static readonly Type _queryableType = typeof(Queryable);
         static readonly Type _stringType = typeof(string);
-        
+
         readonly IOozeCustomProviderProvider _customProviderProvider;
         readonly OozeConfiguration _config;
 
@@ -52,8 +52,11 @@ namespace Ooze.Filters
                 }
                 else
                 {
-                    query = customProviders.SingleOrDefault(provider => string.Equals(provider.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase))
+                    var providerQuery = customProviders.SingleOrDefault(provider => string.Equals(provider.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase))
                         ?.ApplyFilter(query, filter);
+
+                    if (providerQuery != null)
+                        query = providerQuery;
                 }
             }
 

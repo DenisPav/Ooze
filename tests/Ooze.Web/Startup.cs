@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Ooze.Configuration;
 using Ooze.AspNetCore.Filters;
 using Ooze.Filters;
-using System;
+using Ooze.Sorters;
 
 namespace Ooze.Web
 {
@@ -20,6 +20,7 @@ namespace Ooze.Web
             services.AddOoze(typeof(Startup).Assembly, opts => opts.Operations.GreaterThan = ".");
             services.AddScoped(typeof(OozeFilter<>));
             services.AddScoped<IOozeProvider, CustomFilterProvider>();
+            services.AddScoped<IOozeProvider, CustomSorterProvider>();
             services.AddControllers();
         }
 
@@ -90,6 +91,21 @@ namespace Ooze.Web
         public IQueryable<Post> ApplyFilter(IQueryable<Post> query, FilterParserResult filter)
         {
             return query.Where(post => post.Enabled == false);
+        }
+    }
+
+    public class CustomSorterProvider : IOozeSorterProvider<Post>
+    {
+        public string Name => "custom";
+
+        public IQueryable<Post> ApplySorter(IQueryable<Post> query, bool ascending)
+        {
+            return query.OrderBy(x => x.Id);
+        }
+
+        public IOrderedQueryable<Post> ThenApplySorter(IOrderedQueryable<Post> query, bool ascending)
+        {
+            return query.ThenBy(x => x.Id);
         }
     }
 }

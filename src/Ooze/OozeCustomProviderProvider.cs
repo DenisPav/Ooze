@@ -1,4 +1,5 @@
 ﻿using Ooze.Filters;
+using Ooze.Sorters;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,9 +15,18 @@ namespace Ooze
             _customProviders = customProviders;
         }
 
-        public IEnumerable<IOozeFilterProvider<TEntity>> FiltersFor<TEntity>() where TEntity : class
+        public IEnumerable<IOozeFilterProvider<TEntity>> FiltersFor<TEntity>()
+            where TEntity : class
+            => NonNullProvider<IOozeFilterProvider<TEntity>>();
+
+        public IEnumerable<IOozeSorterProvider<TEntity>> SortersFor<TEntity>()
+            where TEntity : class
+            => NonNullProvider<IOozeSorterProvider<TEntity>>();
+
+        IEnumerable<TProvider> NonNullProvider<TProvider>()
+            where TProvider : class
         {
-            return _customProviders.Select(provider => provider as IOozeFilterProvider<TEntity>)
+            return _customProviders.Select(provider => provider as TProvider)
                 .Where(provider => provider != null)
                 .ToList();
         }
