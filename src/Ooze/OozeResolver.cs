@@ -1,23 +1,21 @@
-﻿using Ooze.Filters;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Ooze.Filters;
 using Ooze.Sorters;
 using Ooze.Validation;
+using System;
 using System.Linq;
 
 namespace Ooze
 {
-    public class OozeResolver : IOozeResolver
+    internal class OozeResolver : IOozeResolver
     {
-        readonly IOozeFilterHandler _filterHandler;
-        readonly IOozeSorterHandler _sorterHandler;
-
+        readonly IServiceProvider _provider;
         static readonly OozeModelValidator _modelValidator = new OozeModelValidator();
 
         public OozeResolver(
-            IOozeFilterHandler filterHandler,
-            IOozeSorterHandler sorterHandler)
+            IServiceProvider provider)
         {
-            _filterHandler = filterHandler;
-            _sorterHandler = sorterHandler;
+            _provider = provider;
         }
 
         public IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model)
@@ -26,12 +24,12 @@ namespace Ooze
 
             if (sortersValid)
             {
-                query = _sorterHandler.Handle(query, model.Sorters);
+                query = _provider.GetRequiredService<IOozeSorterHandler<TEntity>>().Handle(query, model.Sorters);
             }
 
             if (filtersValid)
             {
-                query = _filterHandler.Handle(query, model.Filters);
+                query = _provider.GetRequiredService<IOozeFilterHandler<TEntity>>().Handle(query, model.Filters);
             }
 
             return query;

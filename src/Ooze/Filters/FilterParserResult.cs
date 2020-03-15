@@ -1,6 +1,6 @@
 ﻿namespace Ooze.Filters
 {
-    internal class FilterParserResult
+    public class FilterParserResult
     {
         public string Property { get; set; }
         public string Operation { get; set; }

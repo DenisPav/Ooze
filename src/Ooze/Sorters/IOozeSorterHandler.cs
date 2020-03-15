@@ -2,8 +2,8 @@
 
 namespace Ooze.Sorters
 {
-    public interface IOozeSorterHandler
+    public interface IOozeSorterHandler<TEntity>
     {
-        IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string sorters);
+        IQueryable<TEntity> Handle(IQueryable<TEntity> query, string sorters);
     }
 }

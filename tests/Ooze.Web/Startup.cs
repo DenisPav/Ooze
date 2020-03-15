@@ -7,6 +7,8 @@ using Ooze.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Configuration;
 using Ooze.AspNetCore.Filters;
+using Ooze.Filters;
+using System;
 
 namespace Ooze.Web
 {
@@ -17,6 +19,7 @@ namespace Ooze.Web
             services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;"), ServiceLifetime.Transient);
             services.AddOoze(typeof(Startup).Assembly, opts => opts.Operations.GreaterThan = ".");
             services.AddScoped(typeof(OozeFilter<>));
+            services.AddScoped<IOozeFilterProvider<Post>, CustomFilterProvider>();
             services.AddControllers();
         }
 
@@ -77,6 +80,16 @@ namespace Ooze.Web
                  .Filter(post => post.Id)
                  .Filter(post => post.Name)
                  .Filter("bool", post => post.Enabled);
+        }
+    }
+
+    public class CustomFilterProvider : IOozeFilterProvider<Post>
+    {
+        public string Name => "custom";
+
+        public IQueryable<Post> ApplyFilter(IQueryable<Post> query, FilterParserResult filter)
+        {
+            return query.Where(post => post.Enabled == false);
         }
     }
 }
