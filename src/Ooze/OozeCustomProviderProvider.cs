@@ -1,23 +1,10 @@
 ﻿using Ooze.Filters;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Ooze
 {
-    public interface IOozeProvider
-    {
-        string Name { get; }
-    }
-
-    public interface IOozeCustomProviderProvider
-    {
-        IEnumerable<IOozeFilterProvider<TEntity>> FiltersFor<TEntity>()
-            where TEntity : class;
-    }
-
-    class OozeCustomProviderProvider : IOozeCustomProviderProvider
+    internal class OozeCustomProviderProvider : IOozeCustomProviderProvider
     {
         readonly IEnumerable<IOozeProvider> _customProviders;
 
@@ -29,10 +16,9 @@ namespace Ooze
 
         public IEnumerable<IOozeFilterProvider<TEntity>> FiltersFor<TEntity>() where TEntity : class
         {
-            return _customProviders.Cast<IOozeFilterProvider<TEntity>>()
+            return _customProviders.Select(provider => provider as IOozeFilterProvider<TEntity>)
                 .Where(provider => provider != null)
                 .ToList();
-
         }
     }
 }
