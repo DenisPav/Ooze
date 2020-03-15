@@ -7,7 +7,7 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Sorters
 {
-    internal class OozeSorterHandler<TEntity> : IOozeSorterHandler<TEntity>
+    internal class OozeSorterHandler : IOozeSorterHandler
     {
         const string OrderBy = nameof(OrderBy);
         const string ThenBy = nameof(ThenBy);
@@ -25,7 +25,8 @@ namespace Ooze.Sorters
             _config = config;
         }
 
-        public IQueryable<TEntity> Handle(IQueryable<TEntity> query, string sorters)
+        public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string sorters)
+            where TEntity : class
         {
             var entity = typeof(TEntity);
             var configuration = _config.EntityConfigurations[entity];

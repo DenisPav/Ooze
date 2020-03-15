@@ -39,8 +39,9 @@ namespace Ooze.AspNetCore
             var configuration = configBuilder.Build(options);
 
             services.AddSingleton(configuration);
-            services.AddScoped(typeof(IOozeSorterHandler<>), typeof(OozeSorterHandler<>));
-            services.AddScoped(typeof(IOozeFilterHandler<>), typeof(OozeFilterHandler<>));
+            services.AddScoped<IOozeCustomProviderProvider, OozeCustomProviderProvider>();
+            services.AddScoped<IOozeSorterHandler, OozeSorterHandler>();
+            services.AddScoped<IOozeFilterHandler, OozeFilterHandler>();
             services.AddScoped<IOozeResolver, OozeResolver>();
 
             return services;

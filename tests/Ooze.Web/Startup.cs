@@ -19,7 +19,7 @@ namespace Ooze.Web
             services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;"), ServiceLifetime.Transient);
             services.AddOoze(typeof(Startup).Assembly, opts => opts.Operations.GreaterThan = ".");
             services.AddScoped(typeof(OozeFilter<>));
-            services.AddScoped<IOozeFilterProvider<Post>, CustomFilterProvider>();
+            services.AddScoped<IOozeProvider, CustomFilterProvider>();
             services.AddControllers();
         }
 

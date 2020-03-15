@@ -9,27 +9,32 @@ namespace Ooze
 {
     internal class OozeResolver : IOozeResolver
     {
-        readonly IServiceProvider _provider;
+        readonly IOozeSorterHandler _sorterHandler;
+        readonly IOozeFilterHandler _filterHandler;
+        
         static readonly OozeModelValidator _modelValidator = new OozeModelValidator();
 
         public OozeResolver(
-            IServiceProvider provider)
+            IOozeSorterHandler sorterHandler,
+            IOozeFilterHandler filterHandler)
         {
-            _provider = provider;
+            _sorterHandler = sorterHandler;
+            _filterHandler = filterHandler;
         }
 
         public IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model)
+            where TEntity : class
         {
             var (sortersValid, filtersValid) = _modelValidator.Validate(model);
 
             if (sortersValid)
             {
-                query = _provider.GetRequiredService<IOozeSorterHandler<TEntity>>().Handle(query, model.Sorters);
+                query = _sorterHandler.Handle(query, model.Sorters);
             }
 
             if (filtersValid)
             {
-                query = _provider.GetRequiredService<IOozeFilterHandler<TEntity>>().Handle(query, model.Filters);
+                query = _filterHandler.Handle(query, model.Filters);
             }
 
             return query;

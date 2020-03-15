@@ -2,8 +2,9 @@
 
 namespace Ooze.Filters
 {
-    public interface IOozeFilterHandler<TEntity>
+    public interface IOozeFilterHandler
     {
-        IQueryable<TEntity> Handle(IQueryable<TEntity> query, string filters);
+        IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string filters)
+            where TEntity : class;
     }
 }
