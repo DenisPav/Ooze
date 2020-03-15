@@ -16,33 +16,60 @@ namespace Ooze.Filters
         const string Where = nameof(Where);
         static readonly Type _queryableType = typeof(Queryable);
         static readonly Type _stringType = typeof(string);
-
+        
+        readonly IOozeCustomProviderProvider _customProviderProvider;
         readonly OozeConfiguration _config;
 
         public OozeFilterHandler(
+            IOozeCustomProviderProvider customProviderProvider,
             OozeConfiguration config)
         {
+            _customProviderProvider = customProviderProvider;
             _config = config;
         }
 
         public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string filters)
+            where TEntity : class
         {
             var entity = typeof(TEntity);
             var configuration = _config.EntityConfigurations[entity];
+            var customProviders = _customProviderProvider.FiltersFor<TEntity>();
 
-            var filterParser = CreateParser(configuration);
-            var appliedFilters = GetAppliedFilters(filters, configuration, filterParser);
+            var filterParser = CreateParser(configuration, customProviders);
+            var parsedFilters = GetParsedFilters(filters, filterParser);
+            var appliedConfigurationFilters = GetAppliedFilters(parsedFilters, configuration);
 
-            foreach (var (parsed, def) in appliedFilters)
+            foreach (var filter in parsedFilters)
             {
                 var expr = query.Expression;
-                var callExpr = CreateFilterExpression(entity, configuration, parsed, def, expr);
 
-                query = query.Provider
-                    .CreateQuery<TEntity>(callExpr);
+                var configFilter = appliedConfigurationFilters.SingleOrDefault(configFilter => string.Equals(configFilter.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase));
+                if (configFilter != null)
+                {
+                    var callExpr = CreateFilterExpression(entity, configuration, filter, configFilter, expr);
+                    query = query.Provider
+                        .CreateQuery<TEntity>(callExpr);
+                }
+                else
+                {
+                    query = customProviders.SingleOrDefault(provider => string.Equals(provider.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase))
+                        ?.ApplyFilter(query, filter);
+                }
             }
 
             return query;
+        }
+
+        IEnumerable<FilterParserResult> GetParsedFilters(
+            string filters,
+            TextParser<FilterParserResult> filterParser)
+        {
+            var splittedFilters = filters.Split(',');
+            var parsedFilters = splittedFilters.Select(filterParser.TryParse)
+                .Where(result => result.HasValue)
+                .Select(result => result.Value);
+
+            return parsedFilters.ToList();
         }
 
         MethodCallExpression CreateFilterExpression(
@@ -68,32 +95,32 @@ namespace Ooze.Filters
             return callExpr;
         }
 
-        IEnumerable<(FilterParserResult parsed, ParsedExpressionDefinition def)> GetAppliedFilters(
-            string filters,
-            OozeEntityConfiguration configuration,
-            TextParser<FilterParserResult> filterParser)
+        IEnumerable<ParsedExpressionDefinition> GetAppliedFilters(
+            IEnumerable<FilterParserResult> parsedFilters,
+            OozeEntityConfiguration configuration)
         {
-            var splittedFilters = filters.Split(',');
-            var parsedFilters = splittedFilters.Select(filterParser.TryParse)
-                .Where(result => result.HasValue)
-                .Select(result => result.Value);
+            var distinctParsedFilters = parsedFilters.Select(filter => filter.Property)
+                .Distinct();
 
-            var appliedFilters = parsedFilters.Join(
+            var appliedFilters = distinctParsedFilters.Join(
                 configuration.Filters,
-                parsedFilter => parsedFilter.Property,
+                parsedFilter => parsedFilter,
                 configuredFilter => configuredFilter.Name,
-                (parsedFilter, configuredFilter) => (parsed: parsedFilter, def: configuredFilter),
+                (parsedFilter, configuredFilter) => configuredFilter,
                 StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
 
             return appliedFilters;
         }
 
-        TextParser<FilterParserResult> CreateParser(OozeEntityConfiguration configuration)
+        TextParser<FilterParserResult> CreateParser(OozeEntityConfiguration configuration, IEnumerable<IOozeProvider> customProviders)
         {
             var whiteSpaceParser = Character.WhiteSpace.Many();
             var propertyParsers = configuration.Filters.Select(def => Span.EqualToIgnoreCase(def.Name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
-            var propertyParser = propertyParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
+            var customFilterParsers = customProviders.Select(def => Span.EqualToIgnoreCase(def.Name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
+
+            var propertyParser = propertyParsers.Concat(customFilterParsers)
+                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
                 if (accumulator == null)
                     return singlePropertyParser;

@@ -26,6 +26,7 @@ namespace Ooze.Sorters
         }
 
         public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string sorters)
+            where TEntity : class
         {
             var entity = typeof(TEntity);
             var configuration = _config.EntityConfigurations[entity];

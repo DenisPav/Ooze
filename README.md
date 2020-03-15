@@ -88,6 +88,7 @@ Supported operations are next:
 * Contains - `@`
 
 ## ⚒ Configuration
+### Operations
 Currently you can configure operation strings via parameter in `.AddOoze()` extension method. There is a restriction to that though. You can use only symbols and not letters or numbers. Example of that can be seen below:
 ```cs
 //register Ooze services
@@ -97,6 +98,26 @@ services.AddOoze(typeof(Startup).Assembly, opts =>
     opts.Operations.GreaterThan = "."
 });
 ```
+### Custom filtering
+You can extend Ooze default operations by creating implementation of `IOozeFilterProvider<TEntity>` and then registering it to container. Example can be seen below:
+```cs
+//create implementation of IOozeFilterProvider<>
+public class CustomFilterProvider : IOozeFilterProvider<Post>
+{
+    //specify name under which filter will be triggered
+    public string Name => "custom";
+
+    public IQueryable<Post> ApplyFilter(IQueryable<Post> query, FilterParserResult filter)
+    {
+        //filter passed IQueryable instance
+    }
+}
+
+//Startup.cs
+//register to container with wanted lifetime
+services.AddScoped<IOozeProvider, CustomFilterProvider>();
+```
+
 
 ## ⛓ MVC / Controllers
 `Ooze.AspNetCore` package provides a [Result filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-3.1#result-filters) which can abstract boilerplate code for you. You just need to anotate action on which you want to use `Ooze` and that's it (or you can apply it globally).
