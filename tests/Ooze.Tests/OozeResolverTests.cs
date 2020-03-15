@@ -63,7 +63,7 @@ namespace Ooze.Tests
             }
         }
 
-        public class OozeResolverContext
+        internal class OozeResolverContext
         {
             public OozeResolver OozeResolver { get; private set; }
             public IOozeFilterHandler FilterHandler { get; } = Substitute.For<IOozeFilterHandler>();
@@ -71,7 +71,7 @@ namespace Ooze.Tests
 
             public OozeResolverContext()
             {
-                OozeResolver = new OozeResolver(FilterHandler, SorterHandler);
+                OozeResolver = new OozeResolver(SorterHandler, FilterHandler);
             }
         }
     }
