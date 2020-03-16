@@ -1,4 +1,5 @@
 ﻿using Ooze.Configuration;
+using Superpower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,14 @@ namespace Ooze.Sorters
 
         static readonly Type _queryableType = typeof(Queryable);
 
+        readonly IOozeCustomProviderProvider _customProviderProvider;
         readonly OozeConfiguration _config;
 
         public OozeSorterHandler(
+            IOozeCustomProviderProvider customProviderProvider,
             OozeConfiguration config)
         {
+            _customProviderProvider = customProviderProvider;
             _config = config;
         }
 
@@ -30,19 +34,36 @@ namespace Ooze.Sorters
         {
             var entity = typeof(TEntity);
             var configuration = _config.EntityConfigurations[entity];
+            var customProviders = _customProviderProvider.SortersFor<TEntity>();
 
-            var parsedSorters = GetParsedSorters(sorters);
-            var appliedSorters = GetAppliedSorters(configuration, parsedSorters)
-                .ToList();
+            var parsedSorters = GetParsedSorters(sorters).ToList();
+            var appliedSorters = GetAppliedSorters(configuration, parsedSorters);
 
-            for (int i = 0; i < appliedSorters.Count(); i++)
+            for (int i = 0; i < parsedSorters.Count(); i++)
             {
                 var queryExpression = query.Expression;
-                var (_, sorterExpression, sorterType, ascending) = appliedSorters[i];
-                var sortExpression = CreateSortExpression(entity, queryExpression, sorterExpression, sorterType, ascending, i == 0);
+                var parsedSorter = parsedSorters[i];
+                //not ThenBy call
+                var isFirst = i == 0;
 
-                query = query.Provider
-                    .CreateQuery<TEntity>(sortExpression);
+                var configSorter = appliedSorters.SingleOrDefault(sorter => string.Compare(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
+                if (configSorter != null)
+                {
+                    var sortExpression = CreateSortExpression(entity, queryExpression, configSorter.Expression, configSorter.Type, parsedSorter.Ascending, isFirst);
+
+                    query = query.Provider
+                        .CreateQuery<TEntity>(sortExpression);
+                }
+                else
+                {
+                    var provider = customProviders.SingleOrDefault(provider => string.Compare(provider.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    var providerQuery = isFirst
+                        ? provider?.ApplySorter(query, parsedSorter.Ascending)
+                        : provider?.ThenApplySorter((IOrderedQueryable<TEntity>)query, parsedSorter.Ascending);
+
+                    if (providerQuery != null)
+                        query = providerQuery;
+                }
             }
 
             return query;
@@ -56,7 +77,7 @@ namespace Ooze.Sorters
             bool ascending,
             bool isFirst = true)
         {
-            var typings = new [] { entityType, sorterType };
+            var typings = new[] { entityType, sorterType };
             var quoteExpr = Quote(sorterExpression);
 
             var method = isFirst
@@ -66,16 +87,20 @@ namespace Ooze.Sorters
             return Call(_queryableType, method, typings, queryExpression, quoteExpr);
         }
 
-        IEnumerable<(string Name, Expression Expression, Type Type, bool Ascending)> GetAppliedSorters(
+        IEnumerable<ParsedExpressionDefinition> GetAppliedSorters(
             OozeEntityConfiguration configuration,
             IEnumerable<SorterParserResult> parsedSorters)
         {
-            return parsedSorters.Join(
+            var distinctSorters = parsedSorters.Select(sorter => sorter.Sorter)
+                .Distinct();
+
+            return distinctSorters.Join(
                 configuration.Sorters,
-                parsedSorter => parsedSorter.Sorter,
+                parsedSorter => parsedSorter,
                 configuredSorter => configuredSorter.Name,
-                (parsedSorter, configuredSorter) => (configuredSorter.Name, configuredSorter.Expression, configuredSorter.Type, parsedSorter.Ascending),
-                StringComparer.InvariantCultureIgnoreCase);
+                (parsedSorter, configuredSorter) => configuredSorter,
+                StringComparer.InvariantCultureIgnoreCase)
+                .ToList();
         }
 
         IEnumerable<SorterParserResult> GetParsedSorters(
@@ -87,8 +112,7 @@ namespace Ooze.Sorters
                 {
                     Ascending = !sorter.StartsWith(_negativeOrderChar) ? true : false,
                     Sorter = sorter.StartsWith(_negativeOrderChar) ? new string(sorter.Skip(1).ToArray()) : sorter
-                })
-                .ToList();
+                });
         }
     }
 }

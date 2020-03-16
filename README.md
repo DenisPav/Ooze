@@ -118,6 +118,32 @@ public class CustomFilterProvider : IOozeFilterProvider<Post>
 services.AddScoped<IOozeProvider, CustomFilterProvider>();
 ```
 
+### Custom sorting
+Similar to filtering, sorting can be also extended by creating implementation of `IOozeSorterProvider<TEntity>`. Example can be seen below:
+```cs
+//create implementation of IOozeSorterProvider<>
+public class CustomSorterProvider : IOozeSorterProvider<Post>
+{
+    //specify name under which sorter will be triggered
+    public string Name => "custom";
+
+    public IQueryable<Post> ApplySorter(IQueryable<Post> query, bool ascending)
+    {
+        //sort IQueryable
+    }
+
+    public IOrderedQueryable<Post> ThenApplySorter(IOrderedQueryable<Post> query, bool ascending)
+    {
+        //if some sorting was already done this method will get triggered
+        //and you'll get presorted IQueryable on which you can then use
+        //ThenBy methods
+    }
+}
+
+//Startup.cs
+//register to container with wanted lifetime
+services.AddScoped<IOozeProvider, CustomSorterProvider>();
+```
 
 ## ⛓ MVC / Controllers
 `Ooze.AspNetCore` package provides a [Result filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-3.1#result-filters) which can abstract boilerplate code for you. You just need to anotate action on which you want to use `Ooze` and that's it (or you can apply it globally).
