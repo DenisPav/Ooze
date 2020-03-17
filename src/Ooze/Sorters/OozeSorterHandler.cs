@@ -1,22 +1,15 @@
 ﻿using Ooze.Configuration;
+using Ooze.Filters;
 using Superpower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Sorters
 {
     internal class OozeSorterHandler : IOozeSorterHandler
     {
-        const string OrderBy = nameof(OrderBy);
-        const string ThenBy = nameof(ThenBy);
-        const string ThenByDescending = nameof(ThenByDescending);
-        const string OrderByDescending = nameof(OrderByDescending);
         const char _negativeOrderChar = '-';
-
-        static readonly Type _queryableType = typeof(Queryable);
 
         readonly IOozeCustomProviderProvider _customProviderProvider;
         readonly OozeConfiguration _config;
@@ -34,73 +27,20 @@ namespace Ooze.Sorters
         {
             var entity = typeof(TEntity);
             var configuration = _config.EntityConfigurations[entity];
-            var customProviders = _customProviderProvider.SortersFor<TEntity>();
 
+            var customProviders = _customProviderProvider.SortersFor<TEntity>();
             var parsedSorters = GetParsedSorters(sorters).ToList();
-            var appliedSorters = GetAppliedSorters(configuration, parsedSorters);
 
             for (int i = 0; i < parsedSorters.Count(); i++)
             {
-                var queryExpression = query.Expression;
-                var parsedSorter = parsedSorters[i];
                 //not ThenBy call
                 var isFirst = i == 0;
+                var parsedSorter = parsedSorters[i];
 
-                var configSorter = appliedSorters.SingleOrDefault(sorter => string.Compare(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (configSorter != null)
-                {
-                    var sortExpression = CreateSortExpression(entity, queryExpression, configSorter.Expression, configSorter.Type, parsedSorter.Ascending, isFirst);
-
-                    query = query.Provider
-                        .CreateQuery<TEntity>(sortExpression);
-                }
-                else
-                {
-                    var provider = customProviders.SingleOrDefault(provider => string.Compare(provider.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
-                    var providerQuery = isFirst
-                        ? provider?.ApplySorter(query, parsedSorter.Ascending)
-                        : provider?.ThenApplySorter((IOrderedQueryable<TEntity>)query, parsedSorter.Ascending);
-
-                    if (providerQuery != null)
-                        query = providerQuery;
-                }
+                query = OozeQueryableCreator.ForSorter<TEntity>(query, configuration, parsedSorter, customProviders, isFirst);
             }
 
             return query;
-        }
-
-        MethodCallExpression CreateSortExpression(
-            Type entityType,
-            Expression queryExpression,
-            Expression sorterExpression,
-            Type sorterType,
-            bool ascending,
-            bool isFirst = true)
-        {
-            var typings = new[] { entityType, sorterType };
-            var quoteExpr = Quote(sorterExpression);
-
-            var method = isFirst
-                ? ascending ? OrderBy : OrderByDescending
-                : ascending ? ThenBy : ThenByDescending;
-
-            return Call(_queryableType, method, typings, queryExpression, quoteExpr);
-        }
-
-        IEnumerable<ParsedExpressionDefinition> GetAppliedSorters(
-            OozeEntityConfiguration configuration,
-            IEnumerable<SorterParserResult> parsedSorters)
-        {
-            var distinctSorters = parsedSorters.Select(sorter => sorter.Sorter)
-                .Distinct();
-
-            return distinctSorters.Join(
-                configuration.Sorters,
-                parsedSorter => parsedSorter,
-                configuredSorter => configuredSorter.Name,
-                (parsedSorter, configuredSorter) => configuredSorter,
-                StringComparer.InvariantCultureIgnoreCase)
-                .ToList();
         }
 
         IEnumerable<SorterParserResult> GetParsedSorters(

@@ -1,4 +1,5 @@
 ﻿using Ooze.Configuration;
+using Ooze.Sorters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,40 @@ namespace Ooze.Filters
             return filter != null
                 ? ApplyConfigurationFilter(query, entityConfiguration, parsedFilter, operationsMap, filter)
                 : ApplyCustomFilter(query, customFilterProviders, parsedFilter);
+        }
+
+        public static IQueryable<TEntity> ForSorter<TEntity>(
+            IQueryable<TEntity> query,
+            OozeEntityConfiguration entityConfiguration,
+            SorterParserResult parsedSorter,
+            IEnumerable<IOozeSorterProvider<TEntity>> customSorterProviders,
+            bool isFirst)
+            where TEntity : class
+        {
+            var entityType = typeof(TEntity);
+            //this might throw??? check and make sure
+            var sorters = entityConfiguration.Sorters;
+            var sorter = sorters.SingleOrDefault(sorter => string.Compare(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+            if (sorter != null)
+            {
+                var sortExpression = SortExpression<TEntity>(query.Expression, sorter.Expression, sorter.Type, parsedSorter.Ascending, isFirst);
+
+                return query.Provider
+                    .CreateQuery<TEntity>(sortExpression);
+            }
+            else
+            {
+                var provider = customSorterProviders.SingleOrDefault(provider => string.Compare(provider.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
+                var providerQuery = isFirst
+                    ? provider?.ApplySorter(query, parsedSorter.Ascending)
+                    : provider?.ThenApplySorter((IOrderedQueryable<TEntity>)query, parsedSorter.Ascending);
+
+                if (providerQuery != null)
+                    return providerQuery;
+            }
+
+            return query;
         }
 
         static IQueryable<TEntity> ApplyConfigurationFilter<TEntity>(

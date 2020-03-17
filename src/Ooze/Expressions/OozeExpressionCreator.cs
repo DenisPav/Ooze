@@ -11,6 +11,10 @@ namespace Ooze.Expressions
     internal static class OozeExpressionCreator
     {
         const string Where = nameof(Where);
+        const string OrderBy = nameof(OrderBy);
+        const string ThenBy = nameof(ThenBy);
+        const string ThenByDescending = nameof(ThenByDescending);
+        const string OrderByDescending = nameof(OrderByDescending);
         static readonly Type _queryableType = typeof(Queryable);
         static readonly Type _stringType = typeof(string);
 
@@ -35,6 +39,23 @@ namespace Ooze.Expressions
 
             var callExpr = Call(_queryableType, Where, typings, expr, quoteExpr);
             return callExpr;
+        }
+
+        public static MethodCallExpression SortExpression<TEntity>(
+            Expression queryExpression,
+            Expression sorterExpression,
+            Type sorterType,
+            bool ascending,
+            bool isFirst = true)
+        {
+            var typings = new[] { typeof(TEntity), sorterType };
+            var quoteExpr = Quote(sorterExpression);
+
+            var method = isFirst
+                ? ascending ? OrderBy : OrderByDescending
+                : ascending ? ThenBy : ThenByDescending;
+
+            return Call(_queryableType, method, typings, queryExpression, quoteExpr);
         }
     }
 }
