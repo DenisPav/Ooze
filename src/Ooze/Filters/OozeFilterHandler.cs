@@ -1,7 +1,5 @@
 ﻿using Ooze.Configuration;
 using Superpower;
-using Superpower.Model;
-using Superpower.Parsers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,42 +42,16 @@ namespace Ooze.Filters
                 .Where(result => result.HasValue)
                 .Select(result => result.Value);
 
-            return parsedFilters.ToList();
+            return parsedFilters;
         }
 
         TextParser<FilterParserResult> CreateParser(OozeEntityConfiguration configuration, IEnumerable<IOozeProvider> customProviders)
         {
-            var whiteSpaceParser = Character.WhiteSpace.Many();
-            var propertyParsers = configuration.Filters.Select(def => Span.EqualToIgnoreCase(def.Name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
-            var customFilterParsers = customProviders.Select(def => Span.EqualToIgnoreCase(def.Name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
+            var filterNames = configuration.Filters
+                .Select(configurationFilter => configurationFilter.Name)
+                .Concat(customProviders.Select(provider => provider.Name));
 
-            var propertyParser = propertyParsers.Concat(customFilterParsers)
-                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator.Or(singlePropertyParser);
-            });
-
-            var operationParsers = _config.OperationsMap.Keys.Select(Span.EqualToIgnoreCase).ToList();
-            var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator
-                    .Try()
-                    .Or(singlePropertyParser);
-            });
-
-            var valueParser = Span.WithAll(_ => true).OptionalOrDefault(new TextSpan(string.Empty));
-            var filterParser = (from property in propertyParser
-                                from operation in operationParser
-                                from value in valueParser
-                                select new FilterParserResult(property.ToString(), operation.ToString(), value.ToString()));
-
-            return filterParser;
+            return OozeParserCreator.FilterParser(filterNames, _config.OperationsMap.Keys);
         }
     }
 }

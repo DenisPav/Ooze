@@ -21,22 +21,34 @@ namespace Ooze.Filters
             var filters = entityConfiguration.Filters;
             var filter = filters.SingleOrDefault(configFilter => string.Equals(configFilter.Name, parsedFilter.Property, StringComparison.InvariantCultureIgnoreCase));
 
-            if (filter != null)
-            {
-                var callExpr = FilterExpression<TEntity>(entityConfiguration, parsedFilter, filter, query.Expression, operationsMap[parsedFilter.Operation]);
-                return query.Provider
-                    .CreateQuery<TEntity>(callExpr);
-            }
-            else
-            {
-                var providerQuery = customFilterProviders.SingleOrDefault(provider => string.Equals(provider.Name, parsedFilter.Property, StringComparison.InvariantCultureIgnoreCase))
-                       ?.ApplyFilter(query, parsedFilter);
+            return filter != null
+                ? ApplyConfigurationFilter(query, entityConfiguration, parsedFilter, operationsMap, filter)
+                : ApplyCustomFilter(query, customFilterProviders, parsedFilter);
+        }
 
-                if (providerQuery != null)
-                    return providerQuery;
-            }
+        static IQueryable<TEntity> ApplyConfigurationFilter<TEntity>(
+            IQueryable<TEntity> query,
+            OozeEntityConfiguration entityConfiguration,
+            FilterParserResult parsedFilter,
+            IReadOnlyDictionary<string, Operation> operationsMap,
+            ParsedExpressionDefinition filter)
+            where TEntity : class
+        {
+            var callExpr = FilterExpression<TEntity>(entityConfiguration, parsedFilter, filter, query.Expression, operationsMap[parsedFilter.Operation]);
+            return query.Provider
+                .CreateQuery<TEntity>(callExpr);
+        }
 
-            return query;
+        static IQueryable<TEntity> ApplyCustomFilter<TEntity>(
+            IQueryable<TEntity> query,
+            IEnumerable<IOozeFilterProvider<TEntity>> filterProviders,
+            FilterParserResult parsedFilter)
+            where TEntity : class
+        {
+            var providerQuery = filterProviders.SingleOrDefault(provider => string.Equals(provider.Name, parsedFilter.Property, StringComparison.InvariantCultureIgnoreCase))
+                       ?.ApplyFilter(query, parsedFilter) ?? query;
+
+            return providerQuery;
         }
     }
 }
