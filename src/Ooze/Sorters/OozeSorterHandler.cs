@@ -1,7 +1,6 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
 using Superpower;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

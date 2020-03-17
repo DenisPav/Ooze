@@ -40,25 +40,38 @@ namespace Ooze.Filters
             var sorters = entityConfiguration.Sorters;
             var sorter = sorters.SingleOrDefault(sorter => string.Compare(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
 
-            if (sorter != null)
-            {
-                var sortExpression = SortExpression<TEntity>(query.Expression, sorter.Expression, sorter.Type, parsedSorter.Ascending, isFirst);
+            return sorter != null
+                ? ApplyConfigurationSorter(query, parsedSorter, isFirst, sorter)
+                : ApplyCustomSorter(query, customSorterProviders, parsedSorter, isFirst);
+        }
 
-                return query.Provider
-                    .CreateQuery<TEntity>(sortExpression);
-            }
-            else
-            {
-                var provider = customSorterProviders.SingleOrDefault(provider => string.Compare(provider.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
-                var providerQuery = isFirst
-                    ? provider?.ApplySorter(query, parsedSorter.Ascending)
-                    : provider?.ThenApplySorter((IOrderedQueryable<TEntity>)query, parsedSorter.Ascending);
+        static IQueryable<TEntity> ApplyConfigurationSorter<TEntity>(
+            IQueryable<TEntity> query,
+            SorterParserResult parsedSorter,
+            bool isFirst,
+            ParsedExpressionDefinition sorter)
+            where TEntity : class
+        {
+            var sortExpression = SortExpression<TEntity>(query.Expression, sorter.Expression, sorter.Type, parsedSorter.Ascending, isFirst);
 
-                if (providerQuery != null)
-                    return providerQuery;
-            }
+            return query.Provider
+                .CreateQuery<TEntity>(sortExpression);
+        }
 
-            return query;
+        static IQueryable<TEntity> ApplyCustomSorter<TEntity>(
+            IQueryable<TEntity> query,
+            IEnumerable<IOozeSorterProvider<TEntity>> sorterProviders,
+            SorterParserResult parsedSorter,
+            bool isFirst)
+            where TEntity : class
+        {
+            var provider = sorterProviders.SingleOrDefault(provider => string.Compare(provider.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
+            var providerQuery = (isFirst
+                ? provider?.ApplySorter(query, parsedSorter.Ascending)
+                : provider?.ThenApplySorter((IOrderedQueryable<TEntity>)query, parsedSorter.Ascending))
+                ?? query;
+
+            return providerQuery;
         }
 
         static IQueryable<TEntity> ApplyConfigurationFilter<TEntity>(
