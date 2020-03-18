@@ -3,6 +3,10 @@ using NSubstitute;
 using Ooze.Filters;
 using Ooze.Sorters;
 using System.Linq;
+using Ooze.Configuration;
+using Ooze.Configuration.Options;
+using System.Collections.Generic;
+using System;
 
 namespace Ooze.Tests
 {
@@ -68,10 +72,17 @@ namespace Ooze.Tests
             public OozeResolver OozeResolver { get; private set; }
             public IOozeFilterHandler FilterHandler { get; } = Substitute.For<IOozeFilterHandler>();
             public IOozeSorterHandler SorterHandler { get; } = Substitute.For<IOozeSorterHandler>();
+            public OozeConfiguration Configuration { get; } = new OozeConfiguration(new OozeOptions())
+            {
+                EntityConfigurations = new Dictionary<Type, OozeEntityConfiguration>
+                {
+                    { typeof(object), null }
+                }
+            };
 
             public OozeResolverContext()
             {
-                OozeResolver = new OozeResolver(SorterHandler, FilterHandler);
+                OozeResolver = new OozeResolver(SorterHandler, FilterHandler, Configuration);
             }
         }
     }
