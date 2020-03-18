@@ -18,7 +18,6 @@ namespace Ooze.Filters
             where TEntity : class
         {
             var entityType = typeof(TEntity);
-            //this might throw??? check and make sure
             var filters = entityConfiguration.Filters;
             var filter = filters.SingleOrDefault(configFilter => string.Equals(configFilter.Name, parsedFilter.Property, StringComparison.InvariantCultureIgnoreCase));
 
@@ -36,7 +35,6 @@ namespace Ooze.Filters
             where TEntity : class
         {
             var entityType = typeof(TEntity);
-            //this might throw??? check and make sure
             var sorters = entityConfiguration.Sorters;
             var sorter = sorters.SingleOrDefault(sorter => string.Compare(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
 
