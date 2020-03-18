@@ -1,8 +1,10 @@
-﻿using Superpower;
+﻿using Ooze.Configuration;
+using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace Ooze.Filters
 {
@@ -42,6 +44,82 @@ namespace Ooze.Filters
                                 select new FilterParserResult(property.ToString(), operation.ToString(), value.ToString()));
 
             return filterParser;
+        }
+
+        public static TextParser<QueryParserResult[]> QueryParser(OozeEntityConfiguration entityConfiguration)
+        {
+            //example: Property Operation Value LogicalOperator*
+            //* optional
+
+            var filterNames = entityConfiguration.Filters.Select(filter => filter.Name);
+            var whiteSpaceParser = Character.WhiteSpace.Many();
+            var filterNameParsers = filterNames.Select(name => Span.EqualToIgnoreCase(name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
+
+            var propertyParser = filterNameParsers
+                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
+                {
+                    if (accumulator == null)
+                        return singlePropertyParser;
+
+                    return accumulator.Or(singlePropertyParser);
+                });
+
+            var operations = new[]
+            {
+                ">",
+                "<",
+                "==",
+                "!="
+            };
+
+            var operationParsers = operations.Select(Span.EqualToIgnoreCase).ToList();
+            var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
+            {
+                if (accumulator == null)
+                    return singlePropertyParser;
+
+                return accumulator
+                    .Or(singlePropertyParser);
+            });
+
+            var logicalOperations = new[]
+            {
+                "AND",
+                "OR"
+            };
+            var logicalOpParsers = logicalOperations.Select(Span.EqualToIgnoreCase).ToList();
+            var logicalOpParser = logicalOpParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
+            {
+                if (accumulator == null)
+                    return singlePropertyParser;
+
+                return accumulator
+                    .Or(singlePropertyParser);
+            }).Optional();
+
+            var valueParser = Character.AnyChar.ManyDelimitedBy(logicalOpParser.Try());
+            var queryParser = (from property in propertyParser
+                               from operation in operationParser
+                               from value in valueParser
+                               from logicalOperation in logicalOpParser
+                               select new QueryParserResult
+                               {
+                                   Property = property.ToString(),
+                                   Operation = operation.ToString(),
+                                   Value = value.ToString(),
+                                   LogicalOperation = logicalOperation.ToString()
+                               })
+                               .Many();
+
+            return queryParser;
+        }
+
+        public class QueryParserResult
+        {
+            public string Property { get; set; }
+            public string Operation { get; set; }
+            public string Value { get; set; }
+            public string LogicalOperation { get; set; }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
+using Ooze.Query;
 using Ooze.Sorters;
 using Ooze.Validation;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Ooze
     {
         readonly IOozeSorterHandler _sorterHandler;
         readonly IOozeFilterHandler _filterHandler;
+        readonly IOozeQueryHandler _queryHandler;
         readonly OozeConfiguration _config;
 
         static readonly OozeModelValidator _modelValidator = new OozeModelValidator();
@@ -17,10 +19,12 @@ namespace Ooze
         public OozeResolver(
             IOozeSorterHandler sorterHandler,
             IOozeFilterHandler filterHandler,
+            IOozeQueryHandler queryHandler,
             OozeConfiguration config)
         {
             _sorterHandler = sorterHandler;
             _filterHandler = filterHandler;
+            _queryHandler = queryHandler;
             _config = config;
         }
 
@@ -40,16 +44,21 @@ namespace Ooze
             OozeModel model)
             where TEntity : class
         {
-            var (sortersValid, filtersValid) = _modelValidator.Validate(model);
+            var (sortersValid, filtersValid, queryValid) = _modelValidator.Validate(model);
 
-            if (sortersValid)
-            {
-                query = _sorterHandler.Handle(query, model.Sorters);
-            }
+            //if (sortersValid)
+            //{
+            //    query = _sorterHandler.Handle(query, model.Sorters);
+            //}
 
-            if (filtersValid)
+            //if (filtersValid)
+            //{
+            //    query = _filterHandler.Handle(query, model.Filters);
+            //}
+
+            if (queryValid)
             {
-                query = _filterHandler.Handle(query, model.Filters);
+                query = _queryHandler.Handle(query, model.Query);
             }
 
             return query;

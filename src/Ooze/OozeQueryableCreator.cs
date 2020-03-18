@@ -1,11 +1,12 @@
 ﻿using Ooze.Configuration;
+using Ooze.Filters;
 using Ooze.Sorters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Ooze.Expressions.OozeExpressionCreator;
 
-namespace Ooze.Filters
+namespace Ooze
 {
     internal static class OozeQueryableCreator
     {
