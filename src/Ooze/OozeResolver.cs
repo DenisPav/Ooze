@@ -24,7 +24,9 @@ namespace Ooze
             _config = config;
         }
 
-        public IQueryable<TEntity> Apply<TEntity>(IQueryable<TEntity> query, OozeModel model)
+        public IQueryable<TEntity> Apply<TEntity>(
+            IQueryable<TEntity> query,
+            OozeModel model)
             where TEntity : class
         {
             if (!_config.EntityConfigurations.ContainsKey(typeof(TEntity)))
@@ -33,7 +35,10 @@ namespace Ooze
             return ApplyOoze(query, model);
         }
 
-        private IQueryable<TEntity> ApplyOoze<TEntity>(IQueryable<TEntity> query, OozeModel model) where TEntity : class
+        IQueryable<TEntity> ApplyOoze<TEntity>(
+            IQueryable<TEntity> query,
+            OozeModel model)
+            where TEntity : class
         {
             var (sortersValid, filtersValid) = _modelValidator.Validate(model);
 
