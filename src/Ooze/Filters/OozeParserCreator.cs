@@ -64,6 +64,7 @@ namespace Ooze.Filters
                     return accumulator.Or(singlePropertyParser);
                 });
 
+            //pass same operations as for normal filters
             var operations = new[]
             {
                 ">",
@@ -97,7 +98,11 @@ namespace Ooze.Filters
                     .Or(singlePropertyParser);
             }).Optional();
 
-            var valueParser = Character.AnyChar.ManyDelimitedBy(logicalOpParser.Try());
+            //what about booleans
+            var valueParser = Character.Except('\'').Many().Between(Character.EqualTo('\''), Character.EqualTo('\''))
+                .Try()
+                .Or(Character.Numeric.Many());
+
             var queryParser = (from property in propertyParser
                                from operation in operationParser
                                from value in valueParser
@@ -106,7 +111,7 @@ namespace Ooze.Filters
                                {
                                    Property = property.ToString(),
                                    Operation = operation.ToString(),
-                                   Value = value.ToString(),
+                                   Value = new string(value),
                                    LogicalOperation = logicalOperation.ToString()
                                })
                                .Many();

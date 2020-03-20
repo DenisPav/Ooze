@@ -1,10 +1,12 @@
 ﻿using Ooze.Configuration;
+using Ooze.Expressions;
 using Ooze.Filters;
 using Ooze.Sorters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Ooze.Expressions.OozeExpressionCreator;
+using static Ooze.Filters.OozeParserCreator;
 
 namespace Ooze
 {
@@ -42,6 +44,28 @@ namespace Ooze
             return sorter != null
                 ? ApplyConfigurationSorter(query, parsedSorter, isFirst, sorter)
                 : ApplyCustomSorter(query, customSorterProviders, parsedSorter, isFirst);
+        }
+
+        public static IQueryable<TEntity> ForQuery<TEntity>(
+            IQueryable<TEntity> query,
+            OozeEntityConfiguration entityConfiguration,
+            QueryParserResult[] parsedQueryParts,
+            //IEnumerable<IOozeFilterProvider<TEntity>> customFilterProviders,
+            IReadOnlyDictionary<string, Operation> operationsMap)
+            where TEntity : class
+        {
+            var entityType = typeof(TEntity);
+            var filters = entityConfiguration.Filters;
+
+            var mappedParts = parsedQueryParts.Select(part => new QueryFilterOperation
+            {
+                Filter = filters.SingleOrDefault(configFilter => string.Equals(configFilter.Name, part.Property, StringComparison.InvariantCultureIgnoreCase)),
+                OperationFactory = operationsMap[part.Operation],
+                QueryPart = part
+            });
+
+            var callExpr = OozeExpressionCreator.QueryPartExpression<TEntity>(entityConfiguration, mappedParts, query.Expression);
+            return query.Provider.CreateQuery<TEntity>(callExpr);
         }
 
         static IQueryable<TEntity> ApplyConfigurationSorter<TEntity>(
@@ -97,5 +121,12 @@ namespace Ooze
 
             return providerQuery;
         }
+    }
+
+    internal class QueryFilterOperation
+    {
+        public ParsedExpressionDefinition Filter { get; set; }
+        public Operation OperationFactory { get; set; }
+        public QueryParserResult QueryPart { get; set; }
     }
 }

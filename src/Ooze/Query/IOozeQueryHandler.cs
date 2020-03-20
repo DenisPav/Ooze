@@ -34,7 +34,12 @@ namespace Ooze.Query
             var entityConfiguration = _config.EntityConfigurations[entityType];
             var parser = OozeParserCreator.QueryParser(entityConfiguration);
 
-            var parsed = parser.Parse(modelQuery);
+            var parsed = parser.TryParse(modelQuery);
+            if (parsed.HasValue)
+            {
+                var queryParts = parsed.Value;
+                query = OozeQueryableCreator.ForQuery(query, entityConfiguration, queryParts, _config.OperationsMap);
+            }
 
             return query;
         }
