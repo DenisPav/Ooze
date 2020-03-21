@@ -1,14 +1,14 @@
-﻿using Ooze.Configuration;
+﻿using Ooze.Filters;
+using Ooze.Query;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 
-namespace Ooze.Filters
+namespace Ooze.Parsers
 {
-    internal static class OozeParserCreator
+    internal static partial class OozeParserCreator
     {
         public static TextParser<FilterParserResult> FilterParser(
             IEnumerable<string> filterNames,
@@ -46,12 +46,13 @@ namespace Ooze.Filters
             return filterParser;
         }
 
-        public static TextParser<QueryParserResult[]> QueryParser(OozeEntityConfiguration entityConfiguration)
+        public static TextParser<QueryParserResult[]> QueryParser(
+            IEnumerable<string> filterNames,
+            IEnumerable<string> operations,
+            IEnumerable<string> logicalOperations)
         {
             //example: Property Operation Value LogicalOperator*
             //* optional
-
-            var filterNames = entityConfiguration.Filters.Select(filter => filter.Name);
             var whiteSpaceParser = Character.WhiteSpace.Many();
             var filterNameParsers = filterNames.Select(name => Span.EqualToIgnoreCase(name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
 
@@ -64,15 +65,6 @@ namespace Ooze.Filters
                     return accumulator.Or(singlePropertyParser);
                 });
 
-            //pass same operations as for normal filters
-            var operations = new[]
-            {
-                ">",
-                "<",
-                "==",
-                "!="
-            };
-
             var operationParsers = operations.Select(Span.EqualToIgnoreCase).ToList();
             var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
@@ -83,11 +75,6 @@ namespace Ooze.Filters
                     .Or(singlePropertyParser);
             });
 
-            var logicalOperations = new[]
-            {
-                "AND",
-                "OR"
-            };
             var logicalOpParsers = logicalOperations.Select(Span.EqualToIgnoreCase).ToList();
             var logicalOpParser = logicalOpParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
@@ -117,14 +104,6 @@ namespace Ooze.Filters
                                .Many();
 
             return queryParser;
-        }
-
-        public class QueryParserResult
-        {
-            public string Property { get; set; }
-            public string Operation { get; set; }
-            public string Value { get; set; }
-            public string LogicalOperation { get; set; }
         }
     }
 }

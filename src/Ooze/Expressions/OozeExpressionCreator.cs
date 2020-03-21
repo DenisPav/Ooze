@@ -59,7 +59,7 @@ namespace Ooze.Expressions
             return Call(_queryableType, method, typings, queryExpression, quoteExpr);
         }
 
-        public static MethodCallExpression QueryPartExpression<TEntity>(
+        public static MethodCallExpression QueryExpression<TEntity>(
             OozeEntityConfiguration configuration,
             IEnumerable<QueryFilterOperation> mappedQueryParts,
             Expression expr)

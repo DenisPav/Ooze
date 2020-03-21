@@ -1,11 +1,11 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
+using Ooze.Query;
 using Ooze.Sorters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Ooze.Expressions.OozeExpressionCreator;
-using static Ooze.Filters.OozeParserCreator;
 
 namespace Ooze
 {
@@ -65,7 +65,7 @@ namespace Ooze
                 QueryPart = part
             });
 
-            var callExpr = QueryPartExpression<TEntity>(entityConfiguration, mappedQueryParts, query.Expression);
+            var callExpr = QueryExpression<TEntity>(entityConfiguration, mappedQueryParts, query.Expression);
             return query.Provider.CreateQuery<TEntity>(callExpr);
         }
 
