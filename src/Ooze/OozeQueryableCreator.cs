@@ -1,5 +1,4 @@
 ﻿using Ooze.Configuration;
-using Ooze.Expressions;
 using Ooze.Filters;
 using Ooze.Sorters;
 using System;
@@ -51,20 +50,22 @@ namespace Ooze
             OozeEntityConfiguration entityConfiguration,
             QueryParserResult[] parsedQueryParts,
             //IEnumerable<IOozeFilterProvider<TEntity>> customFilterProviders,
-            IReadOnlyDictionary<string, Operation> operationsMap)
+            IReadOnlyDictionary<string, Operation> operationsMap,
+            IReadOnlyDictionary<string, Operation> logicalOperationsMap)
             where TEntity : class
         {
             var entityType = typeof(TEntity);
             var filters = entityConfiguration.Filters;
 
-            var mappedParts = parsedQueryParts.Select(part => new QueryFilterOperation
+            var mappedQueryParts = parsedQueryParts.Select(part => new QueryFilterOperation
             {
                 Filter = filters.SingleOrDefault(configFilter => string.Equals(configFilter.Name, part.Property, StringComparison.InvariantCultureIgnoreCase)),
                 OperationFactory = operationsMap[part.Operation],
+                LogicalOperationFactory = logicalOperationsMap.TryGetValue(part.LogicalOperation, out var factory) ? factory : null,
                 QueryPart = part
             });
 
-            var callExpr = OozeExpressionCreator.QueryPartExpression<TEntity>(entityConfiguration, mappedParts, query.Expression);
+            var callExpr = QueryPartExpression<TEntity>(entityConfiguration, mappedQueryParts, query.Expression);
             return query.Provider.CreateQuery<TEntity>(callExpr);
         }
 
@@ -127,6 +128,7 @@ namespace Ooze
     {
         public ParsedExpressionDefinition Filter { get; set; }
         public Operation OperationFactory { get; set; }
+        public Operation LogicalOperationFactory { get; set; }
         public QueryParserResult QueryPart { get; set; }
     }
 }

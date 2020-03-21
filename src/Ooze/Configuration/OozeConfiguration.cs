@@ -12,6 +12,11 @@ namespace Ooze.Configuration
     {
         readonly OozeOptions _options;
         public readonly IReadOnlyDictionary<string, Operation> OperationsMap;
+        public readonly IReadOnlyDictionary<string, Operation> LogicalOperationMap = new Dictionary<string, Operation>
+        {
+            { "AND", AndAlso },
+            { "OR", OrElse}
+        };
 
         public OozeConfiguration(
             OozeOptions options)

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using static Ooze.Filters.OozeParserCreator;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Expressions
@@ -66,48 +65,42 @@ namespace Ooze.Expressions
             Expression expr)
         {
             var typings = new[] { typeof(TEntity) };
-
-            var exprs = mappedQueryParts.Select(mappedPart =>
-            {
-                var typeConverter = TypeDescriptor.GetConverter(mappedPart.Filter.Type);
-                var value = typeConverter.CanConvertFrom(_stringType)
-                    ? typeConverter.ConvertFrom(mappedPart.QueryPart.Value)
-                    : System.Convert.ChangeType(mappedPart.QueryPart.Value, mappedPart.Filter.Type);
-
-                var constValueExpr = Constant(value);
-                var operationExpr = mappedPart.OperationFactory(mappedPart.Filter.Expression, constValueExpr);
-
-                return operationExpr;
-            }).ToList();
+            var exprs = mappedQueryParts.Select(OperationExpression)
+                .ToList();
 
             Expression endingExpr = null;
             for (int i = 0; i < exprs.Count; i++)
             {
-                var queryPart = mappedQueryParts.ElementAt(i);
-                var currentExpr = exprs[i];
+                var (currentExpr, _) = exprs[i];
                 if (i == 0)
                 {
                     endingExpr = currentExpr;
                 }
                 else
                 {
-                    var before = mappedQueryParts.ElementAt(i - 1);
-                    Func<Expression, Expression, BinaryExpression> logicalExprFactory = before.QueryPart.LogicalOperation switch
-                    {
-                        "AND" => AndAlso,
-                        "OR" => OrElse,
-                        _ => throw new Exception("Not supported")
-                    };
-
-                    endingExpr = logicalExprFactory(endingExpr, currentExpr);
+                    var (_, before) = exprs[i - 1];
+                    endingExpr = before.LogicalOperationFactory(endingExpr, currentExpr);
                 }
             }
 
             var lambda = Lambda(endingExpr, configuration.Param);
             var quoteExpr = Quote(lambda);
-
             var callExpr = Call(_queryableType, Where, typings, expr, quoteExpr);
             return callExpr;
+        }
+
+        static (Expression operationExpr, QueryFilterOperation mappedPart) OperationExpression(
+            QueryFilterOperation mappedPart)
+        {
+            var typeConverter = TypeDescriptor.GetConverter(mappedPart.Filter.Type);
+            var value = typeConverter.CanConvertFrom(_stringType)
+                ? typeConverter.ConvertFrom(mappedPart.QueryPart.Value)
+                : System.Convert.ChangeType(mappedPart.QueryPart.Value, mappedPart.Filter.Type);
+
+            var constValueExpr = Constant(value);
+            var operationExpr = mappedPart.OperationFactory(mappedPart.Filter.Expression, constValueExpr);
+
+            return (operationExpr, mappedPart);
         }
     }
 }

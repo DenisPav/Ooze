@@ -1,10 +1,7 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
 using Superpower;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Ooze.Query
 {
@@ -38,7 +35,7 @@ namespace Ooze.Query
             if (parsed.HasValue)
             {
                 var queryParts = parsed.Value;
-                query = OozeQueryableCreator.ForQuery(query, entityConfiguration, queryParts, _config.OperationsMap);
+                query = OozeQueryableCreator.ForQuery(query, entityConfiguration, queryParts, _config.OperationsMap, _config.LogicalOperationMap);
             }
 
             return query;
