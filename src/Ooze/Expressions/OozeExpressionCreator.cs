@@ -1,5 +1,6 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
+using Ooze.Query;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -123,12 +123,4 @@ namespace Ooze
             return providerQuery;
         }
     }
-
-    internal class QueryFilterOperation
-    {
-        public ParsedExpressionDefinition Filter { get; set; }
-        public Operation OperationFactory { get; set; }
-        public Operation LogicalOperationFactory { get; set; }
-        public QueryParserResult QueryPart { get; set; }
-    }
 }
