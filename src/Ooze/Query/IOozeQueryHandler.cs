@@ -2,7 +2,7 @@
 
 namespace Ooze.Query
 {
-    public interface IOozeQueryHandler
+    internal interface IOozeQueryHandler
     {
         IQueryable<TEntity> Handle<TEntity>(
             IQueryable<TEntity> query,
