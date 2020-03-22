@@ -4,7 +4,7 @@
 You'll need to add reference to the package (insert link here when it will be available). After that call `.AddOoze()` method on services inside of `ConfigureServices()` method in your startup class.
 
 Create a configuration class for your EF entity class. For example:
-```cs
+```csharp
 // sample EF entity class
 public class Post
 {
@@ -29,7 +29,7 @@ public class PostConfiguration : IOozeConfiguration
 
 Next step is to inject `IOozeResolver` into your controller, create instance of `OozeModel` (via modelbinding or manually) and pass it to `.Apply()` method of
 resolver. That's it, after that just materialize query comming from `IOozeResolver` and deal with data. Example of this can be seen below:
-```cs
+```csharp
 [Route("[controller]")]
 public class TestController : ControllerBase
 {
@@ -60,7 +60,7 @@ public class TestController : ControllerBase
 
 ## ↕ Sorting
 Sorting can be done by just specifying name of the sorter that was done via configuration. Order can be inversed by using `-` operator before actual sorter name. Example can be seen below:
-```cs
+```csharp
 //ascending
 "?sorters=id"
 
@@ -70,7 +70,7 @@ Sorting can be done by just specifying name of the sorter that was done via conf
 
 ## 🗡🧀 Filtering
 Filtering can be done by specifying `filter` which is then followed by an `operation` which is then followed by `value` (`filter`->`operation`->`value`). Example of filtering can be seen below:
-```cs
+```csharp
 //filter by id filter where each value is higher then number 2
 ?filters=id>2
 ```
@@ -87,10 +87,18 @@ Supported operations are next:
 * Less Than - `<`
 * Contains - `@`
 
+## 🧪 Queries
+Queries are a bit different feature which enables you to write readable `Filters`. Also you can combine them with logical filters (`AND`, `OR`) in order to create more complex samples. Queries use `Filter` configuration as a source while translating. Queries also take precedence over `Sorters` and `Filters`. Example of queries can be seen below:
+```csharp
+//where id is 3 and name isn't something
+?query= id == 3 AND name != 'something'
+```
+NOTE: custom filters aren't usable with queries
+
 ## ⚒ Configuration
 ### Operations
 Currently you can configure operation strings via parameter in `.AddOoze()` extension method. There is a restriction to that though. You can use only symbols and not letters or numbers. Example of that can be seen below:
-```cs
+```csharp
 //register Ooze services
 services.AddOoze(typeof(Startup).Assembly, opts => 
 {
@@ -100,7 +108,7 @@ services.AddOoze(typeof(Startup).Assembly, opts =>
 ```
 ### Custom filtering
 You can extend Ooze default operations by creating implementation of `IOozeFilterProvider<TEntity>` and then registering it to container. Example can be seen below:
-```cs
+```csharp
 //create implementation of IOozeFilterProvider<>
 public class CustomFilterProvider : IOozeFilterProvider<Post>
 {
@@ -120,7 +128,7 @@ services.AddScoped<IOozeProvider, CustomFilterProvider>();
 
 ### Custom sorting
 Similar to filtering, sorting can be also extended by creating implementation of `IOozeSorterProvider<TEntity>`. Example can be seen below:
-```cs
+```csharp
 //create implementation of IOozeSorterProvider<>
 public class CustomSorterProvider : IOozeSorterProvider<Post>
 {
@@ -148,7 +156,7 @@ services.AddScoped<IOozeProvider, CustomSorterProvider>();
 ## ⛓ MVC / Controllers
 `Ooze.AspNetCore` package provides a [Result filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-3.1#result-filters) which can abstract boilerplate code for you. You just need to anotate action on which you want to use `Ooze` and that's it (or you can apply it globally).
 Example of this can be seen below:
-```cs
+```csharp
 //Startup.cs
 
 //register Ooze
