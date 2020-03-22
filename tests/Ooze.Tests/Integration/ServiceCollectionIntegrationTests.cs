@@ -6,6 +6,7 @@ using Ooze.Sorters;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Ooze.Query;
 
 namespace Ooze.Tests.Integration
 {
@@ -24,6 +25,7 @@ namespace Ooze.Tests.Integration
                 (typeof(OozeConfiguration), ServiceLifetime.Singleton),
                 (typeof(IOozeFilterHandler), ServiceLifetime.Scoped),
                 (typeof(IOozeSorterHandler), ServiceLifetime.Scoped),
+                (typeof(IOozeQueryHandler), ServiceLifetime.Scoped),
                 (typeof(IOozeResolver), ServiceLifetime.Scoped)
             };
 
@@ -72,6 +74,7 @@ namespace Ooze.Tests.Integration
                 (typeof(OozeConfiguration), AssertNoScope),
                 (typeof(IOozeFilterHandler), AssertScope),
                 (typeof(IOozeSorterHandler), AssertScope),
+                (typeof(IOozeQueryHandler), AssertScope),
                 (typeof(IOozeResolver), AssertScope)
             };
 

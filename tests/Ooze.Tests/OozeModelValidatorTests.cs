@@ -6,29 +6,29 @@ namespace Ooze.Tests
     public class OozeModelValidatorTests
     {
         [Theory]
-        [InlineData("", "", false, false)]
-        [InlineData(null, null, false, false)]
-        [InlineData(" ", " ", false, false)]
-        [InlineData("-", "-", true, true)]
-        [InlineData("sample", "sample", true, true)]
+        [InlineData("", false)]
+        [InlineData(null, false)]
+        [InlineData(" ", false)]
+        [InlineData("-", true)]
+        [InlineData("sample", true)]
 
         public void Should_Correctly_Validate_Model(
-            string sorter,
-            string filter,
-            bool validSorter,
-            bool validFilter)
+            string param,
+            bool isValid)
         {
             var context = new OozeModelValidatorContext();
             var model = new OozeModel
             {
-                Sorters = sorter,
-                Filters = filter
+                Sorters = param,
+                Filters = param,
+                Query = param
             };
 
-            var (sorterResult, filterResult) = context.OozeModelValidator.Validate(model);
+            var (sorterResult, filterResult, queryResult) = context.OozeModelValidator.Validate(model);
 
-            Assert.True(sorterResult == validSorter);
-            Assert.True(filterResult == validFilter);
+            Assert.True(sorterResult == isValid);
+            Assert.True(filterResult == isValid);
+            Assert.True(queryResult == isValid);
         }
 
         internal class OozeModelValidatorContext

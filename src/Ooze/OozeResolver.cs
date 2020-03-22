@@ -46,19 +46,21 @@ namespace Ooze
         {
             var (sortersValid, filtersValid, queryValid) = _modelValidator.Validate(model);
 
-            //if (sortersValid)
-            //{
-            //    query = _sorterHandler.Handle(query, model.Sorters);
-            //}
-
-            //if (filtersValid)
-            //{
-            //    query = _filterHandler.Handle(query, model.Filters);
-            //}
-
+            //apply query if it is present
             if (queryValid)
             {
-                query = _queryHandler.Handle(query, model.Query);
+                return _queryHandler.Handle(query, model.Query);
+            }
+
+            //in other case try defaults
+            if (sortersValid)
+            {
+                query = _sorterHandler.Handle(query, model.Sorters);
+            }
+
+            if (filtersValid)
+            {
+                query = _filterHandler.Handle(query, model.Filters);
             }
 
             return query;
