@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Configuration
@@ -92,11 +93,14 @@ namespace Ooze.Configuration
             }
         }
 
-        IEnumerable<ParsedExpressionDefinition> CreateSorters() => CreateFor(_sorters, prop => Lambda(MakeMemberAccess(_parameter, prop), _parameter)).ToList();
+        IEnumerable<ParsedExpressionDefinition> CreateSorters() => CreateFor(_sorters, prop => Lambda(MakeMemberAccess(_parameter, prop), _parameter), CreateSorterFactory).ToList();
 
-        IEnumerable<ParsedExpressionDefinition> CreateFilters() => CreateFor(_filters, prop => MakeMemberAccess(_parameter, prop)).ToList();
+        IEnumerable<ParsedExpressionDefinition> CreateFilters() => CreateFor(_filters, prop => MakeMemberAccess(_parameter, prop), CreateFilterFactory).ToList();
 
-        IEnumerable<ParsedExpressionDefinition> CreateFor(IEnumerable<ExpressionDefinition> expressionDefinitions, Func<PropertyInfo, Expression> exprSelector)
+        IEnumerable<ParsedExpressionDefinition> CreateFor(
+            IEnumerable<ExpressionDefinition> expressionDefinitions,
+            Func<PropertyInfo, Expression> exprSelector,
+            CreateProvider createProviderDelegate)
         {
             foreach (var definition in expressionDefinitions)
             {
@@ -112,9 +116,17 @@ namespace Ooze.Configuration
                     Name = definition.Name,
                     Expression = expr,
                     Type = propType,
-                    ProviderFactory = sp => new OozeFilterProvider<TEntity>(sp.GetRequiredService<OozeConfiguration>(), definition.Name)
+                    ProviderFactory = createProviderDelegate(definition.Name, expr, propType)
                 };
             }
         }
+
+        delegate Func<IServiceProvider, IOozeProvider> CreateProvider(string name, Expression expression, Type propType);
+
+        static Func<IServiceProvider, IOozeProvider> CreateFilterFactory(string name, Expression expression, Type propType) 
+            => sp => new OozeFilterProvider<TEntity>(sp.GetRequiredService<OozeConfiguration>(), name);
+
+        static Func<IServiceProvider, IOozeProvider> CreateSorterFactory(string name, Expression expression, Type propType)
+            => sp => new OozeSorterProvider<TEntity>(name, expression, propType);
     }
 }

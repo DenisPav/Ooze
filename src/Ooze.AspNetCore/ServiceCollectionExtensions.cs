@@ -49,6 +49,16 @@ namespace Ooze.AspNetCore
                      services.AddScoped(filter.ProviderFactory);
                  });
 
+            configuration.EntityConfigurations
+                 .Values
+                 .SelectMany(config => config.Sorters)
+                 .ToList()
+                 .ForEach(sorter =>
+                 {
+                     //maybe change to singleton
+                     services.AddScoped(sorter.ProviderFactory);
+                 });
+
             services.AddSingleton(configuration);
             services.AddScoped<IOozeCustomProviderProvider, OozeCustomProviderProvider>();
             services.AddScoped<IOozeSorterHandler, OozeSorterHandler>();
