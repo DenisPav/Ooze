@@ -22,14 +22,12 @@ namespace Ooze.Filters
         public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string filters)
             where TEntity : class
         {
-            var configuration = _config.EntityConfigurations[typeof(TEntity)];
-            var customProviders = _customProviderProvider.FiltersFor<TEntity>();
-
-            var filterParser = CreateParser(configuration, customProviders);
+            var filterProviders = _customProviderProvider.FiltersFor<TEntity>();
+            var filterParser = CreateParser(filterProviders);
             var parsedFilters = GetParsedFilters(filters, filterParser);
 
             IQueryable<TEntity> Accumulator(IQueryable<TEntity> accumulator, FilterParserResult filter) 
-                => OozeQueryableCreator.ForFilter(accumulator, configuration, filter, customProviders, _config.OperationsMap);
+                => OozeQueryableCreator.ForFilter(accumulator, filter, filterProviders);
 
             return parsedFilters.Aggregate(query, Accumulator);
         }
@@ -46,12 +44,9 @@ namespace Ooze.Filters
             return parsedFilters;
         }
 
-        TextParser<FilterParserResult> CreateParser(OozeEntityConfiguration configuration, IEnumerable<IOozeProvider> customProviders)
+        TextParser<FilterParserResult> CreateParser(IEnumerable<IOozeProvider> customProviders)
         {
-            var filterNames = configuration.Filters
-                .Select(configurationFilter => configurationFilter.Name)
-                .Concat(customProviders.Select(provider => provider.Name));
-
+            var filterNames = customProviders.Select(provider => provider.Name);
             return OozeParserCreator.FilterParser(filterNames, _config.OperationsMap.Keys);
         }
     }

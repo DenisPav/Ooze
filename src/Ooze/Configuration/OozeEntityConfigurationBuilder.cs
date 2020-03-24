@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Ooze.Filters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -109,7 +111,8 @@ namespace Ooze.Configuration
                 {
                     Name = definition.Name,
                     Expression = expr,
-                    Type = propType
+                    Type = propType,
+                    ProviderFactory = sp => new OozeFilterProvider<TEntity>(sp.GetRequiredService<OozeConfiguration>(), definition.Name)
                 };
             }
         }
