@@ -39,11 +39,10 @@ namespace Ooze.AspNetCore
 
             var configuration = configBuilder.Build(options);
             configuration.ProviderFactories
-                //maybe change to singleton
-                .ForEach(provider => services.AddScoped(provider));
+                .ForEach(provider => services.AddSingleton(provider));
 
             services.AddSingleton(configuration);
-            services.AddScoped<IOozeCustomProviderProvider, OozeCustomProviderProvider>();
+            services.AddScoped<IOozeProviderProvider, OozeProviderProvider>();
             services.AddScoped<IOozeSorterHandler, OozeSorterHandler>();
             services.AddScoped<IOozeFilterHandler, OozeFilterHandler>();
             services.AddScoped<IOozeQueryHandler, OozeQueryHandler>();

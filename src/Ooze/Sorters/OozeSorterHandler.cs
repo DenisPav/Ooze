@@ -1,5 +1,5 @@
-﻿using Ooze.Configuration;
-using Superpower;
+﻿using Superpower;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,21 +9,16 @@ namespace Ooze.Sorters
     {
         const char _negativeOrderChar = '-';
 
-        readonly IOozeCustomProviderProvider _customProviderProvider;
-        readonly OozeConfiguration _config;
+        readonly IOozeProviderProvider _providerProvider;
 
-        public OozeSorterHandler(
-            IOozeCustomProviderProvider customProviderProvider,
-            OozeConfiguration config)
-        {
-            _customProviderProvider = customProviderProvider;
-            _config = config;
-        }
+        public OozeSorterHandler(IOozeProviderProvider providerProvider) => _providerProvider = providerProvider;
 
-        public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string sorters)
+        public IQueryable<TEntity> Handle<TEntity>(
+            IQueryable<TEntity> query,
+            string sorters)
             where TEntity : class
         {
-            var customProviders = _customProviderProvider.SortersFor<TEntity>();
+            var sorterProviders = _providerProvider.SortersFor<TEntity>();
             var parsedSorters = GetParsedSorters(sorters).ToList();
 
             for (int i = 0; i < parsedSorters.Count(); i++)
@@ -31,8 +26,11 @@ namespace Ooze.Sorters
                 //not ThenBy call
                 var isFirst = i == 0;
                 var parsedSorter = parsedSorters[i];
+                var sorter = sorterProviders.SingleOrDefault(sorter => string.Compare(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
 
-                query = OozeQueryableCreator.ForSorter(query, parsedSorter, customProviders, isFirst);
+                query = isFirst
+                    ? sorter.ApplySorter(query, parsedSorter.Ascending)
+                    : sorter.ThenApplySorter(query as IOrderedQueryable<TEntity>, parsedSorter.Ascending);
             }
 
             return query;

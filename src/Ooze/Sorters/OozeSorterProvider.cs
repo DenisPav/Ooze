@@ -1,7 +1,7 @@
-using Ooze.Expressions;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using static Ooze.Expressions.OozeExpressionCreator;
 
 namespace Ooze.Sorters
 {
@@ -23,20 +23,28 @@ namespace Ooze.Sorters
             _propType = propType;
         }
 
-        public IQueryable<TEntity> ApplySorter(IQueryable<TEntity> query, bool ascending)
+        public IQueryable<TEntity> ApplySorter(
+            IQueryable<TEntity> query,
+            bool ascending)
         {
-            var sortExpression = OozeExpressionCreator.SortExpression<TEntity>(query.Expression, _expression, _propType, ascending, true);
-
+            var sortExpression = CreateSortExpression(query, ascending, true);
             return query.Provider
                 .CreateQuery<TEntity>(sortExpression);
         }
 
-        public IQueryable<TEntity> ThenApplySorter(IOrderedQueryable<TEntity> query, bool ascending)
+        public IQueryable<TEntity> ThenApplySorter(
+            IOrderedQueryable<TEntity> query,
+            bool ascending)
         {
-            var sortExpression = OozeExpressionCreator.SortExpression<TEntity>(query.Expression, _expression, _propType, ascending, false);
-
+            var sortExpression = CreateSortExpression(query, ascending, false);
             return query.Provider
                 .CreateQuery<TEntity>(sortExpression);
         }
+
+        MethodCallExpression CreateSortExpression(
+            IQueryable<TEntity> query,
+            bool ascending,
+            bool isFirst)
+            => SortExpression<TEntity>(query.Expression, _expression, _propType, ascending, isFirst);
     }
 }

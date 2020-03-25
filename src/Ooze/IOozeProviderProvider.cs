@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Ooze
 {
-    internal interface IOozeCustomProviderProvider
+    internal interface IOozeProviderProvider
     {
         IEnumerable<IOozeFilterProvider<TEntity>> FiltersFor<TEntity>()
             where TEntity : class;

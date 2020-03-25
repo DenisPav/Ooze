@@ -1,7 +1,7 @@
 using Ooze.Configuration;
-using Ooze.Expressions;
 using System;
 using System.Linq;
+using static Ooze.Expressions.OozeExpressionCreator;
 
 namespace Ooze.Filters
 {
@@ -20,12 +20,14 @@ namespace Ooze.Filters
             Name = name;
         }
 
-        public IQueryable<TEntity> ApplyFilter(IQueryable<TEntity> query, FilterParserResult filter)
+        public IQueryable<TEntity> ApplyFilter(
+            IQueryable<TEntity> query,
+            FilterParserResult filter)
         {
             var entityConfiguration = _configuration.EntityConfigurations[typeof(TEntity)];
             var filterDefinition = entityConfiguration.Filters
                 .SingleOrDefault(configFilter => string.Equals(configFilter.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase));
-            var callExpr = OozeExpressionCreator.FilterExpression<TEntity>(entityConfiguration, filter, filterDefinition, query.Expression, _configuration.OperationsMap[filter.Operation]);
+            var callExpr = FilterExpression<TEntity>(entityConfiguration.Param, filter, filterDefinition, query.Expression, _configuration.OperationsMap[filter.Operation]);
 
             return query.Provider
                 .CreateQuery<TEntity>(callExpr);

@@ -38,7 +38,7 @@ namespace Ooze.Tests
 
         internal class OozeCustomProviderProviderContext
         {
-            public OozeCustomProviderProvider OozeCustomProviderProvider { get; set; }
+            public OozeProviderProvider OozeCustomProviderProvider { get; set; }
             public IOozeFilterProvider<object> FilterProvider1 { get; } = Substitute.For<IOozeFilterProvider<object>>();
             public IOozeFilterProvider<SampleEntity> FilterProvider2 { get; } = Substitute.For<IOozeFilterProvider<SampleEntity>>();
             public IOozeSorterProvider<object> SorterProvider1 { get; } = Substitute.For<IOozeSorterProvider<object>>();
@@ -47,7 +47,7 @@ namespace Ooze.Tests
 
             public OozeCustomProviderProviderContext()
             {
-                OozeCustomProviderProvider = new OozeCustomProviderProvider(new IOozeProvider[] { FilterProvider1, FilterProvider2, SorterProvider1, SorterProvider2 });
+                OozeCustomProviderProvider = new OozeProviderProvider(new IOozeProvider[] { FilterProvider1, FilterProvider2, SorterProvider1, SorterProvider2 });
             }
         }
     }

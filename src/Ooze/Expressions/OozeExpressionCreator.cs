@@ -21,7 +21,7 @@ namespace Ooze.Expressions
         static readonly Type _stringType = typeof(string);
 
         public static MethodCallExpression FilterExpression<TEntity>(
-            OozeEntityConfiguration configuration,
+            ParameterExpression parameterExpression,
             FilterParserResult parsedFilter,
             ParsedExpressionDefinition def,
             Expression expr,
@@ -36,7 +36,7 @@ namespace Ooze.Expressions
 
             var constValueExpr = Constant(value);
             var operationExpr = operationExprFactory(def.Expression, constValueExpr);
-            var lambda = Lambda(operationExpr, configuration.Param);
+            var lambda = Lambda(operationExpr, parameterExpression);
             var quoteExpr = Quote(lambda);
 
             var callExpr = Call(_queryableType, Where, typings, expr, quoteExpr);
