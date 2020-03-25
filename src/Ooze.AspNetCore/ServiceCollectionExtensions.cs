@@ -38,26 +38,9 @@ namespace Ooze.AspNetCore
                 .ForEach(configurator => configurator.Configure(configBuilder));
 
             var configuration = configBuilder.Build(options);
-
-            configuration.EntityConfigurations
-                 .Values
-                 .SelectMany(config => config.Filters)
-                 .ToList()
-                 .ForEach(filter =>
-                 {
-                     //maybe change to singleton
-                     services.AddScoped(filter.ProviderFactory);
-                 });
-
-            configuration.EntityConfigurations
-                 .Values
-                 .SelectMany(config => config.Sorters)
-                 .ToList()
-                 .ForEach(sorter =>
-                 {
-                     //maybe change to singleton
-                     services.AddScoped(sorter.ProviderFactory);
-                 });
+            configuration.ProviderFactories
+                //maybe change to singleton
+                .ForEach(provider => services.AddScoped(provider));
 
             services.AddSingleton(configuration);
             services.AddScoped<IOozeCustomProviderProvider, OozeCustomProviderProvider>();
