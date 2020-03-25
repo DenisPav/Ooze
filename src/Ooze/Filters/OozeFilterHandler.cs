@@ -9,14 +9,14 @@ namespace Ooze.Filters
 {
     internal class OozeFilterHandler : IOozeFilterHandler
     {
-        readonly IOozeProviderProvider _providerProvider;
+        readonly IOozeProviderLocator _providerLocator;
         readonly OozeConfiguration _config;
 
         public OozeFilterHandler(
-            IOozeProviderProvider providerProvider,
+            IOozeProviderLocator providerLocator,
             OozeConfiguration config)
         {
-            _providerProvider = providerProvider;
+            _providerLocator = providerLocator;
             _config = config;
         }
 
@@ -25,7 +25,7 @@ namespace Ooze.Filters
             string filters)
             where TEntity : class
         {
-            var filterProviders = _providerProvider.FiltersFor<TEntity>();
+            var filterProviders = _providerLocator.FiltersFor<TEntity>();
             var filterParser = CreateParser(filterProviders);
             var parsedFilters = GetParsedFilters(filters, filterParser);
 

@@ -9,16 +9,16 @@ namespace Ooze.Sorters
     {
         const char _negativeOrderChar = '-';
 
-        readonly IOozeProviderProvider _providerProvider;
+        readonly IOozeProviderLocator _providerLocator;
 
-        public OozeSorterHandler(IOozeProviderProvider providerProvider) => _providerProvider = providerProvider;
+        public OozeSorterHandler(IOozeProviderLocator providerLocator) => _providerLocator = providerLocator;
 
         public IQueryable<TEntity> Handle<TEntity>(
             IQueryable<TEntity> query,
             string sorters)
             where TEntity : class
         {
-            var sorterProviders = _providerProvider.SortersFor<TEntity>();
+            var sorterProviders = _providerLocator.SortersFor<TEntity>();
             var parsedSorters = GetParsedSorters(sorters).ToList();
 
             for (int i = 0; i < parsedSorters.Count(); i++)

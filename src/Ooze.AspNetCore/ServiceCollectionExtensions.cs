@@ -42,7 +42,7 @@ namespace Ooze.AspNetCore
                 .ForEach(provider => services.AddSingleton(provider));
 
             services.AddSingleton(configuration);
-            services.AddScoped<IOozeProviderProvider, OozeProviderProvider>();
+            services.AddScoped<IOozeProviderLocator, OozeProviderLocator>();
             services.AddScoped<IOozeSorterHandler, OozeSorterHandler>();
             services.AddScoped<IOozeFilterHandler, OozeFilterHandler>();
             services.AddScoped<IOozeQueryHandler, OozeQueryHandler>();
