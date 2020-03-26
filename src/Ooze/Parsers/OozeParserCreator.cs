@@ -65,7 +65,7 @@ namespace Ooze.Parsers
                     return accumulator.Or(singlePropertyParser);
                 });
 
-            var operationParsers = operations.Select(Span.EqualToIgnoreCase).ToList();
+            var operationParsers = operations.Select(operation => Span.EqualToIgnoreCase(operation).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
             var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
                 if (accumulator == null)
@@ -75,7 +75,7 @@ namespace Ooze.Parsers
                     .Or(singlePropertyParser);
             });
 
-            var logicalOpParsers = logicalOperations.Select(Span.EqualToIgnoreCase).ToList();
+            var logicalOpParsers = logicalOperations.Select(operation => Span.EqualToIgnoreCase(operation).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
             var logicalOpParser = logicalOpParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
             {
                 if (accumulator == null)
