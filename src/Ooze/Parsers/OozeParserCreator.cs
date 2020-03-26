@@ -10,34 +10,18 @@ namespace Ooze.Parsers
 {
     internal static partial class OozeParserCreator
     {
+        const char _stringContainerSymbol = '\'';
+
         public static TextParser<FilterParserResult> FilterParser(
             IEnumerable<string> filterNames,
             IEnumerable<string> operationKeys)
         {
-            var whiteSpaceParser = Character.WhiteSpace.Many();
-            var filterNameParsers = filterNames.Select(name => Span.EqualToIgnoreCase(name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
+            var propertyParser = CreateFor(filterNames);
+            var operationParser = operationKeys.Select(CreateTextParser)
+                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, TryAggregate);
 
-            var propertyParser = filterNameParsers
-                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-                {
-                    if (accumulator == null)
-                        return singlePropertyParser;
-
-                    return accumulator.Or(singlePropertyParser);
-                });
-
-            var operationParsers = operationKeys.Select(Span.EqualToIgnoreCase).ToList();
-            var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator
-                    .Try()
-                    .Or(singlePropertyParser);
-            });
-
-            var valueParser = Span.WithAll(_ => true).OptionalOrDefault(new TextSpan(string.Empty));
+            var valueParser = Span.WithAll(_ => true)
+                .OptionalOrDefault(new TextSpan(string.Empty));
             var filterParser = (from property in propertyParser
                                 from operation in operationParser
                                 from value in valueParser
@@ -54,39 +38,16 @@ namespace Ooze.Parsers
             //example: Property Operation Value LogicalOperator*
             //* optional
             var whiteSpaceParser = Character.WhiteSpace.Many();
-            var filterNameParsers = filterNames.Select(name => Span.EqualToIgnoreCase(name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
 
-            var propertyParser = filterNameParsers
-                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-                {
-                    if (accumulator == null)
-                        return singlePropertyParser;
-
-                    return accumulator.Or(singlePropertyParser);
-                });
-
-            var operationParsers = operations.Select(operation => Span.EqualToIgnoreCase(operation).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
-            var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator
-                    .Or(singlePropertyParser);
-            });
-
-            var logicalOpParsers = logicalOperations.Select(operation => Span.EqualToIgnoreCase(operation).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
-            var logicalOpParser = logicalOpParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator
-                    .Or(singlePropertyParser);
-            }).Optional();
+            var propertyParser = CreateFor(filterNames);
+            var operationParser = CreateFor(operations);
+            var logicalOpParser = CreateFor(logicalOperations).Optional();
 
             //what about direct booleans without ''
-            var valueParser = Character.Except('\'').Many().Between(Character.EqualTo('\''), Character.EqualTo('\''))
+            var containerSymbolParser = Character.EqualTo(_stringContainerSymbol);
+            var valueParser = Character.Except(_stringContainerSymbol)
+                .Many()
+                .Between(containerSymbolParser, containerSymbolParser)
                 .Try()
                 .Or(Character.Numeric.Many());
 
@@ -104,6 +65,29 @@ namespace Ooze.Parsers
                                .Many();
 
             return queryParser;
+
+        }
+
+        static TextParser<TextSpan> CreateFor(IEnumerable<string> texts)
+            => texts.Select(CreateTextParser)
+                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, Aggregate);
+
+        static TextParser<TextSpan> Aggregate(
+            TextParser<TextSpan> accumulator,
+            TextParser<TextSpan> parser) 
+            => accumulator == null ? parser : accumulator.Or(parser);
+
+        static TextParser<TextSpan> TryAggregate(
+            TextParser<TextSpan> accumulator,
+            TextParser<TextSpan> parser) 
+            => accumulator == null 
+                ? parser
+                : accumulator.Try().Or(parser);
+
+        static TextParser<TextSpan> CreateTextParser(string text)
+        {
+            var whiteSpaceParser = Character.WhiteSpace.Many();
+            return Span.EqualToIgnoreCase(text).Between(whiteSpaceParser, whiteSpaceParser);
         }
     }
 }
