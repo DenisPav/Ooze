@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace Ooze
 {
-    internal class OozeCustomProviderProvider : IOozeCustomProviderProvider
+    internal class OozeProviderLocator : IOozeProviderLocator
     {
         readonly IEnumerable<IOozeProvider> _customProviders;
 
-        public OozeCustomProviderProvider(
+        public OozeProviderLocator(
             IEnumerable<IOozeProvider> customProviders)
         {
             _customProviders = customProviders;

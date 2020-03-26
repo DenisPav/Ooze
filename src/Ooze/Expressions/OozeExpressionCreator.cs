@@ -1,6 +1,8 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
+using Ooze.Query;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -19,7 +21,7 @@ namespace Ooze.Expressions
         static readonly Type _stringType = typeof(string);
 
         public static MethodCallExpression FilterExpression<TEntity>(
-            OozeEntityConfiguration configuration,
+            ParameterExpression parameterExpression,
             FilterParserResult parsedFilter,
             ParsedExpressionDefinition def,
             Expression expr,
@@ -34,7 +36,7 @@ namespace Ooze.Expressions
 
             var constValueExpr = Constant(value);
             var operationExpr = operationExprFactory(def.Expression, constValueExpr);
-            var lambda = Lambda(operationExpr, configuration.Param);
+            var lambda = Lambda(operationExpr, parameterExpression);
             var quoteExpr = Quote(lambda);
 
             var callExpr = Call(_queryableType, Where, typings, expr, quoteExpr);
@@ -56,6 +58,50 @@ namespace Ooze.Expressions
                 : ascending ? ThenBy : ThenByDescending;
 
             return Call(_queryableType, method, typings, queryExpression, quoteExpr);
+        }
+
+        public static MethodCallExpression QueryExpression<TEntity>(
+            OozeEntityConfiguration configuration,
+            IEnumerable<QueryFilterOperation> mappedQueryParts,
+            Expression expr)
+        {
+            var typings = new[] { typeof(TEntity) };
+            var exprs = mappedQueryParts.Select(OperationExpression)
+                .ToList();
+
+            Expression endingExpr = null;
+            for (int i = 0; i < exprs.Count; i++)
+            {
+                var (currentExpr, _) = exprs[i];
+                if (i == 0)
+                {
+                    endingExpr = currentExpr;
+                }
+                else
+                {
+                    var (_, before) = exprs[i - 1];
+                    endingExpr = before.LogicalOperationFactory(endingExpr, currentExpr);
+                }
+            }
+
+            var lambda = Lambda(endingExpr, configuration.Param);
+            var quoteExpr = Quote(lambda);
+            var callExpr = Call(_queryableType, Where, typings, expr, quoteExpr);
+            return callExpr;
+        }
+
+        static (Expression operationExpr, QueryFilterOperation mappedPart) OperationExpression(
+            QueryFilterOperation mappedPart)
+        {
+            var typeConverter = TypeDescriptor.GetConverter(mappedPart.Filter.Type);
+            var value = typeConverter.CanConvertFrom(_stringType)
+                ? typeConverter.ConvertFrom(mappedPart.QueryPart.Value)
+                : System.Convert.ChangeType(mappedPart.QueryPart.Value, mappedPart.Filter.Type);
+
+            var constValueExpr = Constant(value);
+            var operationExpr = mappedPart.OperationFactory(mappedPart.Filter.Expression, constValueExpr);
+
+            return (operationExpr, mappedPart);
         }
     }
 }

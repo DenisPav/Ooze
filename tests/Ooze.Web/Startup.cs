@@ -103,7 +103,7 @@ namespace Ooze.Web
             return query.OrderBy(x => x.Id);
         }
 
-        public IOrderedQueryable<Post> ThenApplySorter(IOrderedQueryable<Post> query, bool ascending)
+        public IQueryable<Post> ThenApplySorter(IOrderedQueryable<Post> query, bool ascending)
         {
             return query.ThenBy(x => x.Id);
         }

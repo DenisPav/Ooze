@@ -1,6 +1,7 @@
 ﻿using Ooze.Configuration.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using static System.Linq.Expressions.Expression;
 
@@ -12,6 +13,11 @@ namespace Ooze.Configuration
     {
         readonly OozeOptions _options;
         public readonly IReadOnlyDictionary<string, Operation> OperationsMap;
+        public readonly IReadOnlyDictionary<string, Operation> LogicalOperationMap = new Dictionary<string, Operation>
+        {
+            { "AND", AndAlso },
+            { "OR", OrElse}
+        };
 
         public OozeConfiguration(
             OozeOptions options)
@@ -33,5 +39,9 @@ namespace Ooze.Configuration
         }
 
         public IDictionary<Type, OozeEntityConfiguration> EntityConfigurations { get; set; }
+        public List<Func<IServiceProvider, IOozeProvider>> ProviderFactories
+            => EntityConfigurations.Values
+                .SelectMany(config => config.ProviderFactories)
+                .ToList();
     }
 }

@@ -6,6 +6,6 @@ namespace Ooze.Sorters
         where TEntity : class
     {
         IQueryable<TEntity> ApplySorter(IQueryable<TEntity> query, bool ascending);
-        IOrderedQueryable<TEntity> ThenApplySorter(IOrderedQueryable<TEntity> query, bool ascending);
+        IQueryable<TEntity> ThenApplySorter(IOrderedQueryable<TEntity> query, bool ascending);
     }
 }

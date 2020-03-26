@@ -2,6 +2,7 @@
 using Ooze.Configuration;
 using Ooze.Configuration.Options;
 using Ooze.Filters;
+using Ooze.Query;
 using Ooze.Sorters;
 using Ooze.Validation;
 using System;
@@ -37,11 +38,14 @@ namespace Ooze.AspNetCore
                 .ForEach(configurator => configurator.Configure(configBuilder));
 
             var configuration = configBuilder.Build(options);
+            configuration.ProviderFactories
+                .ForEach(provider => services.AddSingleton(provider));
 
             services.AddSingleton(configuration);
-            services.AddScoped<IOozeCustomProviderProvider, OozeCustomProviderProvider>();
+            services.AddScoped<IOozeProviderLocator, OozeProviderLocator>();
             services.AddScoped<IOozeSorterHandler, OozeSorterHandler>();
             services.AddScoped<IOozeFilterHandler, OozeFilterHandler>();
+            services.AddScoped<IOozeQueryHandler, OozeQueryHandler>();
             services.AddScoped<IOozeResolver, OozeResolver>();
 
             return services;

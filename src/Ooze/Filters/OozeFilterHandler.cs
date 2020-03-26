@@ -1,5 +1,7 @@
 ﻿using Ooze.Configuration;
+using Ooze.Parsers;
 using Superpower;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,28 +9,31 @@ namespace Ooze.Filters
 {
     internal class OozeFilterHandler : IOozeFilterHandler
     {
-        readonly IOozeCustomProviderProvider _customProviderProvider;
+        readonly IOozeProviderLocator _providerLocator;
         readonly OozeConfiguration _config;
 
         public OozeFilterHandler(
-            IOozeCustomProviderProvider customProviderProvider,
+            IOozeProviderLocator providerLocator,
             OozeConfiguration config)
         {
-            _customProviderProvider = customProviderProvider;
+            _providerLocator = providerLocator;
             _config = config;
         }
 
-        public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, string filters)
+        public IQueryable<TEntity> Handle<TEntity>(
+            IQueryable<TEntity> query,
+            string filters)
             where TEntity : class
         {
-            var configuration = _config.EntityConfigurations[typeof(TEntity)];
-            var customProviders = _customProviderProvider.FiltersFor<TEntity>();
-
-            var filterParser = CreateParser(configuration, customProviders);
+            var filterProviders = _providerLocator.FiltersFor<TEntity>();
+            var filterParser = CreateParser(filterProviders);
             var parsedFilters = GetParsedFilters(filters, filterParser);
 
-            IQueryable<TEntity> Accumulator(IQueryable<TEntity> accumulator, FilterParserResult filter) 
-                => OozeQueryableCreator.ForFilter(accumulator, configuration, filter, customProviders, _config.OperationsMap);
+            IQueryable<TEntity> Accumulator(IQueryable<TEntity> accumulator, FilterParserResult filter)
+            {
+                var filterProvider = filterProviders.SingleOrDefault(configFilter => string.Equals(configFilter.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase));
+                return filterProvider.ApplyFilter(query, filter);
+            }
 
             return parsedFilters.Aggregate(query, Accumulator);
         }
@@ -45,12 +50,9 @@ namespace Ooze.Filters
             return parsedFilters;
         }
 
-        TextParser<FilterParserResult> CreateParser(OozeEntityConfiguration configuration, IEnumerable<IOozeProvider> customProviders)
+        TextParser<FilterParserResult> CreateParser(IEnumerable<IOozeProvider> customProviders)
         {
-            var filterNames = configuration.Filters
-                .Select(configurationFilter => configurationFilter.Name)
-                .Concat(customProviders.Select(provider => provider.Name));
-
+            var filterNames = customProviders.Select(provider => provider.Name);
             return OozeParserCreator.FilterParser(filterNames, _config.OperationsMap.Keys);
         }
     }
