@@ -26,7 +26,7 @@ namespace Ooze.Sorters
                 //not ThenBy call
                 var isFirst = i == 0;
                 var parsedSorter = parsedSorters[i];
-                var sorter = sorterProviders.SingleOrDefault(sorter => string.Compare(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase) == 0);
+                var sorter = sorterProviders.SingleOrDefault(sorter => string.Equals(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase));
 
                 query = isFirst
                     ? sorter.ApplySorter(query, parsedSorter.Ascending)

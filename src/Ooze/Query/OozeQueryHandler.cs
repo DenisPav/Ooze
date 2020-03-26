@@ -1,7 +1,10 @@
 ﻿using Ooze.Configuration;
 using Ooze.Parsers;
 using Superpower;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using static Ooze.Expressions.OozeExpressionCreator;
 
 namespace Ooze.Query
 {
@@ -26,7 +29,11 @@ namespace Ooze.Query
             var parsed = parser.TryParse(modelQuery);
             if (parsed.HasValue)
             {
-                query = OozeQueryableCreator.ForQuery(query, entityConfiguration, parsed.Value, _config.OperationsMap, _config.LogicalOperationMap);
+                var mappedQueryParts = MapQueryParts(parsed.Value, entityConfiguration.Filters);
+                var expression = QueryExpression<TEntity>(entityConfiguration, mappedQueryParts, query.Expression);
+
+                query = query.Provider
+                    .CreateQuery<TEntity>(expression);
             }
 
             return query;
@@ -43,6 +50,19 @@ namespace Ooze.Query
                 .Keys;
 
             return OozeParserCreator.QueryParser(filterNames, operations, logicalOperations);
+        }
+
+        IEnumerable<QueryFilterOperation> MapQueryParts(
+            IEnumerable<QueryParserResult> queryParts,
+            IEnumerable<ParsedExpressionDefinition> filters)
+        {
+            return queryParts.Select(queryPart => new QueryFilterOperation
+            {
+                Filter = filters.SingleOrDefault(configFilter => string.Equals(configFilter.Name, queryPart.Property, StringComparison.InvariantCultureIgnoreCase)),
+                OperationFactory = _config.OperationsMap[queryPart.Operation],
+                LogicalOperationFactory = _config.LogicalOperationMap.TryGetValue(queryPart.LogicalOperation, out var factory) ? factory : null,
+                QueryPart = queryPart
+            });
         }
     }
 }

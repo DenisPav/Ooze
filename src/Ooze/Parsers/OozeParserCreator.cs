@@ -85,7 +85,7 @@ namespace Ooze.Parsers
                     .Or(singlePropertyParser);
             }).Optional();
 
-            //what about booleans
+            //what about direct booleans without ''
             var valueParser = Character.Except('\'').Many().Between(Character.EqualTo('\''), Character.EqualTo('\''))
                 .Try()
                 .Or(Character.Numeric.Many());
