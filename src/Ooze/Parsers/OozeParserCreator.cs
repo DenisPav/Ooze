@@ -1,5 +1,6 @@
 ﻿using Ooze.Filters;
 using Ooze.Query;
+using Ooze.Sorters;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
@@ -10,34 +11,17 @@ namespace Ooze.Parsers
 {
     internal static partial class OozeParserCreator
     {
+        const char _stringContainerSymbol = '\'';
+
         public static TextParser<FilterParserResult> FilterParser(
             IEnumerable<string> filterNames,
             IEnumerable<string> operationKeys)
         {
-            var whiteSpaceParser = Character.WhiteSpace.Many();
-            var filterNameParsers = filterNames.Select(name => Span.EqualToIgnoreCase(name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
+            var propertyParser = CreateFor(filterNames);
+            var operationParser = CreateFor(operationKeys);
 
-            var propertyParser = filterNameParsers
-                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-                {
-                    if (accumulator == null)
-                        return singlePropertyParser;
-
-                    return accumulator.Or(singlePropertyParser);
-                });
-
-            var operationParsers = operationKeys.Select(Span.EqualToIgnoreCase).ToList();
-            var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator
-                    .Try()
-                    .Or(singlePropertyParser);
-            });
-
-            var valueParser = Span.WithAll(_ => true).OptionalOrDefault(new TextSpan(string.Empty));
+            var valueParser = Span.WithAll(_ => true)
+                .OptionalOrDefault(new TextSpan(string.Empty));
             var filterParser = (from property in propertyParser
                                 from operation in operationParser
                                 from value in valueParser
@@ -45,6 +29,21 @@ namespace Ooze.Parsers
 
             return filterParser;
         }
+
+        public static TextParser<SorterParserResult> SorterParser(char negativeOrderChar)
+            => input =>
+            {
+                var sorter = input.ToStringValue()
+                    .Trim();
+
+                var result = new SorterParserResult
+                {
+                    Ascending = !sorter.StartsWith(negativeOrderChar) ? true : false,
+                    Sorter = sorter.StartsWith(negativeOrderChar) ? new string(sorter.Skip(1).ToArray()) : sorter
+                };
+
+                return Result.Value(result, input, input.Skip(input.Length));
+            };
 
         public static TextParser<QueryParserResult[]> QueryParser(
             IEnumerable<string> filterNames,
@@ -54,39 +53,16 @@ namespace Ooze.Parsers
             //example: Property Operation Value LogicalOperator*
             //* optional
             var whiteSpaceParser = Character.WhiteSpace.Many();
-            var filterNameParsers = filterNames.Select(name => Span.EqualToIgnoreCase(name).Between(whiteSpaceParser, whiteSpaceParser)).ToList();
 
-            var propertyParser = filterNameParsers
-                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-                {
-                    if (accumulator == null)
-                        return singlePropertyParser;
-
-                    return accumulator.Or(singlePropertyParser);
-                });
-
-            var operationParsers = operations.Select(Span.EqualToIgnoreCase).ToList();
-            var operationParser = operationParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator
-                    .Or(singlePropertyParser);
-            });
-
-            var logicalOpParsers = logicalOperations.Select(Span.EqualToIgnoreCase).ToList();
-            var logicalOpParser = logicalOpParsers.Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, (accumulator, singlePropertyParser) =>
-            {
-                if (accumulator == null)
-                    return singlePropertyParser;
-
-                return accumulator
-                    .Or(singlePropertyParser);
-            }).Optional();
+            var propertyParser = CreateFor(filterNames);
+            var operationParser = CreateFor(operations);
+            var logicalOpParser = CreateFor(logicalOperations).Optional();
 
             //what about direct booleans without ''
-            var valueParser = Character.Except('\'').Many().Between(Character.EqualTo('\''), Character.EqualTo('\''))
+            var containerSymbolParser = Character.EqualTo(_stringContainerSymbol);
+            var valueParser = Character.Except(_stringContainerSymbol)
+                .Many()
+                .Between(containerSymbolParser, containerSymbolParser)
                 .Try()
                 .Or(Character.Numeric.Many());
 
@@ -104,6 +80,23 @@ namespace Ooze.Parsers
                                .Many();
 
             return queryParser;
+
         }
+
+        static TextParser<TextSpan> CreateFor(IEnumerable<string> texts)
+            => texts.Select(CreateTextParser)
+                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, TryAggregate);
+
+        static TextParser<TextSpan> TryAggregate(
+            TextParser<TextSpan> accumulator,
+            TextParser<TextSpan> parser)
+            => accumulator == null
+                ? parser
+                : accumulator.Try().Or(parser);
+
+        static TextParser<TextSpan> CreateTextParser(string text)
+            => Span.WhiteSpace
+                .Many()
+                .IgnoreThen(Span.EqualToIgnoreCase(text));
     }
 }

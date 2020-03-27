@@ -32,7 +32,7 @@ namespace Ooze.Filters
             IQueryable<TEntity> Accumulator(IQueryable<TEntity> accumulator, FilterParserResult filter)
             {
                 var filterProvider = filterProviders.SingleOrDefault(configFilter => string.Equals(configFilter.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase));
-                return filterProvider.ApplyFilter(query, filter);
+                return filterProvider.ApplyFilter(accumulator, filter);
             }
 
             return parsedFilters.Aggregate(query, Accumulator);
