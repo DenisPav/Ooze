@@ -17,8 +17,7 @@ namespace Ooze.Parsers
             IEnumerable<string> operationKeys)
         {
             var propertyParser = CreateFor(filterNames);
-            var operationParser = operationKeys.Select(CreateTextParser)
-                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, TryAggregate);
+            var operationParser = CreateFor(operationKeys);
 
             var valueParser = Span.WithAll(_ => true)
                 .OptionalOrDefault(new TextSpan(string.Empty));
@@ -70,12 +69,7 @@ namespace Ooze.Parsers
 
         static TextParser<TextSpan> CreateFor(IEnumerable<string> texts)
             => texts.Select(CreateTextParser)
-                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, Aggregate);
-
-        static TextParser<TextSpan> Aggregate(
-            TextParser<TextSpan> accumulator,
-            TextParser<TextSpan> parser) 
-            => accumulator == null ? parser : accumulator.Or(parser);
+                .Aggregate<TextParser<TextSpan>, TextParser<TextSpan>>(null, TryAggregate);
 
         static TextParser<TextSpan> TryAggregate(
             TextParser<TextSpan> accumulator,
@@ -85,9 +79,8 @@ namespace Ooze.Parsers
                 : accumulator.Try().Or(parser);
 
         static TextParser<TextSpan> CreateTextParser(string text)
-        {
-            var whiteSpaceParser = Character.WhiteSpace.Many();
-            return Span.EqualToIgnoreCase(text).Between(whiteSpaceParser, whiteSpaceParser);
-        }
+            => Span.WhiteSpace
+                .Many()
+                .IgnoreThen(Span.EqualToIgnoreCase(text));
     }
 }
