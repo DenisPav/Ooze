@@ -1,4 +1,5 @@
-﻿using Superpower;
+﻿using Ooze.Parsers;
+using Superpower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,13 +40,13 @@ namespace Ooze.Sorters
         IEnumerable<SorterParserResult> GetParsedSorters(
             string sorters)
         {
+            var parser = OozeParserCreator.SorterParser(_negativeOrderChar);
+
             return sorters.Split(',')
                 .Select(sorter => sorter.Trim())
-                .Select(sorter => new SorterParserResult
-                {
-                    Ascending = !sorter.StartsWith(_negativeOrderChar) ? true : false,
-                    Sorter = sorter.StartsWith(_negativeOrderChar) ? new string(sorter.Skip(1).ToArray()) : sorter
-                });
+                .Select(parser.TryParse)
+                .Where(result => result.HasValue)
+                .Select(result => result.Value);
         }
     }
 }

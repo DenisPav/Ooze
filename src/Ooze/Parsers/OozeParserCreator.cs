@@ -1,5 +1,6 @@
 ﻿using Ooze.Filters;
 using Ooze.Query;
+using Ooze.Sorters;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
@@ -28,6 +29,21 @@ namespace Ooze.Parsers
 
             return filterParser;
         }
+
+        public static TextParser<SorterParserResult> SorterParser(char negativeOrderChar)
+            => input =>
+            {
+                var sorter = input.ToStringValue()
+                    .Trim();
+
+                var result = new SorterParserResult
+                {
+                    Ascending = !sorter.StartsWith(negativeOrderChar) ? true : false,
+                    Sorter = sorter.StartsWith(negativeOrderChar) ? new string(sorter.Skip(1).ToArray()) : sorter
+                };
+
+                return Result.Value(result, input, input.Skip(input.Length));
+            };
 
         public static TextParser<QueryParserResult[]> QueryParser(
             IEnumerable<string> filterNames,
@@ -73,8 +89,8 @@ namespace Ooze.Parsers
 
         static TextParser<TextSpan> TryAggregate(
             TextParser<TextSpan> accumulator,
-            TextParser<TextSpan> parser) 
-            => accumulator == null 
+            TextParser<TextSpan> parser)
+            => accumulator == null
                 ? parser
                 : accumulator.Try().Or(parser);
 
