@@ -9,6 +9,8 @@ using Ooze.Configuration;
 using Ooze.AspNetCore.Filters;
 using Ooze.Filters;
 using Ooze.Sorters;
+using System.Collections.Generic;
+using System;
 
 namespace Ooze.Web
 {
@@ -39,7 +41,15 @@ namespace Ooze.Web
                     {
                         Id = _,
                         Enabled = _ % 2 == 0,
-                        Name = _.ToString()
+                        Name = _.ToString(),
+                        Comments = new[] { 
+                            new Comment
+                            {
+                                Id = _,
+                                Date = DateTime.Now.AddDays(_),
+                                Text = $"Sample comment {_}"
+                            }
+                        }
                     });
 
                 db.Posts.AddRange(posts);
@@ -65,6 +75,7 @@ namespace Ooze.Web
         { }
 
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 
     public class Post
@@ -72,6 +83,14 @@ namespace Ooze.Web
         public long Id { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; }
+        public ICollection<Comment> Comments { get; set; }
+    }
+
+    public class Comment
+    {
+        public long Id { get; set; }
+        public DateTime Date { get; set; }
+        public string Text { get; set; }
     }
 
     public class PostConfiguration : IOozeConfiguration
