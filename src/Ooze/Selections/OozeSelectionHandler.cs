@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Selections
@@ -13,6 +14,8 @@ namespace Ooze.Selections
         {
             public string Property { get; set; }
             public IList<FieldDefinition> Children { get; set; } = new List<FieldDefinition>();
+
+            public FieldDefinition(string property) => Property = property;
         }
 
         public IQueryable<TEntity> Handle<TEntity>(
@@ -33,16 +36,7 @@ namespace Ooze.Selections
             var assignments = CreateAssignments(paramExpr, typeof(TEntity), results);
 
 
-            var lambda = Lambda<Func<TEntity, TEntity>>(
-                MemberInit(
-                    New(
-                        typeof(TEntity).GetConstructors().First()
-                    ),
-                    assignments
-                ),
-                paramExpr
-            );
-
+            var lambda = LambdaExpr(typeof(TEntity), paramExpr, assignments) as Expression<Func<TEntity, TEntity>>;
             return query.Select(lambda);
         }
 
@@ -52,35 +46,25 @@ namespace Ooze.Selections
 
             foreach (var fieldDefinition in fieldDefinitions)
             {
-                if (!fieldDefinition.Contains('.'))
+                if (!fieldDefinition.Contains('.')
+                    && !existingDefinitions.Any(def => def.Property.Equals(fieldDefinition, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    if (!existingDefinitions.Any(def => def.Property.Equals(fieldDefinition, StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        existingDefinitions.Add(new FieldDefinition
-                        {
-                            Property = fieldDefinition
-                        });
-                    }
+                    existingDefinitions.Add(new FieldDefinition(fieldDefinition));
                 }
                 else
                 {
-                    var fieldDefinitionParts = fieldDefinition.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
-                    var containerDef = existingDefinitions.FirstOrDefault(def => def.Property.Equals(fieldDefinitionParts[0], StringComparison.InvariantCultureIgnoreCase));
+                    var separatorIndex = fieldDefinition.IndexOf('.');
+                    var containerPart = fieldDefinition.Remove(separatorIndex);
+                    var subPart = fieldDefinition.Substring(separatorIndex + 1);
+                    var containerDef = existingDefinitions.FirstOrDefault(def => def.Property.Equals(containerPart, StringComparison.InvariantCultureIgnoreCase));
 
                     if (containerDef is null)
                     {
-                        var newDef = new FieldDefinition
-                        {
-                            Property = fieldDefinitionParts[0]
-                        };
-                        newDef.Children = Parse(new[] { string.Join('.', fieldDefinitionParts.Skip(1)) }, newDef.Children).ToList();
+                        containerDef = new FieldDefinition(containerPart);
+                        existingDefinitions.Add(containerDef);
+                    }
 
-                        existingDefinitions.Add(newDef);
-                    }
-                    else
-                    {
-                        containerDef.Children = Parse(new[] { string.Join('.', fieldDefinitionParts.Skip(1)) }, containerDef.Children).ToList();
-                    }
+                    containerDef.Children = Parse(new[] { subPart }, containerDef.Children).ToList();
                 }
             }
 
@@ -89,7 +73,6 @@ namespace Ooze.Selections
 
         static IEnumerable<MemberAssignment> CreateAssignments(ParameterExpression rootExpression, Type type, IEnumerable<FieldDefinition> fieldDefinitions)
         {
-            var assignemnts = new List<MemberAssignment>();
             var typeProperties = type.GetProperties();
 
             foreach (var fieldDefinition in fieldDefinitions)
@@ -101,7 +84,8 @@ namespace Ooze.Selections
                     if (targetProp is { })
                     {
                         var bind = Bind(targetProp, MakeMemberAccess(rootExpression, targetProp));
-                        assignemnts.Add(bind);
+
+                        yield return bind;
                     }
                 }
                 else
@@ -114,45 +98,60 @@ namespace Ooze.Selections
 
                         var nestedAssignments = CreateAssignments(newRootParamExpr, propertyType, fieldDefinition.Children);
 
-                        var lambda = Lambda(
-                            MemberInit(
-                                New(
-                                    propertyType.GetConstructors().First()
-                                    ),
-                                nestedAssignments
-                                ),
-                            newRootParamExpr
-                            );
+                        var lambda = LambdaExpr(propertyType, newRootParamExpr, nestedAssignments);
+                        var selectCallExpr = SelectExpr(propertyType, rootExpression, targetProp, lambda);
+                        var toListCallExpr = ToListExpr(propertyType, selectCallExpr);
 
-                        var selectCallExpr = Call(
-                            typeof(Enumerable),
-                            "Select",
-                            new[] {
-                                    propertyType,
-                                    propertyType
-                            },
-                            MakeMemberAccess(rootExpression, targetProp),
-                            lambda
-                        );
-
-                        var toListCallExpr = Call(
-                            typeof(Enumerable),
-                            "ToList",
-                            new[] {
-                                    propertyType
-                            },
-                            selectCallExpr
-                        );
-
-                        assignemnts.Add(Bind(
-                            targetProp,
-                            toListCallExpr
-                            ));
+                        yield return Bind(targetProp, toListCallExpr);
+                    }
+                    else
+                    {
+                        //handle nested objects
                     }
                 }
             }
-
-            return assignemnts;
         }
+
+        static MethodCallExpression SelectExpr(
+            Type propertyType,
+            ParameterExpression paramExpr,
+            PropertyInfo targetProperty,
+            LambdaExpression expression)
+            => Call(
+                typeof(Enumerable),
+                "Select",
+                new[] {
+                    propertyType,
+                    propertyType
+                },
+                MakeMemberAccess(paramExpr, targetProperty),
+                expression
+                );
+
+        static MethodCallExpression ToListExpr(
+            Type propertyType,
+            MethodCallExpression selectExpression)
+            => Call(
+                typeof(Enumerable),
+                "ToList",
+                new[] {
+                    propertyType
+                },
+                selectExpression
+                );
+
+        static LambdaExpression LambdaExpr(
+            Type propertyType,
+            ParameterExpression parameterExpression,
+            IEnumerable<MemberAssignment> memberAssignments)
+            => Lambda(
+                MemberInit(
+                    New(
+                        propertyType.GetConstructors().First()
+                        ),
+                    memberAssignments
+                    ),
+                parameterExpression
+                );
     }
 }
