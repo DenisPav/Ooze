@@ -35,6 +35,13 @@ namespace Ooze.Selections
             var results = Parse(splitted);
             var assignments = CreateAssignments(paramExpr, typeof(TEntity), results);
 
+            if (OozeExpressionCreator.LambdaExpr(typeof(TEntity), paramExpr, assignments) is Expression<Func<TEntity, TEntity>> lambda)
+            {
+                query = query.Select(lambda);
+            }
+
+            return query;
+        }
 
             var lambda = LambdaExpr(typeof(TEntity), paramExpr, assignments) as Expression<Func<TEntity, TEntity>>;
             return query.Select(lambda);
@@ -98,9 +105,9 @@ namespace Ooze.Selections
 
                         var nestedAssignments = CreateAssignments(newRootParamExpr, propertyType, fieldDefinition.Children);
 
-                        var lambda = LambdaExpr(propertyType, newRootParamExpr, nestedAssignments);
-                        var selectCallExpr = SelectExpr(propertyType, rootExpression, targetProp, lambda);
-                        var toListCallExpr = ToListExpr(propertyType, selectCallExpr);
+                        var lambda = OozeExpressionCreator.LambdaExpr(propertyType, newRootParamExpr, nestedAssignments);
+                        var selectCallExpr = OozeExpressionCreator.SelectExpr(propertyType, rootExpression, targetProp, lambda);
+                        var toListCallExpr = OozeExpressionCreator.ToListExpr(propertyType, selectCallExpr);
 
                         yield return Bind(targetProp, toListCallExpr);
                     }

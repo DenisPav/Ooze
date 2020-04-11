@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Expressions
@@ -103,5 +104,47 @@ namespace Ooze.Expressions
 
             return (operationExpr, mappedPart);
         }
+
+        public static MethodCallExpression SelectExpr(
+            Type propertyType,
+            ParameterExpression paramExpr,
+            PropertyInfo targetProperty,
+            LambdaExpression expression)
+            => Call(
+                typeof(Enumerable),
+                "Select",
+                new[] {
+                    propertyType,
+                    propertyType
+                },
+                MakeMemberAccess(paramExpr, targetProperty),
+                expression
+                );
+
+        public static MethodCallExpression ToListExpr(
+            Type propertyType,
+            MethodCallExpression selectExpression)
+            => Call(
+                typeof(Enumerable),
+                "ToList",
+                new[] {
+                    propertyType
+                },
+                selectExpression
+                );
+
+        public static LambdaExpression LambdaExpr(
+            Type propertyType,
+            ParameterExpression parameterExpression,
+            IEnumerable<MemberAssignment> memberAssignments)
+            => Lambda(
+                MemberInit(
+                    New(
+                        propertyType.GetConstructors().First()
+                        ),
+                    memberAssignments
+                    ),
+                parameterExpression
+                );
     }
 }
