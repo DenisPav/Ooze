@@ -37,42 +37,49 @@ namespace Ooze
             OozeModel model)
             where TEntity : class
         {
-            if (!_config.EntityConfigurations.ContainsKey(typeof(TEntity)))
-                return query;
+            var hasConfig = HasEntityConfiguration<TEntity>();
+            var validationResult = _modelValidator.Validate(model, _config.UseSelections);
 
-            return ApplyOoze(query, model);
-        }
-
-        IQueryable<TEntity> ApplyOoze<TEntity>(
-            IQueryable<TEntity> query,
-            OozeModel model)
-            where TEntity : class
-        {
-            var (sortersValid, filtersValid, queryValid, fieldsValid) = _modelValidator.Validate(model, _config.UseSelections);
-
-            //apply query if it is present
-            if (queryValid)
+            if (hasConfig)
             {
-                return _queryHandler.Handle(query, model.Query);
+                query = ApplyStandard(query, model, validationResult);
             }
 
-            //in other case try defaults
-            if (sortersValid)
-            {
-                query = _sorterHandler.Handle(query, model.Sorters);
-            }
-
-            if (filtersValid)
-            {
-                query = _filterHandler.Handle(query, model.Filters);
-            }
-
-            if (_config.UseSelections && fieldsValid)
+            //apply query even if config isn't present
+            if (_config.UseSelections && validationResult.FieldsValid)
             {
                 query = _selectionHandler.Handle(query, model.Fields);
             }
 
             return query;
         }
+
+        IQueryable<TEntity> ApplyStandard<TEntity>(
+            IQueryable<TEntity> query,
+            OozeModel model,
+            OozeModelValidationResult validationResult)
+            where TEntity : class
+        {
+            //apply query if it is present
+            if (validationResult.QueryValid)
+            {
+                return _queryHandler.Handle(query, model.Query);
+            }
+
+            //in other case try defaults
+            if (validationResult.SortersValid)
+            {
+                query = _sorterHandler.Handle(query, model.Sorters);
+            }
+
+            if (validationResult.FiltersValid)
+            {
+                query = _filterHandler.Handle(query, model.Filters);
+            }
+
+            return query;
+        }
+
+        bool HasEntityConfiguration<TEntity>() => _config.EntityConfigurations.ContainsKey(typeof(TEntity));
     }
 }
