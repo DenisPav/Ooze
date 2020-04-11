@@ -1,7 +1,9 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
 using Ooze.Query;
+using Ooze.Selections;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -146,5 +148,46 @@ namespace Ooze.Expressions
                     ),
                 parameterExpression
                 );
+
+        public static IEnumerable<MemberAssignment> CreateAssignments(ParameterExpression rootExpression, Type type, IEnumerable<FieldDefinition> fieldDefinitions)
+        {
+            var typeProperties = type.GetProperties();
+
+            foreach (var fieldDefinition in fieldDefinitions)
+            {
+                if (!fieldDefinition.Children.Any())
+                {
+                    var targetProp = typeProperties.FirstOrDefault(prop => prop.Name.Equals(fieldDefinition.Property, StringComparison.InvariantCultureIgnoreCase));
+
+                    if (targetProp is { })
+                    {
+                        var bind = Bind(targetProp, MakeMemberAccess(rootExpression, targetProp));
+
+                        yield return bind;
+                    }
+                }
+                else
+                {
+                    var targetProp = typeProperties.FirstOrDefault(prop => prop.Name.Equals(fieldDefinition.Property, StringComparison.InvariantCultureIgnoreCase));
+                    if (targetProp is { } && typeof(IEnumerable).IsAssignableFrom(targetProp.PropertyType))
+                    {
+                        var propertyType = targetProp.PropertyType.GetGenericArguments().First();
+                        var newRootParamExpr = Parameter(propertyType, targetProp.Name);
+
+                        var nestedAssignments = CreateAssignments(newRootParamExpr, propertyType, fieldDefinition.Children);
+
+                        var lambda = LambdaExpr(propertyType, newRootParamExpr, nestedAssignments);
+                        var selectCallExpr = SelectExpr(propertyType, rootExpression, targetProp, lambda);
+                        var toListCallExpr = ToListExpr(propertyType, selectCallExpr);
+
+                        yield return Bind(targetProp, toListCallExpr);
+                    }
+                    else
+                    {
+                        //handle nested objects
+                    }
+                }
+            }
+        }
     }
 }
