@@ -2,7 +2,7 @@
 
 namespace Ooze.Selections
 {
-    class FieldDefinition
+    internal class FieldDefinition
     {
         public string Property { get; set; }
         public IList<FieldDefinition> Children { get; set; } = new List<FieldDefinition>();

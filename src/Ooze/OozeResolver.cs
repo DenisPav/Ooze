@@ -38,7 +38,7 @@ namespace Ooze
             where TEntity : class
         {
             var hasConfig = HasEntityConfiguration<TEntity>();
-            var validationResult = _modelValidator.Validate(model, _config.UseSelections);
+            var validationResult = _modelValidator.Validate(model);
 
             if (hasConfig)
             {

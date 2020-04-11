@@ -18,5 +18,13 @@
             QueryValid = queryValid;
             FieldsValid = fieldsValid;
         }
+
+        public void Deconstruct(out bool sortersValid, out bool filtersValid, out bool queryValid, out bool fieldsValid)
+        {
+            sortersValid = SortersValid;
+            filtersValid = FiltersValid;
+            queryValid = QueryValid;
+            fieldsValid = FieldsValid;
+        }
     }
 }
