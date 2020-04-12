@@ -135,21 +135,30 @@ namespace Ooze.Expressions
                 selectExpression
                 );
 
+        public static MemberInitExpression MemberInitExpr(
+            Type propertyType,
+            IEnumerable<MemberAssignment> memberAssignments)
+            => MemberInit(
+                New(
+                    propertyType.GetConstructors().First()
+                    ),
+                memberAssignments
+                );
+
         public static LambdaExpression LambdaExpr(
             Type propertyType,
             ParameterExpression parameterExpression,
             IEnumerable<MemberAssignment> memberAssignments)
             => Lambda(
-                MemberInit(
-                    New(
-                        propertyType.GetConstructors().First()
-                        ),
-                    memberAssignments
-                    ),
+                MemberInitExpr(propertyType, memberAssignments),
                 parameterExpression
                 );
 
-        public static IEnumerable<MemberAssignment> CreateAssignments(ParameterExpression rootExpression, Type type, IEnumerable<FieldDefinition> fieldDefinitions)
+        public static IEnumerable<MemberAssignment> CreateAssignments(
+            ParameterExpression rootExpression,
+            Type type,
+            IEnumerable<FieldDefinition> fieldDefinitions,
+            MemberExpression parentObjectExpr = null)
         {
             var typeProperties = type.GetProperties();
 
@@ -161,7 +170,9 @@ namespace Ooze.Expressions
 
                     if (targetProp is { })
                     {
-                        var bind = Bind(targetProp, MakeMemberAccess(rootExpression, targetProp));
+                        var bind = parentObjectExpr == null
+                            ? Bind(targetProp, MakeMemberAccess(rootExpression, targetProp))
+                            : Bind(targetProp, MakeMemberAccess(parentObjectExpr, targetProp));
 
                         yield return bind;
                     }
@@ -182,9 +193,15 @@ namespace Ooze.Expressions
 
                         yield return Bind(targetProp, toListCallExpr);
                     }
-                    else
+                    else if (targetProp is { } && targetProp.PropertyType.IsClass)
                     {
-                        //handle nested objects
+                        var propertyType = targetProp.PropertyType;
+                        var newRootParamExpr = Parameter(propertyType, targetProp.Name);
+                        var parentObjectExpression = MakeMemberAccess(parentObjectExpr == null ? rootExpression : (Expression)parentObjectExpr, targetProp);
+                        var nestedAssignments = CreateAssignments(newRootParamExpr, propertyType, fieldDefinition.Children, parentObjectExpression);
+
+                        var memberInit = MemberInitExpr(propertyType, nestedAssignments);
+                        yield return Bind(targetProp, memberInit);
                     }
                 }
             }

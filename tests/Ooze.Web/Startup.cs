@@ -47,7 +47,12 @@ namespace Ooze.Web
                             {
                                 Id = _,
                                 Date = DateTime.Now.AddDays(_),
-                                Text = $"Sample comment {_}"
+                                Text = $"Sample comment {_}",
+                                User = new User
+                                {
+                                    Id = _,
+                                    Email = $"sample_{_}@email.com"
+                                }
                             }
                         }
                     });
@@ -76,6 +81,27 @@ namespace Ooze.Web
 
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var post = modelBuilder.Entity<Post>();
+            post.HasKey(x => x.Id);
+            post.Property(x => x.Id).ValueGeneratedOnAdd();
+            post.HasMany(x => x.Comments)
+                .WithOne();
+
+            var comment = modelBuilder.Entity<Comment>();
+            comment.HasKey(x => x.Id);
+            comment.Property(x => x.Id).ValueGeneratedOnAdd();
+            comment.HasOne(x => x.User)
+                .WithOne(x => x.Comment)
+                .HasForeignKey<Comment>(x => x.Id);
+
+            var user = modelBuilder.Entity<User>();
+            user.HasKey(x => x.Id);
+            user.Property(x => x.Id);
+        }
     }
 
     public class Post
@@ -91,6 +117,14 @@ namespace Ooze.Web
         public long Id { get; set; }
         public DateTime Date { get; set; }
         public string Text { get; set; }
+        public User User { get; set; }
+    }
+
+    public class User
+    {
+        public long Id { get; set; }
+        public string Email { get; set; }
+        public Comment Comment { get; set; }
     }
 
     public class PostConfiguration : IOozeConfiguration

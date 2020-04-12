@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Ooze.AspNetCore.Filters;
 using System;
 using System.Linq;
@@ -30,12 +28,24 @@ namespace Ooze.Web.Controllers
                 Id = post.Id,
                 Comments = post.Comments.Select(comment => new Comment
                 {
-                    Id = comment.Id
+                    Id = comment.Id,
+                    User = new User
+                    {
+                        Id = comment.User.Id,
+                        Email = comment.User.Email,
+                        Comment = new Comment
+                        {
+                            Id = comment.User.Comment.Id,
+                            User = new User
+                            {
+                                Id = comment.User.Comment.User.Id
+                            }
+                        }
+                    }
                 }).ToList()
             };
 
-            IQueryable<Post> query = _db.Posts
-                .Include(post => post.Comments);
+            IQueryable<Post> query = _db.Posts;
 
             query = _resolver.Apply(query, model);
 
