@@ -88,7 +88,7 @@ Supported operations are next:
 * Contains - `@`
 
 ## 🗡 Selections
-You can also let Ooze cut the total selections that go out of the `IQueryable<>` instance. In order to enable that you need to switch the flag in configurator of `AddOoze()` method. Example of that can be seen below:
+You can also let Ooze cut the total selections that go out of the `IQueryable<>` instance. In order to enable that you need to switch the flag in configurator of `AddOoze()` method (You don't need to have configuration classes for Selections to work). Example of that can be seen below:
 ```csharp
 //ConfigureServices() method in Startup.cs
 services.AddOoze(typeof(Startup).Assembly, opts => opts.UseSelections = true);
@@ -101,6 +101,18 @@ public class Post
     public int Id { get; set; }
     public string Name { get; set; }
     public DateTime Date { get; set; }
+
+    public ICollection<Comment> Comments { get; set; }
+}
+
+public class Comments
+{
+    public int Id { get; set; }
+    public string Text { get; set; }
+    public DateTime Date { get; set; }
+
+    public int PostId { get; set; }
+    public Post Post { get; set; }
 }
 
 public class SampleController : ControllerBase
@@ -138,6 +150,21 @@ FROM "Posts" AS "p"
 --Without selections this might look like following:
 SELECT "p"."Id", "p"."Date", "p"."Name"
 FROM "Posts" AS "p"
+```
+
+Similar to upper example if you `OozeModel` gets values like `Name,Comments.Text` you'll get something in terms of next SQL:
+```sql
+SELECT "p"."Name", "p"."Id", "c"."Text", "c"."Id"
+FROM "Posts" AS "p"
+LEFT JOIN "Comments" AS "c" ON "p"."Id" = "c"."PostId"
+ORDER BY "p"."Id", "c"."Id"
+```
+without selections that would be more like
+```sql
+SELECT "p"."Id", "c"."Id", "c"."Date", "c"."PostId", "c"."Text"
+FROM "Posts" AS "p"
+LEFT JOIN "Comments" AS "c" ON "p"."Id" = "c"."PostId"
+ORDER BY "p"."Id", "c"."Id"
 ```
 
 ## 🧪 Queries

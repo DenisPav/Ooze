@@ -252,5 +252,23 @@ namespace Ooze.Tests.Integration
             var results = await query.ToListAsync();
             results.ForEach(item => Assert.True(item.Id == 0 && item.Enabled == false && item.Comments == null));
         }
+
+        [Fact]
+        public async Task Should_Correctly_Select_Complex_Data()
+        {
+            using var scope = _fixture.CreateScope();
+            var provider = scope.ServiceProvider;
+
+            var context = provider.GetRequiredService<DatabaseContext>();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
+
+            IQueryable<Post> query = context.Posts;
+            query = oozeResolver.Apply(query, new OozeModel { Fields = "name,comments.user.email" });
+
+            var results = await query.ToListAsync();
+            results.ForEach(item => Assert.True(item.Id == 0 && item.Name != null
+                && item.Comments != null
+                && item.Comments.Any(comment => comment.User != null && comment.User.Email != null && comment.User.Id == 0)));
+        }
     }
 }
