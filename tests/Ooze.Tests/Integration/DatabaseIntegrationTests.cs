@@ -5,38 +5,93 @@ using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 namespace Ooze.Tests.Integration
 {
     public class DatabaseContext : DbContext
     {
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<User> Users { get; set; }
+
+
         public DatabaseContext(DbContextOptions options) : base(options)
         { }
 
-        public DbSet<Post> Posts { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var post = modelBuilder.Entity<Post>();
+            post.HasKey(x => x.Id);
+            post.Property(x => x.Id).ValueGeneratedOnAdd();
+            post.HasMany(x => x.Comments)
+                .WithOne();
+
+            var comment = modelBuilder.Entity<Comment>();
+            comment.HasKey(x => x.Id);
+            comment.Property(x => x.Id).ValueGeneratedOnAdd();
+            comment.HasOne(x => x.User)
+                .WithOne(x => x.Comment)
+                .HasForeignKey<Comment>(x => x.Id);
+
+            var user = modelBuilder.Entity<User>();
+            user.HasKey(x => x.Id);
+            user.Property(x => x.Id);
+        }
 
         public async Task Prepare()
         {
+            await Database.EnsureDeletedAsync();
             await Database.EnsureCreatedAsync();
             Posts.RemoveRange(Posts);
 
             var posts = Enumerable.Range(1, 100)
-                    .Select(id => new Post
+                    .Select(_ => new Post
                     {
-                        Id = id,
-                        Enabled = id % 2 == 0,
-                        Name = id.ToString()
+                        Id = _,
+                        Enabled = _ % 2 == 0,
+                        Name = _.ToString(),
+                        Comments = new[] {
+                            new Comment
+                            {
+                                Id = _,
+                                Date = DateTime.Now.AddDays(_),
+                                Text = $"Sample comment {_}",
+                                User = new User
+                                {
+                                    Id = _,
+                                    Email = $"sample_{_}@email.com"
+                                }
+                            }
+                        }
                     });
 
             Posts.AddRange(posts);
             await SaveChangesAsync();
         }
     }
+
     public class Post
     {
         public long Id { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; }
+        public ICollection<Comment> Comments { get; set; }
+    }
+
+    public class Comment
+    {
+        public long Id { get; set; }
+        public DateTime Date { get; set; }
+        public string Text { get; set; }
+        public User User { get; set; }
+    }
+
+    public class User
+    {
+        public long Id { get; set; }
+        public string Email { get; set; }
+        public Comment Comment { get; set; }
     }
 
     public class PostConfiguration : IOozeConfiguration
@@ -180,6 +235,40 @@ namespace Ooze.Tests.Integration
 
             var groups = results.GroupBy(item => item.Enabled, (item, index) => index).ToList();
             Assert.True(groups.Count == 2);
+        }
+
+        [Fact]
+        public async Task Should_Correctly_Select_Simple_Data()
+        {
+            using var scope = _fixture.CreateScope();
+            var provider = scope.ServiceProvider;
+
+            var context = provider.GetRequiredService<DatabaseContext>();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
+
+            IQueryable<Post> query = context.Posts;
+            query = oozeResolver.Apply(query, new OozeModel { Fields = "name" });
+
+            var results = await query.ToListAsync();
+            results.ForEach(item => Assert.True(item.Id == 0 && item.Enabled == false && item.Comments == null));
+        }
+
+        [Fact]
+        public async Task Should_Correctly_Select_Complex_Data()
+        {
+            using var scope = _fixture.CreateScope();
+            var provider = scope.ServiceProvider;
+
+            var context = provider.GetRequiredService<DatabaseContext>();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
+
+            IQueryable<Post> query = context.Posts;
+            query = oozeResolver.Apply(query, new OozeModel { Fields = "name,comments.user.email" });
+
+            var results = await query.ToListAsync();
+            results.ForEach(item => Assert.True(item.Id == 0 && item.Name != null
+                && item.Comments != null
+                && item.Comments.Any(comment => comment.User != null && comment.User.Email != null && comment.User.Id == 0)));
         }
     }
 }

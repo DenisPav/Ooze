@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Ooze.AspNetCore.Filters;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Ooze.Web.Controllers
 {
@@ -21,6 +23,28 @@ namespace Ooze.Web.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery]OozeModel model)
         {
+            Expression<Func<Post, Post>> expr = post => new Post
+            {
+                Id = post.Id,
+                Comments = post.Comments.Select(comment => new Comment
+                {
+                    Id = comment.Id,
+                    User = new User
+                    {
+                        Id = comment.User.Id,
+                        Email = comment.User.Email,
+                        Comment = new Comment
+                        {
+                            Id = comment.User.Comment.Id,
+                            User = new User
+                            {
+                                Id = comment.User.Comment.User.Id
+                            }
+                        }
+                    }
+                }).ToList()
+            };
+
             IQueryable<Post> query = _db.Posts;
 
             query = _resolver.Apply(query, model);

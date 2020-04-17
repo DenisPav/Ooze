@@ -9,6 +9,8 @@ using Ooze.Configuration;
 using Ooze.AspNetCore.Filters;
 using Ooze.Filters;
 using Ooze.Sorters;
+using System.Collections.Generic;
+using System;
 
 namespace Ooze.Web
 {
@@ -17,7 +19,11 @@ namespace Ooze.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;"), ServiceLifetime.Transient);
-            services.AddOoze(typeof(Startup).Assembly, opts => opts.Operations.GreaterThan = ".");
+            services.AddOoze(typeof(Startup).Assembly, opts =>
+            {
+                opts.Operations.GreaterThan = ".";
+                opts.UseSelections = true;
+            });
             services.AddScoped(typeof(OozeFilter<>));
             services.AddScoped<IOozeProvider, CustomFilterProvider>();
             services.AddScoped<IOozeProvider, CustomSorterProvider>();
@@ -35,7 +41,20 @@ namespace Ooze.Web
                     {
                         Id = _,
                         Enabled = _ % 2 == 0,
-                        Name = _.ToString()
+                        Name = _.ToString(),
+                        Comments = new[] { 
+                            new Comment
+                            {
+                                Id = _,
+                                Date = DateTime.Now.AddDays(_),
+                                Text = $"Sample comment {_}",
+                                User = new User
+                                {
+                                    Id = _,
+                                    Email = $"sample_{_}@email.com"
+                                }
+                            }
+                        }
                     });
 
                 db.Posts.AddRange(posts);
@@ -61,6 +80,28 @@ namespace Ooze.Web
         { }
 
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var post = modelBuilder.Entity<Post>();
+            post.HasKey(x => x.Id);
+            post.Property(x => x.Id).ValueGeneratedOnAdd();
+            post.HasMany(x => x.Comments)
+                .WithOne();
+
+            var comment = modelBuilder.Entity<Comment>();
+            comment.HasKey(x => x.Id);
+            comment.Property(x => x.Id).ValueGeneratedOnAdd();
+            comment.HasOne(x => x.User)
+                .WithOne(x => x.Comment)
+                .HasForeignKey<Comment>(x => x.Id);
+
+            var user = modelBuilder.Entity<User>();
+            user.HasKey(x => x.Id);
+            user.Property(x => x.Id);
+        }
     }
 
     public class Post
@@ -68,6 +109,22 @@ namespace Ooze.Web
         public long Id { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; }
+        public ICollection<Comment> Comments { get; set; }
+    }
+
+    public class Comment
+    {
+        public long Id { get; set; }
+        public DateTime Date { get; set; }
+        public string Text { get; set; }
+        public User User { get; set; }
+    }
+
+    public class User
+    {
+        public long Id { get; set; }
+        public string Email { get; set; }
+        public Comment Comment { get; set; }
     }
 
     public class PostConfiguration : IOozeConfiguration

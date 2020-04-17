@@ -8,19 +8,21 @@ using Ooze.Configuration.Options;
 using System.Collections.Generic;
 using System;
 using Ooze.Query;
+using Ooze.Selections;
 
 namespace Ooze.Tests
 {
     public class OozeResolverTests
     {
         [Fact]
-        public void Should_Call_Filter_Sorter_Handler_If_Model_Is_Valid()
+        public void Should_Call_Filter_Sorter_Selection_Handler_If_Model_Is_Valid()
         {
             var context = new OozeResolverContext();
             var model = new OozeModel
             {
                 Filters = "-",
-                Sorters = "-"
+                Sorters = "-",
+                Fields = "-"
             };
 
             var data = Enumerable.Empty<object>().AsQueryable();
@@ -28,7 +30,8 @@ namespace Ooze.Tests
 
             context.FilterHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Filters);
             context.SorterHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
-            context.QueryHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
+            context.SelectionHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Fields);
+            context.QueryHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Query);
         }
 
         [Fact]
@@ -39,7 +42,8 @@ namespace Ooze.Tests
             {
                 Filters = "-",
                 Sorters = "-",
-                Query = "-"
+                Query = "-",
+                Fields = "-"
             };
 
             var data = Enumerable.Empty<object>().AsQueryable();
@@ -47,44 +51,24 @@ namespace Ooze.Tests
 
             context.FilterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Filters);
             context.SorterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
-            context.QueryHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
+            context.SelectionHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Fields);
+            context.QueryHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Query);
         }
 
-        [Theory]
-        [InlineData("sorter", "")]
-        [InlineData("", "filter")]
-        [InlineData("sorter", null)]
-        [InlineData(null, "filter")]
-        [InlineData(null, null)]
-        public void Should_Not_Call_Handlers_If_Any_Model_Property_Is_Invalid(string sorter, string filter)
+        [Fact]
+        public void Should_Not_Call_Handlers_If_Any_Model_Property_Is_Invalid()
         {
             var context = new OozeResolverContext();
             var model = new OozeModel
-            {
-                Filters = filter,
-                Sorters = sorter
-            };
+            { };
 
             var data = Enumerable.Empty<object>().AsQueryable();
             context.OozeResolver.Apply(data, model);
 
-            if (string.IsNullOrEmpty(sorter))
-            {
-                context.SorterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
-            }
-            else
-            {
-                context.SorterHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
-            }
-
-            if (string.IsNullOrEmpty(filter))
-            {
-                context.FilterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Filters);
-            }
-            else
-            {
-                context.FilterHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Filters);
-            }
+            context.FilterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Filters);
+            context.SorterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
+            context.SelectionHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Fields);
+            context.QueryHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Query);
         }
 
         internal class OozeResolverContext
@@ -93,7 +77,8 @@ namespace Ooze.Tests
             public IOozeFilterHandler FilterHandler { get; } = Substitute.For<IOozeFilterHandler>();
             public IOozeSorterHandler SorterHandler { get; } = Substitute.For<IOozeSorterHandler>();
             public IOozeQueryHandler QueryHandler { get; } = Substitute.For<IOozeQueryHandler>();
-            public OozeConfiguration Configuration { get; } = new OozeConfiguration(new OozeOptions())
+            public IOozeSelectionHandler SelectionHandler { get; } = Substitute.For<IOozeSelectionHandler>();
+            public OozeConfiguration Configuration { get; } = new OozeConfiguration(new OozeOptions { UseSelections = true })
             {
                 EntityConfigurations = new Dictionary<Type, OozeEntityConfiguration>
                 {
@@ -103,7 +88,7 @@ namespace Ooze.Tests
 
             public OozeResolverContext()
             {
-                OozeResolver = new OozeResolver(SorterHandler, FilterHandler, QueryHandler, Configuration);
+                OozeResolver = new OozeResolver(SorterHandler, FilterHandler, QueryHandler, SelectionHandler, Configuration);
             }
         }
     }

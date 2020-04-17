@@ -21,14 +21,16 @@ namespace Ooze.Tests
             {
                 Sorters = param,
                 Filters = param,
-                Query = param
+                Query = param,
+                Fields = param
             };
 
-            var (sorterResult, filterResult, queryResult) = context.OozeModelValidator.Validate(model);
+            var (sorterResult, filterResult, queryResult, fieldsResult) = context.OozeModelValidator.Validate(model);
 
             Assert.True(sorterResult == isValid);
             Assert.True(filterResult == isValid);
             Assert.True(queryResult == isValid);
+            Assert.True(fieldsResult == isValid);
         }
 
         internal class OozeModelValidatorContext

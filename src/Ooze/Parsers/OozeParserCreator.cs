@@ -1,9 +1,11 @@
 ﻿using Ooze.Filters;
 using Ooze.Query;
+using Ooze.Selections;
 using Ooze.Sorters;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,7 +44,7 @@ namespace Ooze.Parsers
                     Sorter = sorter.StartsWith(negativeOrderChar) ? new string(sorter.Skip(1).ToArray()) : sorter
                 };
 
-                return Result.Value(result, input, input.Skip(input.Length));
+                return Result.Value(result, input, TextSpan.Empty);
             };
 
         public static TextParser<QueryParserResult[]> QueryParser(
@@ -81,6 +83,54 @@ namespace Ooze.Parsers
 
             return queryParser;
 
+        }
+
+        public static TextParser<IEnumerable<FieldDefinition>> SelectionParser(
+            char fieldDelimiter,
+            char separator = ',')
+            => input =>
+            {
+                var fields = input.ToStringValue()
+                    .Trim()
+                    .Split(separator)
+                    .OrderByDescending(def => def.Count(@char => @char == fieldDelimiter))
+                    .ToList();
+
+                var parsed = ParseSelections(fields);
+                return Result.Value(parsed, input, TextSpan.Empty);
+            };
+
+        static IEnumerable<FieldDefinition> ParseSelections(
+            IEnumerable<string> fieldDefinitions,
+            IList<FieldDefinition> existingDefinitions = null)
+        {
+            existingDefinitions ??= new List<FieldDefinition>();
+
+            foreach (var fieldDefinition in fieldDefinitions)
+            {
+                if (!fieldDefinition.Contains('.')
+                    && !existingDefinitions.Any(def => def.Property.Equals(fieldDefinition, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    existingDefinitions.Add(new FieldDefinition(fieldDefinition));
+                }
+                else
+                {
+                    var separatorIndex = fieldDefinition.IndexOf('.');
+                    var containerPart = fieldDefinition.Remove(separatorIndex);
+                    var subPart = fieldDefinition.Substring(separatorIndex + 1);
+                    var containerDef = existingDefinitions.FirstOrDefault(def => def.Property.Equals(containerPart, StringComparison.InvariantCultureIgnoreCase));
+
+                    if (containerDef is null)
+                    {
+                        containerDef = new FieldDefinition(containerPart);
+                        existingDefinitions.Add(containerDef);
+                    }
+
+                    containerDef.Children = ParseSelections(new[] { subPart }, containerDef.Children).ToList();
+                }
+            }
+
+            return existingDefinitions;
         }
 
         static TextParser<TextSpan> CreateFor(IEnumerable<string> texts)

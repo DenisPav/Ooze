@@ -1,11 +1,14 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
 using Ooze.Query;
+using Ooze.Selections;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Expressions
@@ -17,6 +20,8 @@ namespace Ooze.Expressions
         const string ThenBy = nameof(ThenBy);
         const string ThenByDescending = nameof(ThenByDescending);
         const string OrderByDescending = nameof(OrderByDescending);
+        const string Select = nameof(Select);
+        const string ToList = nameof(ToList);
         static readonly Type _queryableType = typeof(Queryable);
         static readonly Type _stringType = typeof(string);
 
@@ -102,6 +107,115 @@ namespace Ooze.Expressions
             var operationExpr = mappedPart.OperationFactory(mappedPart.Filter.Expression, constValueExpr);
 
             return (operationExpr, mappedPart);
+        }
+
+        public static MethodCallExpression SelectExpr(
+            Type propertyType,
+            Expression paramExpr,
+            PropertyInfo targetProperty,
+            LambdaExpression expression)
+            => Call(
+                typeof(Enumerable),
+                Select,
+                new[] {
+                    propertyType,
+                    propertyType
+                },
+                MakeMemberAccess(paramExpr, targetProperty),
+                expression
+                );
+
+        public static MethodCallExpression ToListExpr(
+            Type propertyType,
+            MethodCallExpression selectExpression)
+            => Call(
+                typeof(Enumerable),
+                ToList,
+                new[] {
+                    propertyType
+                },
+                selectExpression
+                );
+
+        public static MemberInitExpression MemberInitExpr(
+            Type propertyType,
+            IEnumerable<MemberAssignment> memberAssignments)
+            => MemberInit(
+                New(
+                    propertyType.GetConstructors().First()
+                    ),
+                memberAssignments
+                );
+
+        public static LambdaExpression LambdaExpr(
+            Type propertyType,
+            ParameterExpression parameterExpression,
+            IEnumerable<MemberAssignment> memberAssignments)
+            => Lambda(
+                MemberInitExpr(propertyType, memberAssignments),
+                parameterExpression
+                );
+
+        public static IEnumerable<MemberAssignment> CreateAssignments(
+            Expression expression,
+            Type type,
+            IEnumerable<FieldDefinition> fieldDefinitions)
+        {
+            var typeProperties = type.GetProperties();
+
+            foreach (var fieldDefinition in fieldDefinitions)
+            {
+                if (!fieldDefinition.Children.Any())
+                {
+                    var targetProp = typeProperties.FirstOrDefault(prop => prop.Name.Equals(fieldDefinition.Property, StringComparison.InvariantCultureIgnoreCase));
+                    if (targetProp is { })
+                    {
+                        yield return Bind(targetProp, MakeMemberAccess(expression, targetProp));
+                    }
+                }
+                else
+                {
+                    var targetProp = typeProperties.FirstOrDefault(prop => prop.Name.Equals(fieldDefinition.Property, StringComparison.InvariantCultureIgnoreCase));
+                    if (targetProp is { } && typeof(IEnumerable).IsAssignableFrom(targetProp.PropertyType))
+                    {
+                        var propertyType = targetProp.PropertyType.GetGenericArguments().First();
+
+                        yield return NestedSelectExpr(expression, fieldDefinition, targetProp, propertyType);
+                    }
+                    else if (targetProp is { } && targetProp.PropertyType.IsClass)
+                    {
+                        yield return NestedClassInitExpr(expression, fieldDefinition, targetProp);
+                    }
+                }
+            }
+        }
+
+        static MemberAssignment NestedSelectExpr(
+            Expression expression,
+            FieldDefinition fieldDefinition,
+            PropertyInfo targetProp,
+            Type propertyType)
+        {
+            var newRootParamExpr = Parameter(propertyType, targetProp.Name);
+            var nestedAssignments = CreateAssignments(newRootParamExpr, propertyType, fieldDefinition.Children);
+            var lambda = LambdaExpr(propertyType, newRootParamExpr, nestedAssignments);
+            var selectCallExpr = SelectExpr(propertyType, expression, targetProp, lambda);
+            var toListCallExpr = ToListExpr(propertyType, selectCallExpr);
+
+            return Bind(targetProp, toListCallExpr);
+        }
+
+        static MemberAssignment NestedClassInitExpr(
+            Expression expression,
+            FieldDefinition fieldDefinition,
+            PropertyInfo targetProp)
+        {
+            var propertyType = targetProp.PropertyType;
+            var parentObjectExpression = MakeMemberAccess(expression, targetProp);
+            var nestedAssignments = CreateAssignments(parentObjectExpression, propertyType, fieldDefinition.Children);
+            var memberInit = MemberInitExpr(propertyType, nestedAssignments);
+
+            return Bind(targetProp, memberInit);
         }
     }
 }

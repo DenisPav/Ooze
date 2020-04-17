@@ -1,4 +1,4 @@
-# 🌳💧 Ooze - Sorting and Filtering for ASP.NET Core and EF Core
+# 🌳💧 Ooze - Sorting, Filtering and Selections for ASP.NET Core and EF Core
 
 ## ⚙ Setup
 You'll need to add reference to the package (insert link here when it will be available). After that call `.AddOoze()` method on services inside of `ConfigureServices()` method in your startup class.
@@ -86,6 +86,86 @@ Supported operations are next:
 * Greater Than - `>`
 * Less Than - `<`
 * Contains - `@`
+
+## 🗡 Selections
+You can also let Ooze cut the total selections that go out of the `IQueryable<>` instance. In order to enable that you need to switch the flag in configurator of `AddOoze()` method (You don't need to have configuration classes for Selections to work). Example of that can be seen below:
+```csharp
+//ConfigureServices() method in Startup.cs
+services.AddOoze(typeof(Startup).Assembly, opts => opts.UseSelections = true);
+```
+After that everything that goes through `IOozeResolver` will be handled and cutted if not present in `Fields` property of `OozeModel`. More detailed example of that can be seen below:
+```csharp
+//sample EF Model
+public class Post
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public DateTime Date { get; set; }
+
+    public ICollection<Comment> Comments { get; set; }
+}
+
+public class Comments
+{
+    public int Id { get; set; }
+    public string Text { get; set; }
+    public DateTime Date { get; set; }
+
+    public int PostId { get; set; }
+    public Post Post { get; set; }
+}
+
+public class SampleController : ControllerBase
+{
+    readonly IOozeResolver _resolver;
+    //example DbContext instance
+    readonly DatabaseContext _db;
+
+    public SampleController(
+        IOozeResolver resolver,
+        DatabaseContext db)
+    {
+        _resolver = resolver;
+        _db = db;
+    }
+
+    //you can bind values from query string, body... anything you want
+    [HttpGet]
+    public async Task<IActionResult> Sample([FromQuery]OozeModel model)
+    {
+        IQueryable<Post> query = Db.Set<Post>();
+
+        //if query string contains for example fields=id,name
+        //we only select id,name from DB
+        return await _resolver.Apply(query, model)
+            .ToListAsync();
+    }
+}
+```
+```sql
+--SQL that might get executed for this is next:
+SELECT "p"."Id", "p"."Name"
+FROM "Posts" AS "p"
+
+--Without selections this might look like following:
+SELECT "p"."Id", "p"."Date", "p"."Name"
+FROM "Posts" AS "p"
+```
+
+Similar to upper example if you `OozeModel` gets values like `Name,Comments.Text` you'll get something in terms of next SQL:
+```sql
+SELECT "p"."Name", "p"."Id", "c"."Text", "c"."Id"
+FROM "Posts" AS "p"
+LEFT JOIN "Comments" AS "c" ON "p"."Id" = "c"."PostId"
+ORDER BY "p"."Id", "c"."Id"
+```
+without selections that would be more like
+```sql
+SELECT "p"."Id", "c"."Id", "c"."Date", "c"."PostId", "c"."Text"
+FROM "Posts" AS "p"
+LEFT JOIN "Comments" AS "c" ON "p"."Id" = "c"."PostId"
+ORDER BY "p"."Id", "c"."Id"
+```
 
 ## 🧪 Queries
 Queries are a bit different feature which enables you to write readable `Filters`. Also you can combine them with logical filters (`AND`, `OR`) in order to create more complex samples. Queries use `Filter` configuration as a source while translating. Queries also take precedence over `Sorters` and `Filters`. Example of queries can be seen below:
