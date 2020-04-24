@@ -2,6 +2,7 @@
 using Ooze.Configuration;
 using Ooze.Configuration.Options;
 using Ooze.Filters;
+using Ooze.Paging;
 using Ooze.Query;
 using Ooze.Selections;
 using Ooze.Sorters;
@@ -48,6 +49,7 @@ namespace Ooze.AspNetCore
             services.AddScoped<IOozeFilterHandler, OozeFilterHandler>();
             services.AddScoped<IOozeQueryHandler, OozeQueryHandler>();
             services.AddScoped<IOozeSelectionHandler, OozeSelectionHandler>();
+            services.AddScoped<IOozePagingHandler, OozePagingHandler>();
             services.AddScoped<IOozeResolver, OozeResolver>();
 
             return services;

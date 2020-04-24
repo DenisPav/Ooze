@@ -23,6 +23,8 @@ namespace Ooze.Web
             {
                 opts.Operations.GreaterThan = ".";
                 opts.UseSelections = true;
+                opts.Paging.UsePaging = true;
+                opts.Paging.DefaultPageSize = 88;
             });
             services.AddScoped(typeof(OozeFilter<>));
             services.AddScoped<IOozeProvider, CustomFilterProvider>();
