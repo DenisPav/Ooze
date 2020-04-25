@@ -1,4 +1,4 @@
-# 🌳💧 Ooze - Sorting, Filtering and Selections for ASP.NET Core and EF Core
+# 🌳💧 Ooze - Sorting, Filtering, Paging and Selections for ASP.NET Core and EF Core
 
 ## ⚙ Setup
 You'll need to add reference to the package (insert link here when it will be available). After that call `.AddOoze()` method on services inside of `ConfigureServices()` method in your startup class.
@@ -86,6 +86,19 @@ Supported operations are next:
 * Greater Than - `>`
 * Less Than - `<`
 * Contains - `@`
+
+## 📄 Paging
+Paging can be enabled if you switch the flag in configuration of `.AddOoze` method. After turning paging on, arguments form `OozeModel` will be consumed and applied to `IQueryable<>` instance. You can configure default `page size` in the configuration lambda also. Sample of this can be seen below:
+```csharp
+//ConfigureServices() method in Startup.cs
+services.AddOoze(typeof(Startup).Assembly, opts =>
+{
+    //enable paging
+    opts.Paging.UsePaging = true;
+    //change default pagesize from 20 to 88
+    opts.Paging.DefaultPageSize = 88;
+});
+```
 
 ## 🗡 Selections
 You can also let Ooze cut the total selections that go out of the `IQueryable<>` instance. In order to enable that you need to switch the flag in configurator of `AddOoze()` method (You don't need to have configuration classes for Selections to work). Example of that can be seen below:
@@ -175,7 +188,7 @@ Queries are a bit different feature which enables you to write readable `Filters
 ```
 NOTE: custom filters aren't usable with queries
 
-## ⚒ Configuration
+## ⚒ Advanced configuration
 ### Operations
 Currently you can configure operation strings via parameter in `.AddOoze()` extension method. There is a restriction to that though. You can use only symbols and not letters or numbers. Example of that can be seen below:
 ```csharp
