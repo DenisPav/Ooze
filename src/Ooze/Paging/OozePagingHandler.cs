@@ -18,7 +18,7 @@ namespace Ooze.Paging
             var actualPageSize = pageSize.GetValueOrDefault(_config.DefaultPageSize);
 
             var toSkip = actualPage * actualPageSize;
-            var toTake = actualPageSize + 1;
+            var toTake = actualPageSize;
 
             return query.Skip(toSkip)
                 .Take(toTake);
