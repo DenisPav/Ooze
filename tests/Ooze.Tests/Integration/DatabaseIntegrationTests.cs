@@ -274,7 +274,7 @@ namespace Ooze.Tests.Integration
         [Fact]
         public async Task Should_Correctly_Apply_Paging()
         {
-            using var scope = _fixture.CreateScope();
+            using var scope = _fixture.CreateScope(true);
             var provider = scope.ServiceProvider;
 
             var context = provider.GetRequiredService<DatabaseContext>();

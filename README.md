@@ -99,6 +99,7 @@ services.AddOoze(typeof(Startup).Assembly, opts =>
     opts.Paging.DefaultPageSize = 88;
 });
 ```
+By default internal implementation of `PagingHandler` will use exact number as specified by `DefaultPageSize` or `PageSize` from `OozeModel` if it was passed in request. If you need to know if there are more pages, you can create your own implementation and replace existing registration in `ServiceCollection`. More about that can be seen below under `Advanced configuration`. More info can be seen in sample in `Tests/Ooze.Web`.
 
 ## 🗡 Selections
 You can also let Ooze cut the total selections that go out of the `IQueryable<>` instance. In order to enable that you need to switch the flag in configurator of `AddOoze()` method (You don't need to have configuration classes for Selections to work). Example of that can be seen below:

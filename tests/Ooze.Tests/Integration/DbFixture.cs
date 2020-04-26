@@ -10,27 +10,27 @@ namespace Ooze.Tests.Integration
     {
         public DbFixture()
         {
-            using var scope = CreateScope();
+            using var scope = CreateScope(false);
             var provider = scope.ServiceProvider;
 
             var context = provider.GetRequiredService<DatabaseContext>();
             context.Prepare().Wait();
         }
 
-        public IServiceCollection Services = new ServiceCollection()
+        public IServiceCollection Services(bool usePaging) => new ServiceCollection()
             .AddDbContext<TContext>(opts => opts.UseSqlite("Data Source=./database.db;"))
             .AddOoze(typeof(DbFixture<>).Assembly, opts =>
             {
                 opts.UseSelections = true;
-                opts.Paging.UsePaging = true;
+                opts.Paging.UsePaging = usePaging;
             });
 
-        IServiceProvider ServiceProvider => new DefaultServiceProviderFactory(
+        IServiceProvider ServiceProvider(bool usePaging) => new DefaultServiceProviderFactory(
             new ServiceProviderOptions
             {
                 ValidateScopes = true
-            }).CreateServiceProvider(Services);
+            }).CreateServiceProvider(Services(usePaging));
 
-        public IServiceScope CreateScope() => ServiceProvider.CreateScope();
+        public IServiceScope CreateScope(bool usePaging = false) => ServiceProvider(usePaging).CreateScope();
     }
 }

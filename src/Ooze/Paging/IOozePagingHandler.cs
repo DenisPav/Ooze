@@ -2,7 +2,7 @@
 
 namespace Ooze.Paging
 {
-    internal interface IOozePagingHandler
+    public interface IOozePagingHandler
     {
         IQueryable<TEntity> Handle<TEntity>(
             IQueryable<TEntity> query,
