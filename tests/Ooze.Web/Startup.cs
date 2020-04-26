@@ -11,6 +11,7 @@ using Ooze.Filters;
 using Ooze.Sorters;
 using System.Collections.Generic;
 using System;
+using Ooze.Paging;
 
 namespace Ooze.Web
 {
@@ -23,10 +24,16 @@ namespace Ooze.Web
             {
                 opts.Operations.GreaterThan = ".";
                 opts.UseSelections = true;
+                opts.Paging.UsePaging = true;
+                opts.Paging.DefaultPageSize = 88;
             });
             services.AddScoped(typeof(OozeFilter<>));
             services.AddScoped<IOozeProvider, CustomFilterProvider>();
             services.AddScoped<IOozeProvider, CustomSorterProvider>();
+
+            services.Remove(services.First(descriptor => descriptor.ServiceType.Equals(typeof(IOozePagingHandler))));
+            services.Add(new ServiceDescriptor(typeof(IOozePagingHandler), typeof(CustomPagingProvider), ServiceLifetime.Scoped));
+
             services.AddControllers();
         }
 
@@ -163,6 +170,17 @@ namespace Ooze.Web
         public IQueryable<Post> ThenApplySorter(IOrderedQueryable<Post> query, bool ascending)
         {
             return query.ThenBy(x => x.Id);
+        }
+    }
+
+    public class CustomPagingProvider : IOozePagingHandler
+    {
+        public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, int? page, int? pageSize)
+        {
+            var toSkip = page.GetValueOrDefault(0) * pageSize.GetValueOrDefault(20);
+
+            return query.Skip(toSkip)
+                .Take(pageSize.GetValueOrDefault(20));
         }
     }
 }

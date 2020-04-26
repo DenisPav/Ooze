@@ -1,5 +1,6 @@
 ﻿using Ooze.Configuration;
 using Ooze.Filters;
+using Ooze.Paging;
 using Ooze.Query;
 using Ooze.Selections;
 using Ooze.Sorters;
@@ -14,6 +15,7 @@ namespace Ooze
         readonly IOozeFilterHandler _filterHandler;
         readonly IOozeQueryHandler _queryHandler;
         readonly IOozeSelectionHandler _selectionHandler;
+        readonly IOozePagingHandler _pagingHandler;
         readonly OozeConfiguration _config;
 
         static readonly OozeModelValidator _modelValidator = new OozeModelValidator();
@@ -23,12 +25,14 @@ namespace Ooze
             IOozeFilterHandler filterHandler,
             IOozeQueryHandler queryHandler,
             IOozeSelectionHandler selectionHandler,
+            IOozePagingHandler pagingHandler,
             OozeConfiguration config)
         {
             _sorterHandler = sorterHandler;
             _filterHandler = filterHandler;
             _queryHandler = queryHandler;
             _selectionHandler = selectionHandler;
+            _pagingHandler = pagingHandler;
             _config = config;
         }
 
@@ -49,6 +53,11 @@ namespace Ooze
             if (_config.UseSelections && validationResult.FieldsValid)
             {
                 query = _selectionHandler.Handle(query, model.Fields);
+            }
+
+            if (_config.UsePaging)
+            {
+                query = _pagingHandler.Handle(query, model.Page, model.PageSize);
             }
 
             return query;

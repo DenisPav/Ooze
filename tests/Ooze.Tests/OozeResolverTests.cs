@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System;
 using Ooze.Query;
 using Ooze.Selections;
+using Ooze.Paging;
 
 namespace Ooze.Tests
 {
@@ -32,6 +33,7 @@ namespace Ooze.Tests
             context.SorterHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
             context.SelectionHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Fields);
             context.QueryHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Query);
+            context.PagingHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Page, model.PageSize);
         }
 
         [Fact]
@@ -53,6 +55,7 @@ namespace Ooze.Tests
             context.SorterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
             context.SelectionHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Fields);
             context.QueryHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Query);
+            context.PagingHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Page, model.PageSize);
         }
 
         [Fact]
@@ -69,6 +72,7 @@ namespace Ooze.Tests
             context.SorterHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Sorters);
             context.SelectionHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Fields);
             context.QueryHandler.DidNotReceive().Handle(Arg.Any<IQueryable<object>>(), model.Query);
+            context.PagingHandler.Received().Handle(Arg.Any<IQueryable<object>>(), model.Page, model.PageSize);
         }
 
         internal class OozeResolverContext
@@ -78,7 +82,8 @@ namespace Ooze.Tests
             public IOozeSorterHandler SorterHandler { get; } = Substitute.For<IOozeSorterHandler>();
             public IOozeQueryHandler QueryHandler { get; } = Substitute.For<IOozeQueryHandler>();
             public IOozeSelectionHandler SelectionHandler { get; } = Substitute.For<IOozeSelectionHandler>();
-            public OozeConfiguration Configuration { get; } = new OozeConfiguration(new OozeOptions { UseSelections = true })
+            public IOozePagingHandler PagingHandler { get; } = Substitute.For<IOozePagingHandler>();
+            public OozeConfiguration Configuration { get; } = new OozeConfiguration(new OozeOptions { UseSelections = true, Paging = new OozePaging { UsePaging = true } })
             {
                 EntityConfigurations = new Dictionary<Type, OozeEntityConfiguration>
                 {
@@ -88,7 +93,7 @@ namespace Ooze.Tests
 
             public OozeResolverContext()
             {
-                OozeResolver = new OozeResolver(SorterHandler, FilterHandler, QueryHandler, SelectionHandler, Configuration);
+                OozeResolver = new OozeResolver(SorterHandler, FilterHandler, QueryHandler, SelectionHandler, PagingHandler, Configuration);
             }
         }
     }

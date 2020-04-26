@@ -18,6 +18,8 @@ namespace Ooze.Configuration
             { "OR", OrElse}
         };
         public readonly bool UseSelections = false;
+        public readonly bool UsePaging = false;
+        public readonly int DefaultPageSize = 20;
 
         public OozeConfiguration(
             OozeOptions options)
@@ -37,6 +39,8 @@ namespace Ooze.Configuration
                 { options.Operations.Contains, Expressions.Contains },
             };
             UseSelections = options.UseSelections;
+            UsePaging = options.Paging.UsePaging;
+            DefaultPageSize = options.Paging.DefaultPageSize;
         }
 
         public IDictionary<Type, OozeEntityConfiguration> EntityConfigurations { get; set; }
