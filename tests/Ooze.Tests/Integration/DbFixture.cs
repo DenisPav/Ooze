@@ -19,7 +19,11 @@ namespace Ooze.Tests.Integration
 
         public IServiceCollection Services = new ServiceCollection()
             .AddDbContext<TContext>(opts => opts.UseSqlite("Data Source=./database.db;"))
-            .AddOoze(typeof(DbFixture<>).Assembly, opts => opts.UseSelections = true);
+            .AddOoze(typeof(DbFixture<>).Assembly, opts =>
+            {
+                opts.UseSelections = true;
+                opts.Paging.UsePaging = true;
+            });
 
         IServiceProvider ServiceProvider => new DefaultServiceProviderFactory(
             new ServiceProviderOptions

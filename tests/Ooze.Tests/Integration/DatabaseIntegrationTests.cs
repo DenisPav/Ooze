@@ -270,5 +270,29 @@ namespace Ooze.Tests.Integration
                 && item.Comments != null
                 && item.Comments.Any(comment => comment.User != null && comment.User.Email != null && comment.User.Id == 0)));
         }
+
+        [Fact]
+        public async Task Should_Correctly_Apply_Paging()
+        {
+            using var scope = _fixture.CreateScope();
+            var provider = scope.ServiceProvider;
+
+            var context = provider.GetRequiredService<DatabaseContext>();
+            var oozeResolver = provider.GetRequiredService<IOozeResolver>();
+
+            IQueryable<Post> query = context.Posts;
+            var model = new OozeModel { Page = 2, PageSize = 33 };
+            query = oozeResolver.Apply(query, model);
+
+            var results = await query.ToListAsync();
+            for (int i = 0; i < results.Count; i++)
+            {
+                var item = results[i];
+                Assert.True(item.Id == (i + (model.PageSize * model.Page) + 1));
+                Assert.True(item.Name == (i + (model.PageSize * model.Page) + 1).ToString());
+            }
+
+            Assert.True(results.Count == model.PageSize);
+        }
     }
 }
