@@ -27,14 +27,16 @@ namespace Ooze.Query
             var parser = CreateParser(entityConfiguration);
 
             var parsed = parser.TryParse(modelQuery);
-            if (parsed.HasValue)
+            if (!parsed.HasValue)
             {
-                var mappedQueryParts = MapQueryParts(parsed.Value, entityConfiguration.Filters);
-                var expression = QueryExpression<TEntity>(entityConfiguration, mappedQueryParts, query.Expression);
-
-                query = query.Provider
-                    .CreateQuery<TEntity>(expression);
+                throw new OozeQueryException("Query parsing failed");
             }
+
+            var mappedQueryParts = MapQueryParts(parsed.Value, entityConfiguration.Filters);
+            var expression = QueryExpression<TEntity>(entityConfiguration, mappedQueryParts, query.Expression);
+
+            query = query.Provider
+                .CreateQuery<TEntity>(expression);
 
             return query;
         }
