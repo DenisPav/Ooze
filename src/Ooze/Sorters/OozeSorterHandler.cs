@@ -24,14 +24,15 @@ namespace Ooze.Sorters
 
             for (int i = 0; i < parsedSorters.Count(); i++)
             {
-                //not ThenBy call
-                var isFirst = i == 0;
                 var parsedSorter = parsedSorters[i];
                 var sorter = sorterProviders.SingleOrDefault(sorter => string.Equals(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase));
 
-                query = isFirst
-                    ? sorter.ApplySorter(query, parsedSorter.Ascending)
-                    : sorter.ThenApplySorter(query as IOrderedQueryable<TEntity>, parsedSorter.Ascending);
+                if (sorter is { })
+                {
+                    query = (query is IOrderedQueryable<TEntity> orderQuery)
+                        ? sorter.ThenApplySorter(orderQuery, parsedSorter.Ascending)
+                        : sorter.ApplySorter(query, parsedSorter.Ascending);
+                }
             }
 
             return query;
