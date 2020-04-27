@@ -247,6 +247,29 @@ public class CustomSorterProvider : IOozeSorterProvider<Post>
 services.AddScoped<IOozeProvider, CustomSorterProvider>();
 ```
 
+### Custom paging
+Similar to above sample, you can create a custom paging handler which will do your logic on related queryable. For example you might want to pull 1 additional record from query in order to determine if there is a next page available, or something similar. To do so you need to create implementation of `IOozePagingHandler`. Example of this can be seen below (more detailed example is in `tests/Ooze.Web` sample):
+```csharp
+//custom paging handler
+public class CustomPagingProvider : IOozePagingHandler
+{
+    public IQueryable<TEntity> Handle<TEntity>(IQueryable<TEntity> query, int? page, int? pageSize)
+    {
+        //paging logic
+    }
+}
+
+//alter ServiceCollection registrations in ConfigureServices() method
+//NOTE: this goes after .AddOoze() call
+
+//remove old registration
+services.Remove(services.First(descriptor => descriptor.ServiceType.Equals(typeof(IOozePagingHandler))));
+//add new registration
+services.Add(new ServiceDescriptor(typeof(IOozePagingHandler), typeof(CustomPagingProvider), ServiceLifetime.Scoped));
+
+```
+
+
 ## ⛓ MVC / Controllers
 `Ooze.AspNetCore` package provides a [Result filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-3.1#result-filters) which can abstract boilerplate code for you. You just need to anotate action on which you want to use `Ooze` and that's it (or you can apply it globally).
 Example of this can be seen below:
