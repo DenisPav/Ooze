@@ -9,6 +9,7 @@ namespace Ooze.Sorters
     internal class OozeSorterHandler : IOozeSorterHandler
     {
         const char _negativeOrderChar = '-';
+        const char _sorterSeparator = ',';
 
         readonly IOozeProviderLocator _providerLocator;
 
@@ -20,11 +21,10 @@ namespace Ooze.Sorters
             where TEntity : class
         {
             var sorterProviders = _providerLocator.SortersFor<TEntity>();
-            var parsedSorters = GetParsedSorters(sorters).ToList();
+            var parsedSorters = GetParsedSorters(sorters);
 
-            for (int i = 0; i < parsedSorters.Count(); i++)
+            foreach (var parsedSorter in parsedSorters)            
             {
-                var parsedSorter = parsedSorters[i];
                 var sorter = sorterProviders.SingleOrDefault(sorter => string.Equals(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase));
 
                 if (sorter is { })
@@ -43,11 +43,12 @@ namespace Ooze.Sorters
         {
             var parser = OozeParserCreator.SorterParser(_negativeOrderChar);
 
-            return sorters.Split(',')
+            return sorters.Split(_sorterSeparator)
                 .Select(sorter => sorter.Trim())
                 .Select(parser.TryParse)
                 .Where(result => result.HasValue)
-                .Select(result => result.Value);
+                .Select(result => result.Value)
+                .ToList();
         }
     }
 }
