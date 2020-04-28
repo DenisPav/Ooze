@@ -27,7 +27,7 @@ namespace Ooze.AspNetCore
 
             if (!optionsValidator.Validate(options))
             {
-                throw new Exception("Specified option configuration is not valid");
+                throw new OozeOptionsException("Specified option configuration is not valid");
             }
 
             var configBuilder = new OozeConfigurationBuilder();
