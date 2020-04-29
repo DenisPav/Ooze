@@ -68,6 +68,8 @@ Sorting can be done by just specifying name of the sorter that was done via conf
 "?sorters=-id"
 ```
 
+Non existing sorters will be skipped in runtime, only correct ones will be aplied.
+
 ## 🗡🧀 Filtering
 Filtering can be done by specifying `filter` which is then followed by an `operation` which is then followed by `value` (`filter`->`operation`->`value`). Example of filtering can be seen below:
 ```csharp
@@ -86,6 +88,8 @@ Supported operations are next:
 * Greater Than - `>`
 * Less Than - `<`
 * Contains - `@`
+
+Operations need to be unique or otherwise validation error will occur, also only symbols can be used for them. Non existing filters will be skipped in runtime, only correct ones will be aplied.
 
 ## 📄 Paging
 Paging can be enabled if you switch the flag in configuration of `.AddOoze` method. After turning paging on, arguments form `OozeModel` will be consumed and applied to `IQueryable<>` instance. You can configure default `page size` in the configuration lambda also. Sample of this can be seen below:
@@ -247,6 +251,8 @@ public class CustomSorterProvider : IOozeSorterProvider<Post>
 services.AddScoped<IOozeProvider, CustomSorterProvider>();
 ```
 
+NOTE: If you're using custom sorter or filter provider you need to name it uniquely. Otherwise you'll get exceptions while doing operations with them. Handlers are based on implementations for specific field sorter, filter that comes from builder so if you create a custom one which has the same name, code won't be able which one to use and due to that will throw an exception in runtime.
+
 ### Custom paging
 Similar to above sample, you can create a custom paging handler which will do your logic on related queryable. For example you might want to pull 1 additional record from query in order to determine if there is a next page available, or something similar. To do so you need to create implementation of `IOozePagingHandler`. Example of this can be seen below (more detailed example is in `tests/Ooze.Web` sample):
 ```csharp
@@ -266,7 +272,6 @@ public class CustomPagingProvider : IOozePagingHandler
 services.Remove(services.First(descriptor => descriptor.ServiceType.Equals(typeof(IOozePagingHandler))));
 //add new registration
 services.Add(new ServiceDescriptor(typeof(IOozePagingHandler), typeof(CustomPagingProvider), ServiceLifetime.Scoped));
-
 ```
 
 

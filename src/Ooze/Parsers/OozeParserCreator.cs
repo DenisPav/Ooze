@@ -54,8 +54,6 @@ namespace Ooze.Parsers
         {
             //example: Property Operation Value LogicalOperator*
             //* optional
-            var whiteSpaceParser = Character.WhiteSpace.Many();
-
             var propertyParser = CreateFor(filterNames);
             var operationParser = CreateFor(operations);
             var logicalOpParser = CreateFor(logicalOperations).Optional();
@@ -79,7 +77,7 @@ namespace Ooze.Parsers
                                    Value = new string(value),
                                    LogicalOperation = logicalOperation.ToString()
                                })
-                               .Many();
+                               .AtLeastOnce();
 
             return queryParser;
 

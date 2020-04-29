@@ -1,5 +1,4 @@
-﻿using Ooze.Configuration;
-using Ooze.Configuration.Options;
+﻿using Ooze.Configuration.Options;
 using System.Linq;
 
 namespace Ooze.Validation
