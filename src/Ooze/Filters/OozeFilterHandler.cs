@@ -1,4 +1,5 @@
-﻿using Ooze.Configuration;
+﻿using Microsoft.Extensions.Logging;
+using Ooze.Configuration;
 using Ooze.Parsers;
 using Superpower;
 using System;
@@ -11,13 +12,16 @@ namespace Ooze.Filters
     {
         readonly IOozeProviderLocator _providerLocator;
         readonly OozeConfiguration _config;
+        readonly ILogger<OozeFilterHandler> _log;
 
         public OozeFilterHandler(
             IOozeProviderLocator providerLocator,
-            OozeConfiguration config)
+            OozeConfiguration config,
+            ILogger<OozeFilterHandler> log)
         {
             _providerLocator = providerLocator;
             _config = config;
+            _log = log;
         }
 
         public IQueryable<TEntity> Handle<TEntity>(
@@ -25,6 +29,8 @@ namespace Ooze.Filters
             string filters)
             where TEntity : class
         {
+            _log.LogDebug("Running filter IQueryable changes");
+
             var filterProviders = _providerLocator.FiltersFor<TEntity>();
             var filterParser = CreateParser(filterProviders);
             var parsedFilters = GetParsedFilters(filters, filterParser);
@@ -52,6 +58,8 @@ namespace Ooze.Filters
 
         TextParser<FilterParserResult> CreateParser(IEnumerable<IOozeProvider> customProviders)
         {
+            _log.LogDebug("Creating Filter parser");
+
             var filterNames = customProviders.Select(provider => provider.Name);
             return OozeParserCreator.FilterParser(filterNames, _config.OperationsMap.Keys);
         }

@@ -1,4 +1,5 @@
-﻿using Ooze.Configuration;
+﻿using Microsoft.Extensions.Logging;
+using Ooze.Configuration;
 using System.Linq;
 
 namespace Ooze.Paging
@@ -6,14 +7,23 @@ namespace Ooze.Paging
     internal class OozePagingHandler : IOozePagingHandler
     {
         readonly OozeConfiguration _config;
+        readonly ILogger<OozePagingHandler> _log;
 
-        public OozePagingHandler(OozeConfiguration config) => _config = config;
+        public OozePagingHandler(
+            OozeConfiguration config,
+            ILogger<OozePagingHandler> log)
+        {
+            _config = config;
+            _log = log;
+        }
 
         public IQueryable<TEntity> Handle<TEntity>(
             IQueryable<TEntity> query,
             int? page,
             int? pageSize)
         {
+            _log.LogDebug("Running paging IQueryable changes");
+
             var actualPage = page.GetValueOrDefault(0);
             var actualPageSize = pageSize.GetValueOrDefault(_config.DefaultPageSize);
 

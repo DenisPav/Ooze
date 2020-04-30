@@ -1,4 +1,5 @@
-﻿using Ooze.Configuration;
+﻿using Microsoft.Extensions.Logging;
+using Ooze.Configuration;
 using Ooze.Parsers;
 using Superpower;
 using System;
@@ -11,17 +12,22 @@ namespace Ooze.Query
     internal class OozeQueryHandler : IOozeQueryHandler
     {
         readonly OozeConfiguration _config;
+        readonly ILogger<OozeQueryHandler> _log;
 
         public OozeQueryHandler(
-            OozeConfiguration config)
+            OozeConfiguration config,
+            ILogger<OozeQueryHandler> log)
         {
             _config = config;
+            _log = log;
         }
 
         public IQueryable<TEntity> Handle<TEntity>(
             IQueryable<TEntity> query,
             string modelQuery) where TEntity : class
         {
+            _log.LogDebug("Running query language IQueryable updates");
+
             var entityType = typeof(TEntity);
             var entityConfiguration = _config.EntityConfigurations[entityType];
             var parser = CreateParser(entityConfiguration);
@@ -44,6 +50,8 @@ namespace Ooze.Query
         TextParser<QueryParserResult[]> CreateParser(
             OozeEntityConfiguration entityConfiguration)
         {
+            _log.LogDebug("Creating Query language parser");
+
             var filterNames = entityConfiguration.Filters
                 .Select(filter => filter.Name);
             var operations = _config.OperationsMap
