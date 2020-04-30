@@ -274,6 +274,18 @@ services.Remove(services.First(descriptor => descriptor.ServiceType.Equals(typeo
 services.Add(new ServiceDescriptor(typeof(IOozePagingHandler), typeof(CustomPagingProvider), ServiceLifetime.Scoped));
 ```
 
+## 📖 Logging
+There is simple debug logging in most of the DI enabled code. If you want to enable it be sure to change default log level to `Debug` or change log level for Ooze. Sample of this is below:
+```json
+{
+    "Logging": {
+        "LogLevel": {
+            "Ooze": "Debug"
+        }
+    },
+}
+```
+
 
 ## ⛓ MVC / Controllers
 `Ooze.AspNetCore` package provides a [Result filter](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/filters?view=aspnetcore-3.1#result-filters) which can abstract boilerplate code for you. You just need to anotate action on which you want to use `Ooze` and that's it (or you can apply it globally).
