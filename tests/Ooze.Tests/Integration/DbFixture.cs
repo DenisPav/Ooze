@@ -19,6 +19,7 @@ namespace Ooze.Tests.Integration
 
         public IServiceCollection Services(bool usePaging) => new ServiceCollection()
             .AddDbContext<TContext>(opts => opts.UseSqlite("Data Source=./database.db;"))
+            .AddLogging()
             .AddOoze(typeof(DbFixture<>).Assembly, opts =>
             {
                 opts.UseSelections = true;

@@ -12,7 +12,7 @@ namespace Ooze.Tests.Integration
 {
     public class ServiceCollectionIntegrationTests
     {
-        public IServiceCollection Services => new ServiceCollection();
+        public IServiceCollection Services => new ServiceCollection().AddLogging();
 
         [Fact]
         public void Should_Have_Registered_Services()
