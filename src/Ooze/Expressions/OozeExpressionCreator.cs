@@ -162,7 +162,6 @@ namespace Ooze.Expressions
             IEnumerable<FieldDefinition> fieldDefinitions)
         {
             var typeProperties = type.GetProperties();
-
             foreach (var fieldDefinition in fieldDefinitions)
             {
                 if (!fieldDefinition.Children.Any())
@@ -196,7 +195,7 @@ namespace Ooze.Expressions
             PropertyInfo targetProp,
             Type propertyType)
         {
-            var newRootParamExpr = Parameter(propertyType, targetProp.Name);
+            var newRootParamExpr = Parameter(propertyType, targetProp.Name.ToLower());
             var nestedAssignments = CreateAssignments(newRootParamExpr, propertyType, fieldDefinition.Children);
             var lambda = LambdaExpr(propertyType, newRootParamExpr, nestedAssignments);
             var selectCallExpr = SelectExpr(propertyType, expression, targetProp, lambda);

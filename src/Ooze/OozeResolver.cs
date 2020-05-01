@@ -1,4 +1,5 @@
-﻿using Ooze.Configuration;
+﻿using Microsoft.Extensions.Logging;
+using Ooze.Configuration;
 using Ooze.Filters;
 using Ooze.Paging;
 using Ooze.Query;
@@ -17,6 +18,7 @@ namespace Ooze
         readonly IOozeSelectionHandler _selectionHandler;
         readonly IOozePagingHandler _pagingHandler;
         readonly OozeConfiguration _config;
+        readonly ILogger<OozeResolver> _log;
 
         static readonly OozeModelValidator _modelValidator = new OozeModelValidator();
 
@@ -26,7 +28,8 @@ namespace Ooze
             IOozeQueryHandler queryHandler,
             IOozeSelectionHandler selectionHandler,
             IOozePagingHandler pagingHandler,
-            OozeConfiguration config)
+            OozeConfiguration config,
+            ILogger<OozeResolver> log)
         {
             _sorterHandler = sorterHandler;
             _filterHandler = filterHandler;
@@ -34,6 +37,7 @@ namespace Ooze
             _selectionHandler = selectionHandler;
             _pagingHandler = pagingHandler;
             _config = config;
+            _log = log;
         }
 
         public IQueryable<TEntity> Apply<TEntity>(
@@ -41,6 +45,8 @@ namespace Ooze
             OozeModel model)
             where TEntity : class
         {
+            _log.LogDebug("Applying changes to passed IQueryable instance");
+
             var hasConfig = HasEntityConfiguration<TEntity>();
             var validationResult = _modelValidator.Validate(model);
 
@@ -60,6 +66,7 @@ namespace Ooze
                 query = _pagingHandler.Handle(query, model.Page, model.PageSize);
             }
 
+            _log.LogDebug("Final queryable expression: {expression}", query.Expression.ToString());
             return query;
         }
 

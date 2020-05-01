@@ -1,4 +1,5 @@
-﻿using Ooze.Parsers;
+﻿using Microsoft.Extensions.Logging;
+using Ooze.Parsers;
 using Superpower;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,23 @@ namespace Ooze.Sorters
         const char _sorterSeparator = ',';
 
         readonly IOozeProviderLocator _providerLocator;
+        readonly ILogger<OozeSorterHandler> _log;
 
-        public OozeSorterHandler(IOozeProviderLocator providerLocator) => _providerLocator = providerLocator;
+        public OozeSorterHandler(
+            IOozeProviderLocator providerLocator,
+            ILogger<OozeSorterHandler> log)
+        {
+            _providerLocator = providerLocator;
+            _log = log;
+        }
 
         public IQueryable<TEntity> Handle<TEntity>(
             IQueryable<TEntity> query,
             string sorters)
             where TEntity : class
         {
+            _log.LogDebug("Running sorter IQueryable changes");
+
             var sorterProviders = _providerLocator.SortersFor<TEntity>();
             var parsedSorters = GetParsedSorters(sorters);
 
@@ -35,12 +45,15 @@ namespace Ooze.Sorters
                 }
             }
 
+            _log.LogDebug("Final sorter expression: {expression}", query.Expression.ToString());
             return query;
         }
 
         IEnumerable<SorterParserResult> GetParsedSorters(
             string sorters)
         {
+            _log.LogDebug("Creating Sorter parser");
+
             var parser = OozeParserCreator.SorterParser(_negativeOrderChar);
 
             return sorters.Split(_sorterSeparator)

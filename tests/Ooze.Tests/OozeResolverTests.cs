@@ -10,6 +10,8 @@ using System;
 using Ooze.Query;
 using Ooze.Selections;
 using Ooze.Paging;
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Ooze.Tests
 {
@@ -83,6 +85,7 @@ namespace Ooze.Tests
             public IOozeQueryHandler QueryHandler { get; } = Substitute.For<IOozeQueryHandler>();
             public IOozeSelectionHandler SelectionHandler { get; } = Substitute.For<IOozeSelectionHandler>();
             public IOozePagingHandler PagingHandler { get; } = Substitute.For<IOozePagingHandler>();
+            public ILogger<OozeResolver> Log { get; } = Substitute.For<ILogger<OozeResolver>>();
             public OozeConfiguration Configuration { get; } = new OozeConfiguration(new OozeOptions { UseSelections = true, Paging = new OozePaging { UsePaging = true } })
             {
                 EntityConfigurations = new Dictionary<Type, OozeEntityConfiguration>
@@ -93,7 +96,7 @@ namespace Ooze.Tests
 
             public OozeResolverContext()
             {
-                OozeResolver = new OozeResolver(SorterHandler, FilterHandler, QueryHandler, SelectionHandler, PagingHandler, Configuration);
+                OozeResolver = new OozeResolver(SorterHandler, FilterHandler, QueryHandler, SelectionHandler, PagingHandler, Configuration, Log);
             }
         }
     }
