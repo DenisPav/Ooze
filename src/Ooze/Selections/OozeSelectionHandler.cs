@@ -26,7 +26,7 @@ namespace Ooze.Selections
             _log.LogDebug("Running selection IQueryable changes");
 
             var results = GetParsedSelections(fields);
-            var paramExpr = Parameter(typeof(TEntity), typeof(TEntity).Name);
+            var paramExpr = Parameter(typeof(TEntity), typeof(TEntity).Name.ToLower());
             var assignments = OozeExpressionCreator.CreateAssignments(paramExpr, typeof(TEntity), results);
 
             if (OozeExpressionCreator.LambdaExpr(typeof(TEntity), paramExpr, assignments) is Expression<Func<TEntity, TEntity>> lambda)

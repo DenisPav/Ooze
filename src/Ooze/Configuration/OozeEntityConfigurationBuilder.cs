@@ -17,7 +17,7 @@ namespace Ooze.Configuration
         const string _sorterError = "Sorter definition not correct";
         const string _filterError = "Filter definition not correct";
 
-        readonly ParameterExpression _parameter = Parameter(typeof(TEntity), nameof(TEntity));
+        readonly ParameterExpression _parameter = Parameter(typeof(TEntity), typeof(TEntity).Name.ToLower());
         readonly IList<ExpressionDefinition> _sorters = new List<ExpressionDefinition>();
         readonly IList<ExpressionDefinition> _filters = new List<ExpressionDefinition>();
 
