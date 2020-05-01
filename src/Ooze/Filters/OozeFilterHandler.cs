@@ -41,7 +41,10 @@ namespace Ooze.Filters
                 return filterProvider.ApplyFilter(accumulator, filter);
             }
 
-            return parsedFilters.Aggregate(query, Accumulator);
+            query = parsedFilters.Aggregate(query, Accumulator);
+
+            _log.LogDebug("Final filter expression: {expression}", query.Expression.ToString());
+            return query;
         }
 
         IEnumerable<FilterParserResult> GetParsedFilters(

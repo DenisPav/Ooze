@@ -30,8 +30,11 @@ namespace Ooze.Paging
             var toSkip = actualPage * actualPageSize;
             var toTake = actualPageSize;
 
-            return query.Skip(toSkip)
+            query = query.Skip(toSkip)
                 .Take(toTake);
+
+            _log.LogDebug("Final paging expression: {expression}", query.Expression.ToString());
+            return query;
         }
     }
 }

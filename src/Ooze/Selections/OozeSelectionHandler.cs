@@ -34,6 +34,7 @@ namespace Ooze.Selections
                 query = query.Select(lambda);
             }
 
+            _log.LogDebug("Final selection expression: {expression}", query.Expression.ToString());
             return query;
         }
 

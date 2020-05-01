@@ -45,6 +45,7 @@ namespace Ooze.Sorters
                 }
             }
 
+            _log.LogDebug("Final sorter expression: {expression}", query.Expression.ToString());
             return query;
         }
 

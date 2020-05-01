@@ -44,6 +44,7 @@ namespace Ooze.Query
             query = query.Provider
                 .CreateQuery<TEntity>(expression);
 
+            _log.LogDebug("Final query language expression: {expression}", query.Expression.ToString());
             return query;
         }
 
