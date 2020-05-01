@@ -66,6 +66,7 @@ namespace Ooze
                 query = _pagingHandler.Handle(query, model.Page, model.PageSize);
             }
 
+            _log.LogDebug("Final queryable expression: {expression}", query.Expression.ToString());
             return query;
         }
 
