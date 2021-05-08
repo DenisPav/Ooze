@@ -11,7 +11,7 @@ namespace Ooze.Configuration
 
     internal class OozeConfiguration
     {
-        public readonly IReadOnlyDictionary<string, Operation> OperationsMap;
+        public readonly IReadOnlyDictionary<string, (Operation operation, Func<Type, bool> validator)> OperationsMap;
         public readonly IReadOnlyDictionary<string, Operation> LogicalOperationMap = new Dictionary<string, Operation>
         {
             { "AND", AndAlso },
@@ -26,17 +26,17 @@ namespace Ooze.Configuration
         {
             _ = options ?? throw new Exception("Ooze options not registered to container");
 
-            OperationsMap = new Dictionary<string, Operation>
+            OperationsMap = new Dictionary<string, (Operation, Func<Type, bool> validator)>
             {
-                { options.Operations.Equal, Equal },
-                { options.Operations.NotEqual, NotEqual },
-                { options.Operations.GreaterThanOrEqual, GreaterThanOrEqual },
-                { options.Operations.LessThanOrEqual, LessThanOrEqual },
-                { options.Operations.StartsWith, Expressions.StartsWith },
-                { options.Operations.EndsWith, Expressions.EndsWith },
-                { options.Operations.GreaterThan, GreaterThan },
-                { options.Operations.LessThan, LessThan },
-                { options.Operations.Contains, Expressions.Contains },
+                { options.Operations.Equal, (Equal, DefaultTypeValidator) },
+                { options.Operations.NotEqual, (NotEqual, DefaultTypeValidator) },
+                { options.Operations.GreaterThanOrEqual, (GreaterThanOrEqual, DefaultTypeValidator) },
+                { options.Operations.LessThanOrEqual, (LessThanOrEqual, DefaultTypeValidator) },
+                { options.Operations.StartsWith, (Expressions.StartsWith, type => type == typeof(string)) },
+                { options.Operations.EndsWith, (Expressions.EndsWith, type => type == typeof(string)) },
+                { options.Operations.GreaterThan, (GreaterThan, DefaultTypeValidator) },
+                { options.Operations.LessThan, (LessThan, DefaultTypeValidator) },
+                { options.Operations.Contains, (Expressions.Contains, type => type == typeof(string)) },
             };
             UseSelections = options.UseSelections;
             UsePaging = options.Paging.UsePaging;
@@ -48,5 +48,7 @@ namespace Ooze.Configuration
             => EntityConfigurations.Values
                 .SelectMany(config => config.ProviderFactories)
                 .ToList();
+
+        static bool DefaultTypeValidator(Type type) => true;
     }
 }

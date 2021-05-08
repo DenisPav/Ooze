@@ -147,9 +147,6 @@ namespace Ooze.Tests.Integration
         }
 
         [Theory]
-        [InlineData("Id@3")]
-        [InlineData("bool@=3")]
-        [InlineData("bool=@3")]
         [InlineData("Name>3")]
         [InlineData("Name>=3")]
         [InlineData("Name<3")]

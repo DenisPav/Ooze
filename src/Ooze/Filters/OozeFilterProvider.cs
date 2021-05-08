@@ -26,9 +26,15 @@ namespace Ooze.Filters
         {
             var entityConfiguration = _configuration.EntityConfigurations[typeof(TEntity)];
             var filterDefinition = entityConfiguration.Filters
-                .SingleOrDefault(configFilter => string.Equals(configFilter.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase));
-            var callExpr = FilterExpression<TEntity>(entityConfiguration.Param, filter, filterDefinition, query.Expression, _configuration.OperationsMap[filter.Operation]);
+                .Single(configFilter => string.Equals(configFilter.Name, filter.Property, StringComparison.InvariantCultureIgnoreCase));
+            var (operation, validator) = _configuration.OperationsMap[filter.Operation];
 
+            if (!validator(filterDefinition.Type))
+            {
+                return query;
+            }
+            
+            var callExpr = FilterExpression<TEntity>(entityConfiguration.Param, filter, filterDefinition, query.Expression, operation);
             return query.Provider
                 .CreateQuery<TEntity>(callExpr);
         }

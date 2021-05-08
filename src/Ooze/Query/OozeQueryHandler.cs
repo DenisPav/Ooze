@@ -70,7 +70,7 @@ namespace Ooze.Query
             return queryParts.Select(queryPart => new QueryFilterOperation
             {
                 Filter = filters.SingleOrDefault(configFilter => string.Equals(configFilter.Name, queryPart.Property, StringComparison.InvariantCultureIgnoreCase)),
-                OperationFactory = _config.OperationsMap[queryPart.Operation],
+                OperationFactory = _config.OperationsMap[queryPart.Operation].operation,
                 LogicalOperationFactory = _config.LogicalOperationMap.TryGetValue(queryPart.LogicalOperation, out var factory) ? factory : null,
                 QueryPart = queryPart
             });
