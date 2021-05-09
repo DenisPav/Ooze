@@ -39,8 +39,8 @@ namespace Ooze.Sorters
 
                 if (sorter is { })
                 {
-                    query = (query is IOrderedQueryable<TEntity> orderQuery)
-                        ? sorter.ThenApplySorter(orderQuery, parsedSorter.Ascending)
+                    query = (query.Expression.Type == typeof(IOrderedQueryable<TEntity>))
+                        ? sorter.ThenApplySorter(query as IOrderedQueryable<TEntity>, parsedSorter.Ascending)
                         : sorter.ApplySorter(query, parsedSorter.Ascending);
                 }
             }
