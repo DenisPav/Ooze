@@ -1,7 +1,7 @@
 # 🌳💧 Ooze - Sorting, Filtering, Paging and Selections for ASP.NET Core and EF Core
 
 ## ⚙ Setup
-You'll need to add reference to the package (insert link here when it will be available). After that call `.AddOoze()` method on services inside of `ConfigureServices()` method in your startup class.
+You'll need to add reference to the package (most easily by adding it via `git modules` to the project). After that call `.AddOoze()` method on services inside of `ConfigureServices()` method in your startup class.
 
 Create a configuration class for your EF entity class. For example:
 ```csharp
@@ -305,3 +305,6 @@ services.AddScoped(typeof(OozeFilter<>));
 [ServiceFilter(typeof(OozeFilter<Post>))]
 public IQueryable<Post> GetQuery() => _db.Posts;
 ```
+
+# 🌳💧🔧 Ooze.Typed
+Updates coming soon.
