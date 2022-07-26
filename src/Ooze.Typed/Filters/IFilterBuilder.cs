@@ -19,9 +19,21 @@ public interface IFilterBuilder<TEntity, TFilter>
     IFilterBuilder<TEntity, TFilter> In<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, IEnumerable<TProperty>> filterFunc);
+    IFilterBuilder<TEntity, TFilter> NotIn<TProperty>(
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, IEnumerable<TProperty>> filterFunc);
     IFilterBuilder<TEntity, TFilter> Range<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, RangeFilter<TProperty>> filterFunc);
+    IFilterBuilder<TEntity, TFilter> OutOfRange<TProperty>(
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, RangeFilter<TProperty>> filterFunc);
+    IFilterBuilder<TEntity, TFilter> StartsWith(
+        Expression<Func<TEntity, string>> dataExpression,
+        Func<TFilter, string> filterFunc);
+    IFilterBuilder<TEntity, TFilter> EndsWith(
+        Expression<Func<TEntity, string>> dataExpression,
+        Func<TFilter, string> filterFunc);
     IFilterBuilder<TEntity, TFilter> Custom(
         Func<TFilter, bool> shouldRun,
         Func<TFilter, Expression<Func<TEntity, bool>>> filterExpressionFactory);

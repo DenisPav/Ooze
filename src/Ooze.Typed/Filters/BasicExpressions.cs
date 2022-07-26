@@ -51,6 +51,19 @@ internal static class BasicExpressions
         return GetLambdaExpression<TEntity>(callExpression, parameter);
     }
 
+    internal static Expression<Func<TEntity, bool>> NotIn<TEntity, TProperty>(
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        IEnumerable<TProperty> filterValue)
+    {
+        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
+        var genericMethod = Common.EnumerableContains.MakeGenericMethod(typeof(TProperty));
+        var collectionConstantExpression = Constant(filterValue);
+        var callExpression = Not(Call(genericMethod, collectionConstantExpression, memberAccessExpression));
+        var parameter = memberAccessExpression.Expression as ParameterExpression;
+
+        return GetLambdaExpression<TEntity>(callExpression, parameter);
+    }
+
     internal static Expression<Func<TEntity, bool>> Range<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         RangeFilter<TProperty> rangeFilterValue)
@@ -65,6 +78,48 @@ internal static class BasicExpressions
         var parameter = memberAccessExpression.Expression as ParameterExpression;
 
         return GetLambdaExpression<TEntity>(andAlsoExpression, parameter);
+    }
+
+    internal static Expression<Func<TEntity, bool>> OutOfRange<TEntity, TProperty>(
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        RangeFilter<TProperty> rangeFilterValue)
+    {
+        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
+        var fromConstantExpression = Constant(rangeFilterValue.From);
+        var toConstantExpression = Constant(rangeFilterValue.To);
+
+        var lessThenOrEqualFromExpression = LessThanOrEqual(fromConstantExpression, memberAccessExpression);
+        var lessThenOrEqualToExpression = LessThanOrEqual(memberAccessExpression, toConstantExpression);
+        var andAlsoExpression = Not(AndAlso(lessThenOrEqualFromExpression, lessThenOrEqualToExpression));
+        var parameter = memberAccessExpression.Expression as ParameterExpression;
+
+        return GetLambdaExpression<TEntity>(andAlsoExpression, parameter);
+    }
+
+    internal static Expression<Func<TEntity, bool>> StartsWith<TEntity>(
+        Expression<Func<TEntity, string>> dataExpression,
+        string filterValue)
+    {
+        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
+        var method = Common.StringStartsWith;
+        var stringConstant = Constant(filterValue);
+        var callExpression = Call(memberAccessExpression, method, stringConstant);
+        var parameter = memberAccessExpression.Expression as ParameterExpression;
+
+        return GetLambdaExpression<TEntity>(callExpression, parameter);
+    }
+
+    internal static Expression<Func<TEntity, bool>> EndsWith<TEntity>(
+        Expression<Func<TEntity, string>> dataExpression,
+        string filterValue)
+    {
+        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
+        var method = Common.StringEndsWith;
+        var stringConstant = Constant(filterValue);
+        var callExpression = Call(memberAccessExpression, method, stringConstant);
+        var parameter = memberAccessExpression.Expression as ParameterExpression;
+
+        return GetLambdaExpression<TEntity>(callExpression, parameter);
     }
 
     internal static MemberExpression GetMemberExpression(Expression expressionBody)

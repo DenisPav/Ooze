@@ -8,4 +8,7 @@ internal static class Common
         .GetMethods()
         .Where(x => x.Name == "Contains")
         .Single(x => x.GetParameters().Length == 2);
+
+    internal static MethodInfo StringStartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+    internal static MethodInfo StringEndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
 }
