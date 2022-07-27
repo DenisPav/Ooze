@@ -92,7 +92,7 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
                 var value = filterFunc(filter);
                 return value != null && value.Any();
             },
-            FilterExpressionFactory = filter => BasicExpressions.NotIn(dataExpression, filterFunc(filter))
+            FilterExpressionFactory = filter => BasicExpressions.In(dataExpression, filterFunc(filter), true)
         });
 
         return this;
@@ -128,7 +128,7 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
                 var value = filterFunc(filter);
                 return value != null && value.From != null && value.To != null;
             },
-            FilterExpressionFactory = filter => BasicExpressions.OutOfRange(dataExpression, filterFunc(filter))
+            FilterExpressionFactory = filter => BasicExpressions.Range(dataExpression, filterFunc(filter), true)
         });
 
         return this;
@@ -142,7 +142,23 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
         {
             DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
-            FilterExpressionFactory = filter => BasicExpressions.StartsWith(dataExpression, filterFunc(filter))
+            FilterExpressionFactory = filter
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringStartsWith)
+        });
+
+        return this;
+    }
+
+    public IFilterBuilder<TEntity, TFilter> DoesntStartWith(
+        Expression<Func<TEntity, string>> dataExpression,
+        Func<TFilter, string> filterFunc)
+    {
+        _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
+        {
+            DataExpression = dataExpression,
+            ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
+            FilterExpressionFactory = filter
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringStartsWith, true)
         });
 
         return this;
@@ -156,7 +172,23 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
         {
             DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
-            FilterExpressionFactory = filter => BasicExpressions.EndsWith(dataExpression, filterFunc(filter))
+            FilterExpressionFactory = filter
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringEndsWith)
+        });
+
+        return this;
+    }
+
+    public IFilterBuilder<TEntity, TFilter> DoesntEndWith(
+        Expression<Func<TEntity, string>> dataExpression,
+        Func<TFilter, string> filterFunc)
+    {
+        _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
+        {
+            DataExpression = dataExpression,
+            ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
+            FilterExpressionFactory = filter
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringEndsWith, true)
         });
 
         return this;

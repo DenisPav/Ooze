@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Typed.Filters;
@@ -40,33 +41,25 @@ internal static class BasicExpressions
 
     internal static Expression<Func<TEntity, bool>> In<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        IEnumerable<TProperty> filterValue)
+        IEnumerable<TProperty> filterValue,
+        bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
         var genericMethod = Common.EnumerableContains.MakeGenericMethod(typeof(TProperty));
         var collectionConstantExpression = Constant(filterValue);
         var callExpression = Call(genericMethod, collectionConstantExpression, memberAccessExpression);
         var parameter = memberAccessExpression.Expression as ParameterExpression;
+        Expression lambaBody = isNegated
+            ? Not(callExpression)
+            : callExpression;
 
-        return GetLambdaExpression<TEntity>(callExpression, parameter);
-    }
-
-    internal static Expression<Func<TEntity, bool>> NotIn<TEntity, TProperty>(
-        Expression<Func<TEntity, TProperty>> dataExpression,
-        IEnumerable<TProperty> filterValue)
-    {
-        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var genericMethod = Common.EnumerableContains.MakeGenericMethod(typeof(TProperty));
-        var collectionConstantExpression = Constant(filterValue);
-        var callExpression = Not(Call(genericMethod, collectionConstantExpression, memberAccessExpression));
-        var parameter = memberAccessExpression.Expression as ParameterExpression;
-
-        return GetLambdaExpression<TEntity>(callExpression, parameter);
+        return GetLambdaExpression<TEntity>(lambaBody, parameter);
     }
 
     internal static Expression<Func<TEntity, bool>> Range<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        RangeFilter<TProperty> rangeFilterValue)
+        RangeFilter<TProperty> rangeFilterValue,
+        bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
         var fromConstantExpression = Constant(rangeFilterValue.From);
@@ -76,50 +69,28 @@ internal static class BasicExpressions
         var lessThenOrEqualToExpression = LessThanOrEqual(memberAccessExpression, toConstantExpression);
         var andAlsoExpression = AndAlso(lessThenOrEqualFromExpression, lessThenOrEqualToExpression);
         var parameter = memberAccessExpression.Expression as ParameterExpression;
+        Expression lambaBody = isNegated
+            ? Not(andAlsoExpression)
+            : andAlsoExpression;
 
-        return GetLambdaExpression<TEntity>(andAlsoExpression, parameter);
+        return GetLambdaExpression<TEntity>(lambaBody, parameter);
     }
 
-    internal static Expression<Func<TEntity, bool>> OutOfRange<TEntity, TProperty>(
-        Expression<Func<TEntity, TProperty>> dataExpression,
-        RangeFilter<TProperty> rangeFilterValue)
-    {
-        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var fromConstantExpression = Constant(rangeFilterValue.From);
-        var toConstantExpression = Constant(rangeFilterValue.To);
-
-        var lessThenOrEqualFromExpression = LessThanOrEqual(fromConstantExpression, memberAccessExpression);
-        var lessThenOrEqualToExpression = LessThanOrEqual(memberAccessExpression, toConstantExpression);
-        var andAlsoExpression = Not(AndAlso(lessThenOrEqualFromExpression, lessThenOrEqualToExpression));
-        var parameter = memberAccessExpression.Expression as ParameterExpression;
-
-        return GetLambdaExpression<TEntity>(andAlsoExpression, parameter);
-    }
-
-    internal static Expression<Func<TEntity, bool>> StartsWith<TEntity>(
+    internal static Expression<Func<TEntity, bool>> StringOperation<TEntity>(
         Expression<Func<TEntity, string>> dataExpression,
-        string filterValue)
+        string filterValue,
+        MethodInfo operationMethod,
+        bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var method = Common.StringStartsWith;
         var stringConstant = Constant(filterValue);
-        var callExpression = Call(memberAccessExpression, method, stringConstant);
+        var callExpression = Call(memberAccessExpression, operationMethod, stringConstant);
         var parameter = memberAccessExpression.Expression as ParameterExpression;
+        Expression lambaBody = isNegated
+            ? Not(callExpression)
+            : callExpression;
 
-        return GetLambdaExpression<TEntity>(callExpression, parameter);
-    }
-
-    internal static Expression<Func<TEntity, bool>> EndsWith<TEntity>(
-        Expression<Func<TEntity, string>> dataExpression,
-        string filterValue)
-    {
-        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var method = Common.StringEndsWith;
-        var stringConstant = Constant(filterValue);
-        var callExpression = Call(memberAccessExpression, method, stringConstant);
-        var parameter = memberAccessExpression.Expression as ParameterExpression;
-
-        return GetLambdaExpression<TEntity>(callExpression, parameter);
+        return GetLambdaExpression<TEntity>(lambaBody, parameter);
     }
 
     internal static MemberExpression GetMemberExpression(Expression expressionBody)

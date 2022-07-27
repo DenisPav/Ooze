@@ -31,7 +31,13 @@ public interface IFilterBuilder<TEntity, TFilter>
     IFilterBuilder<TEntity, TFilter> StartsWith(
         Expression<Func<TEntity, string>> dataExpression,
         Func<TFilter, string> filterFunc);
+    IFilterBuilder<TEntity, TFilter> DoesntStartWith(
+        Expression<Func<TEntity, string>> dataExpression,
+        Func<TFilter, string> filterFunc);
     IFilterBuilder<TEntity, TFilter> EndsWith(
+        Expression<Func<TEntity, string>> dataExpression,
+        Func<TFilter, string> filterFunc);
+    IFilterBuilder<TEntity, TFilter> DoesntEndWith(
         Expression<Func<TEntity, string>> dataExpression,
         Func<TFilter, string> filterFunc);
     IFilterBuilder<TEntity, TFilter> Custom(
