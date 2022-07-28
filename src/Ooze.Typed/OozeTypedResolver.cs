@@ -12,7 +12,9 @@ internal class OozeTypedResolver : IOozeTypedResolver
         _serviceProvider = serviceProvider;
     }
 
-    public IQueryable<TEntity> Filter<TEntity, TFilters>(IQueryable<TEntity> query, TFilters filters)
+    public IQueryable<TEntity> Filter<TEntity, TFilters>(
+        IQueryable<TEntity> query,
+        TFilters filters)
     {
         var filterHandler = _serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
         query = filterHandler.Apply(query, filters);

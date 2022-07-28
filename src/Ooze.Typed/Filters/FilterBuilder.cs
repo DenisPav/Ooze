@@ -143,7 +143,7 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
             DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
-                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringStartsWith)
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringStartsWith)
         });
 
         return this;
@@ -158,7 +158,7 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
             DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
-                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringStartsWith, true)
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringStartsWith, true)
         });
 
         return this;
@@ -173,7 +173,7 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
             DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
-                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringEndsWith)
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringEndsWith)
         });
 
         return this;
@@ -188,7 +188,7 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
             DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
-                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), Common.StringEndsWith, true)
+                => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringEndsWith, true)
         });
 
         return this;

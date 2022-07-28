@@ -45,7 +45,7 @@ internal static class BasicExpressions
         bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var genericMethod = Common.EnumerableContains.MakeGenericMethod(typeof(TProperty));
+        var genericMethod = CommonMethods.EnumerableContains.MakeGenericMethod(typeof(TProperty));
         var collectionConstantExpression = Constant(filterValue);
         var callExpression = Call(genericMethod, collectionConstantExpression, memberAccessExpression);
         var parameter = memberAccessExpression.Expression as ParameterExpression;

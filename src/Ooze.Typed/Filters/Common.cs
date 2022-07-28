@@ -2,7 +2,7 @@
 
 namespace Ooze.Typed.Filters;
 
-internal static class Common
+internal static class CommonMethods
 {
     internal static MethodInfo EnumerableContains = typeof(Enumerable)
         .GetMethods()

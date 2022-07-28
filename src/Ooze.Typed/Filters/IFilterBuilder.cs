@@ -45,9 +45,3 @@ public interface IFilterBuilder<TEntity, TFilter>
         Func<TFilter, Expression<Func<TEntity, bool>>> filterExpressionFactory);
     IEnumerable<IFilterDefinition<TEntity, TFilter>> Build();
 }
-
-public class RangeFilter<TType>
-{
-    public TType From { get; set; }
-    public TType To { get; set; }
-}
