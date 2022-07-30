@@ -1,8 +1,9 @@
-﻿using System.Linq.Expressions;
+﻿using Ooze.Typed.Filters;
+using System.Linq.Expressions;
 using System.Reflection;
 using static System.Linq.Expressions.Expression;
 
-namespace Ooze.Typed.Filters;
+namespace Ooze.Typed.Expressions;
 
 internal static class BasicExpressions
 {
