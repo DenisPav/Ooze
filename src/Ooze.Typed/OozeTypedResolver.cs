@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
+using Ooze.Typed.Paging;
 using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed;
@@ -32,31 +33,38 @@ internal class OozeTypedResolver : IOozeTypedResolver
 
         return query;
     }
+
+    public IQueryable<TEntity> Page<TEntity>(
+        IQueryable<TEntity> query,
+        PagingOptions pagingOptions)
+    {
+        var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        query = sorterHandler.Apply(query, pagingOptions);
+
+        return query;
+    }
 }
 
 internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolver<TEntity, TFilters, TSorters>
 {
     private readonly IOozeFilterHandler<TEntity, TFilters> _filterHandler;
     private readonly IOozeSorterHandler<TEntity, TSorters> _sorterHandler;
+    private readonly IOozePagingHandler<TEntity> _pagingHandler;
     private IQueryable<TEntity> _query = null;
 
     public OozeTypedResolver(
+        IOozeSorterHandler<TEntity, TSorters> sorterHandler,
         IOozeFilterHandler<TEntity, TFilters> filterHandler,
-        IOozeSorterHandler<TEntity, TSorters> sorterHandler)
+        IOozePagingHandler<TEntity> pagingHandler)
     {
-        _filterHandler = filterHandler;
         _sorterHandler = sorterHandler;
+        _filterHandler = filterHandler;
+        _pagingHandler = pagingHandler;
     }
 
     public IOozeTypedResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
     {
         _query = query;
-        return this;
-    }
-
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> Filter(TFilters filters)
-    {
-        _query = _filterHandler.Apply(_query, filters);
         return this;
     }
 
@@ -66,6 +74,31 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
         return this;
     }
 
+    public IOozeTypedResolver<TEntity, TFilters, TSorters> Filter(TFilters filters)
+    {
+        _query = _filterHandler.Apply(_query, filters);
+        return this;
+    }
+
+    public IOozeTypedResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions)
+    {
+        _query = _pagingHandler.Apply(_query, pagingOptions);
+        return this;
+    }
+
     public IQueryable<TEntity> Apply() 
         => _query;
+
+    public IQueryable<TEntity> Apply(
+        IQueryable<TEntity> query,
+        TSorters sorters,
+        TFilters filters,
+        PagingOptions pagingOptions)
+    {
+        return WithQuery(query)
+            .Sort(sorters)
+            .Filter(filters)
+            .Page(pagingOptions)
+            .Apply();
+    }
 }
