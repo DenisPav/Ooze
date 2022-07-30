@@ -9,6 +9,7 @@ namespace Ooze.Typed.Extensions
         public static IServiceCollection AddOozeTyped(this IServiceCollection services)
         {
             services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
+            services.AddScoped(typeof(IOozeTypedResolver<,,>), typeof(OozeTypedResolver<,,>));
             services.AddScoped(typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>));
             services.AddScoped(typeof(IOozeSorterHandler<,>), typeof(OozeSorterHandler<,>));
 

@@ -14,14 +14,17 @@ var app = builder.Build();
 
 app.MapGet("/", (
     DatabaseContext db,
-    IOozeTypedResolver resolver,
+    IOozeTypedResolver<Blog, BlogFilters, BlogSorters> resolver,
     string? name,
     SortDirection? idSort) =>
 {
     IQueryable<Blog> query = db.Set<Blog>();
 
-    query = resolver.Filter(query, new BlogFilters { Name = name ?? string.Empty });
-    query = resolver.Sort(query, new BlogSorters { BlogIdSort = idSort });
+    query = resolver
+        .WithQuery(query)
+        .Sort(new BlogSorters { BlogIdSort = idSort })
+        .Filter(new BlogFilters { Name = name ?? string.Empty })
+        .Apply();
 
     return query;
 });
