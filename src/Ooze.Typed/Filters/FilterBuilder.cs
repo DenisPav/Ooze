@@ -4,7 +4,7 @@ namespace Ooze.Typed.Filters;
 
 internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter>
 {
-    IList<FilterDefinition<TEntity, TFilter>> _filterDefinitions = new List<FilterDefinition<TEntity, TFilter>>();
+    readonly IList<FilterDefinition<TEntity, TFilter>> _filterDefinitions = new List<FilterDefinition<TEntity, TFilter>>();
 
     public IFilterBuilder<TEntity, TFilter> Equal<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,

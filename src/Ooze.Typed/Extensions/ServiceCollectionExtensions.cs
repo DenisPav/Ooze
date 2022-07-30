@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
+using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed.Extensions
 {
@@ -9,6 +10,7 @@ namespace Ooze.Typed.Extensions
         {
             services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
             services.AddScoped(typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>));
+            services.AddScoped(typeof(IOozeSorterHandler<,>), typeof(OozeSorterHandler<,>));
 
             return services;
         }
