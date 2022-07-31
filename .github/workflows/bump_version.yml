@@ -1,0 +1,28 @@
+name: Bump package version
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Bump version
+        id: bump
+        shell: pwsh
+        run: |
+          $xml = [Xml] (Get-Content .\src\Ooze.Typed\Ooze.Typed.csproj)
+          $version = [Version] $xml.Project.PropertyGroup.Version
+          $newVersion = "{0}.{1}.{2}" -f $version.Major, $version.Minor, ($version.Build + 1)
+          $xml.Project.PropertyGroup.Version = $newVersion
+          $xml.Save("./src/Ooze.Typed/Ooze.Typed.csproj")
+          echo "::set-output name=newVersion::$newVersion"
+      - name: Commit changes
+        run: |
+          git status
+          git config user.name "ooze"
+          git config user.email "ooze@users.noreply.github.com"
+          git add ./src/Ooze.Typed/*
+          git commit -m "Bump project version to ${{ steps.bump.outputs.newVersion }}"
+          git push
