@@ -22,6 +22,15 @@ app.MapGet("/", (
     IQueryable<Blog> query = db.Set<Blog>();
 
     query = resolver
+        .WithQuery(query)
+        .Sort(new BlogSorters { BlogIdSort = idSort })
+        .Filter(new BlogFilters { Name = name ?? string.Empty })
+        .Page(new Ooze.Typed.Paging.PagingOptions
+        {
+            Page = page ?? 0,
+            Size = 3,
+        })
+        .Apply();
 
     return query;
 });
