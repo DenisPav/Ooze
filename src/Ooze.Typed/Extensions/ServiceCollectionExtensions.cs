@@ -1,21 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Ooze.Typed.Filters;
-using Ooze.Typed.Paging;
-using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOozeTyped(this IServiceCollection services)
-        {
-            services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
-            services.AddScoped(typeof(IOozeTypedResolver<,,>), typeof(OozeTypedResolver<,,>));
-            services.AddScoped(typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>));
-            services.AddScoped(typeof(IOozeSorterHandler<,>), typeof(OozeSorterHandler<,>));
-            services.AddScoped(typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>));
-
-            return services;
-        }
+        public static IOozeServiceCollectionBuilder AddOozeTyped(this IServiceCollection services)
+            => new OozeServiceCollectionBuilder(services).AddCommonServices();
     }
 }

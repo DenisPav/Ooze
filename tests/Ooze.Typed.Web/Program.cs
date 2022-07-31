@@ -7,24 +7,21 @@ using Ooze.Typed.Sorters;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;"));
 builder.Services.AddHostedService<SeedService>();
-builder.Services.AddOozeTyped();
-builder.Services.AddSingleton<IOozeFilterProvider<Blog, BlogFilters>, BlogFiltersProvider>();
-builder.Services.AddSingleton<IOozeSorterProvider<Blog, BlogSorters>, BlogSortersProvider>();
+builder.Services.AddOozeTyped()
+    .Add<BlogFiltersProvider>()
+    .Add<BlogSortersProvider>();
 var app = builder.Build();
 
 app.MapGet("/", (
     DatabaseContext db,
     IOozeTypedResolver<Blog, BlogFilters, BlogSorters> resolver,
+    int? page,
     string? name,
     SortDirection? idSort) =>
 {
     IQueryable<Blog> query = db.Set<Blog>();
 
     query = resolver
-        .WithQuery(query)
-        .Sort(new BlogSorters { BlogIdSort = idSort })
-        .Filter(new BlogFilters { Name = name ?? string.Empty })
-        .Apply();
 
     return query;
 });
