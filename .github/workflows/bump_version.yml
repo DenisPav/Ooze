@@ -1,0 +1,15 @@
+name: Create package
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Bump versions
+        uses: SiqiLu/dotnet-bump-version@master
+        with:
+          version_files: "src/Ooze.Typed/*.csproj"
+          github_token: ${{ secrets.OozeToken }}
