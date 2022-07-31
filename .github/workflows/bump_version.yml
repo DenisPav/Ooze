@@ -1,4 +1,4 @@
-name: Create package
+name: Bump package version
 
 on: [push]
 
