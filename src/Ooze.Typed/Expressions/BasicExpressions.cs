@@ -1,4 +1,5 @@
 ﻿using Ooze.Typed.Filters;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using static System.Linq.Expressions.Expression;
@@ -33,8 +34,8 @@ internal static class BasicExpressions
         Func<Expression, Expression, Expression> operationFactory)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var constantExpression = Constant(filterValue);
-        var opreationExpression = operationFactory(memberAccessExpression, constantExpression);
+        var result = GetWrappedConstantExpression(filterValue);
+        var opreationExpression = operationFactory(memberAccessExpression, result);
         var parameter = memberAccessExpression.Expression as ParameterExpression;
 
         return GetLambdaExpression<TEntity>(opreationExpression, parameter);
@@ -47,7 +48,7 @@ internal static class BasicExpressions
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
         var genericMethod = CommonMethods.EnumerableContains.MakeGenericMethod(typeof(TProperty));
-        var collectionConstantExpression = Constant(filterValue);
+        var collectionConstantExpression = GetWrappedConstantExpression(filterValue);
         var callExpression = Call(genericMethod, collectionConstantExpression, memberAccessExpression);
         var parameter = memberAccessExpression.Expression as ParameterExpression;
         Expression lambaBody = isNegated
@@ -63,8 +64,8 @@ internal static class BasicExpressions
         bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var fromConstantExpression = Constant(rangeFilterValue.From);
-        var toConstantExpression = Constant(rangeFilterValue.To);
+        var fromConstantExpression = GetWrappedConstantExpression(rangeFilterValue.From);
+        var toConstantExpression = GetWrappedConstantExpression(rangeFilterValue.To);
 
         var lessThenOrEqualFromExpression = LessThanOrEqual(fromConstantExpression, memberAccessExpression);
         var lessThenOrEqualToExpression = LessThanOrEqual(memberAccessExpression, toConstantExpression);
@@ -84,7 +85,7 @@ internal static class BasicExpressions
         bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var stringConstant = Constant(filterValue);
+        var stringConstant = GetWrappedConstantExpression(filterValue);
         var callExpression = Call(memberAccessExpression, operationMethod, stringConstant);
         var parameter = memberAccessExpression.Expression as ParameterExpression;
         Expression lambaBody = isNegated
@@ -110,4 +111,22 @@ internal static class BasicExpressions
         Expression body,
         params ParameterExpression[] parameterExpressions)
         => Lambda<Func<TEntity, bool>>(body, parameterExpressions);
+
+    internal static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
+    {
+        var constantType = typeof(TProperty);
+        var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
+        var createWrapper = CommonMethods.CreateWrapperObject.MakeGenericMethod(correctType);
+        var wrapper = createWrapper?.Invoke(null, new object[] { constant });
+
+        return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
+    }
+
+    internal static OozeValue<TType> CreateWrapperObject<TType>(TType value)
+    {
+        return new OozeValue<TType>
+        {
+            p = value
+        };
+    }
 }
