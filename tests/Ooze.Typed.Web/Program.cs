@@ -1,68 +1,20 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Ooze.Typed;
 using Ooze.Typed.Extensions;
-using Ooze.Typed.Filters;
-using Ooze.Typed.Sorters;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;"));
+builder.Services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;").EnableSensitiveDataLogging());
 builder.Services.AddHostedService<SeedService>();
 builder.Services.AddOozeTyped()
     .Add<BlogFiltersProvider>()
     .Add<BlogSortersProvider>();
-var app = builder.Build();
-
-app.MapGet("/", (
-    DatabaseContext db,
-    IOozeTypedResolver<Blog, BlogFilters, BlogSorters> resolver,
-    int? page,
-    string? name,
-    SortDirection? idSort) =>
+builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(opts =>
 {
-    IQueryable<Blog> query = db.Set<Blog>();
-
-    query = resolver
-        .WithQuery(query)
-        .Sort(new BlogSorters { BlogIdSort = idSort })
-        .Filter(new BlogFilters { Name = name ?? string.Empty })
-        .Page(new Ooze.Typed.Paging.PagingOptions
-        {
-            Page = page ?? 0,
-            Size = 3,
-        })
-        .Apply();
-
-    return query;
+    opts.SuppressModelStateInvalidFilter = true;
 });
 
+var app = builder.Build();
+app.UseRouting();
+app.UseEndpoints(opts => opts.MapDefaultControllerRoute());
 app.Run();
-
-public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
-{
-    public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
-    {
-        return Filters.CreateFor<Blog, BlogFilters>()
-            .StartsWith(blog => blog.Name, filter => filter.Name)
-            .Build();
-    }
-}
-
-public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
-{
-    public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
-    {
-        return Sorters.CreateFor<Blog, BlogSorters>()
-            .Add(blog => blog.Id, sorter => sorter.BlogIdSort)
-            .Build();
-    }
-}
-
-public class BlogSorters
-{
-    public SortDirection? BlogIdSort { get; set; }
-}
-
-public class BlogFilters
-{
-    public string Name { get; set; } = default!;
-}
