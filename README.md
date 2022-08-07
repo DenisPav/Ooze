@@ -1,5 +1,5 @@
 # Ooze.Typed 🌳💧🔧 
-This package provides simple mechanism for applying filters to your `IQueryable<T>` queries. Packages are available on the `Github package repository` so you can install them from there.
+This package provides simple mechanism for applying filters, sorters, paging to your `IQueryable<T>` queries. Packages are available on the `Github package repository` so you can install them from there.
 
 ## Installation ⚙
 First you'll need to install package from `Github package repository`. In order to do so follow directions on the [official github documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry). You'll need to generate Github personal access token and add new nuget source in order to install package from github. More information can be found on the before mentioned page.
