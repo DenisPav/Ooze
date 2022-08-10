@@ -16,6 +16,8 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
+      - name: Run tests
+        run: dotnet test ./tests/Ooze.Typed.Tests/Ooze.Typed.Tests.csproj
       - name: Bump version
         id: bump
         shell: pwsh

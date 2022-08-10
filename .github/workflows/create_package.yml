@@ -19,6 +19,8 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
+      - name: Run tests
+        run: dotnet test ./tests/Ooze.Typed.Tests/Ooze.Typed.Tests.csproj
       - name: Create package
         run: |
           cd ./src/Ooze.Typed
