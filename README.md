@@ -70,7 +70,7 @@ public IEnumerable<IFilterDefinition<MyClass, MyClassFilters>> GetFilters()
             //Ooze if filter should be applied, second is filter factory
             //which takes filter as input and returns wanted filtering
             //expression
-            .Custom(filter => filter.Name != null, filter => x => x.Name == filter.Name)
+            .Add(filter => filter.Name != null, filter => x => x.Name == filter.Name)
             .Build();
 }
 ```

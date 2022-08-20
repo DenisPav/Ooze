@@ -195,7 +195,7 @@ internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity,
         return this;
     }
 
-    public IFilterBuilder<TEntity, TFilter> Custom(
+    public IFilterBuilder<TEntity, TFilter> Add(
         Func<TFilter, bool> shouldRun,
         Func<TFilter, Expression<Func<TEntity, bool>>> filterExpressionFactory)
     {

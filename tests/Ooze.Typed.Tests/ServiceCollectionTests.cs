@@ -68,7 +68,3 @@ public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
     public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
         => Enumerable.Empty<ISortDefinition<Blog, BlogSorters>>();
 }
-
-public record class Blog;
-public record class BlogFilters;
-public record class BlogSorters;
