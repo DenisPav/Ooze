@@ -40,7 +40,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     IFilterBuilder<TEntity, TFilter> DoesntEndWith(
         Expression<Func<TEntity, string>> dataExpression,
         Func<TFilter, string> filterFunc);
-    IFilterBuilder<TEntity, TFilter> Custom(
+    IFilterBuilder<TEntity, TFilter> Add(
         Func<TFilter, bool> shouldRun,
         Func<TFilter, Expression<Func<TEntity, bool>>> filterExpressionFactory);
     IEnumerable<IFilterDefinition<TEntity, TFilter>> Build();

@@ -29,7 +29,6 @@ public class SorterBuilderTests
         Assert.True(sorters.Count() == 3);
     }
 
-    //TODO: rename Custom filter to Add
     [Theory]
     [InlineData(null, null, null, 0)]
     [InlineData(SortDirection.Ascending, null, null, 1)]

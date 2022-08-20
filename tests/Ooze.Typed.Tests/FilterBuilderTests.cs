@@ -43,7 +43,7 @@ public class FilterBuilderTests
     public void Should_Contain_Custom_Filter()
     {
         var filters = Filters.Filters.CreateFor<Blog, BlogFilters>()
-            .Custom(
+            .Add(
                 filters => filters.IdFilter.HasValue,
                 filters =>
                 {
@@ -99,10 +99,10 @@ public class FilterBuilderTests
         Func<BlogFilters, Expression<Func<Blog, bool>>> fakeFilterHandler = _ => blog => true;
 
         var filters = Filters.Filters.CreateFor<Blog, BlogFilters>()
-            .Custom(filter => filter.IdFilter.HasValue, fakeFilterHandler)
-            .Custom(filter => string.IsNullOrEmpty(filter.NameFilter) == false 
+            .Add(filter => filter.IdFilter.HasValue, fakeFilterHandler)
+            .Add(filter => string.IsNullOrEmpty(filter.NameFilter) == false 
                 && filter.NameFilter.Contains("123"), fakeFilterHandler)
-            .Custom(filter => filter.NumberOfCommentsFilter > 3, fakeFilterHandler)
+            .Add(filter => filter.NumberOfCommentsFilter > 3, fakeFilterHandler)
             .Build()
             .Cast<FilterDefinition<Blog, BlogFilters>>();
 
