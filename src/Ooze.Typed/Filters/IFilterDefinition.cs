@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace Ooze.Typed.Filters;
+﻿namespace Ooze.Typed.Filters;
 
 public interface IFilterDefinition<TEntity, TFilter>
 { }

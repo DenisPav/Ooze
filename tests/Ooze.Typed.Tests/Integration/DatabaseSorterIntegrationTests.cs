@@ -17,12 +17,16 @@ namespace Ooze.Typed.Tests.Integration
             using var scope = _fixture.CreateServiceProvider().CreateScope();
             var provider = scope.ServiceProvider;
 
-            var context = provider.GetRequiredService<DatabaseContext>();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+            await using var context = _fixture.CreateContext();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
+            var sorters = new[]
+            {
+                new Sorter("Id", SortDirection.Descending)
+            };
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
-                .Sort(new PostSorters(SortDirection.Descending, null, null))
+                .Sort(sorters)
                 .Apply();
 
             var results = await query.ToListAsync();
@@ -37,12 +41,16 @@ namespace Ooze.Typed.Tests.Integration
             using var scope = _fixture.CreateServiceProvider().CreateScope();
             var provider = scope.ServiceProvider;
 
-            var context = provider.GetRequiredService<DatabaseContext>();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+            await using var context = _fixture.CreateContext();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
+            var sorters = new[]
+            {
+                new Sorter("Id", SortDirection.Ascending)
+            };
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
-                .Sort(new PostSorters(SortDirection.Ascending, null, null))
+                .Sort(sorters)
                 .Apply();
 
             var results = await query.ToListAsync();
@@ -57,18 +65,23 @@ namespace Ooze.Typed.Tests.Integration
             using var scope = _fixture.CreateServiceProvider().CreateScope();
             var provider = scope.ServiceProvider;
 
-            var context = provider.GetRequiredService<DatabaseContext>();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+            await using var context = _fixture.CreateContext();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
+            var sorters = new[]
+            {
+                new Sorter("Id", SortDirection.Ascending),
+                new Sorter("Enabled", SortDirection.Ascending)
+            };
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
-                .Sort(new PostSorters(SortDirection.Ascending, null, SortDirection.Ascending))
+                .Sort(sorters)
                 .Apply();
 
             var results = await query.ToListAsync();
             Assert.True(results.Count == 100);
             Assert.True(results[0].Id == 1);
-            Assert.True(results[1].Id == 3);
+            Assert.True(results[1].Id == 2);
         }
         
         [Fact]
@@ -77,12 +90,13 @@ namespace Ooze.Typed.Tests.Integration
             using var scope = _fixture.CreateServiceProvider().CreateScope();
             var provider = scope.ServiceProvider;
 
-            var context = provider.GetRequiredService<DatabaseContext>();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+            await using var context = _fixture.CreateContext();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
+            var sorters = Enumerable.Empty<Sorter>();
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
-                .Sort(new PostSorters(null, null, null))
+                .Sort(sorters)
                 .Apply();
 
             var results = await query.ToListAsync();

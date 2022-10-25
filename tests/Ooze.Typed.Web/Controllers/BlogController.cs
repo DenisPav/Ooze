@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed.Web.Controllers
 {
@@ -7,31 +8,32 @@ namespace Ooze.Typed.Web.Controllers
     public class BlogController : ControllerBase
     {
         private readonly DatabaseContext _db;
-        private readonly IOozeTypedResolver<Blog, BlogFilters, BlogSorters> _resolver;
+        private readonly IOozeTypedResolver _nonTypedResolver;
+        private readonly IOozeTypedResolver<Blog, BlogFilters> _resolver;
 
         public BlogController(
             DatabaseContext db,
-            IOozeTypedResolver<Blog, BlogFilters, BlogSorters> resolver)
+            IOozeTypedResolver nonTypedResolver,
+            IOozeTypedResolver<Blog, BlogFilters> resolver)
         {
             _db = db;
+            _nonTypedResolver = nonTypedResolver;
             _resolver = resolver;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get(
-            [FromQuery] BlogFilters filters,
-            [FromQuery] BlogSorters sorters)
+        [HttpPost]
+        public async Task<IActionResult> Post(Input model)
         {
             IQueryable<Blog> query = _db.Set<Blog>();
 
-            query = _resolver
-                .WithQuery(query)
-                .Sort(sorters)
-                .Filter(filters)
-                .Apply();
-
+            query = _nonTypedResolver
+                .Filter(query, model.Filters);
+            query = _nonTypedResolver.Sort(query, model.Sorters);
+            
             var results = await query.ToListAsync();
             return Ok(results);
         }
     }
+
+    public record class Input(BlogFilters Filters, IEnumerable<Sorter> Sorters);
 }

@@ -20,8 +20,8 @@ namespace Ooze.Typed.Tests.Integration
             using var scope = _fixture.CreateServiceProvider().CreateScope();
             var provider = scope.ServiceProvider;
 
-            var context = provider.GetRequiredService<DatabaseContext>();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+            await using var context = _fixture.CreateContext();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -43,8 +43,8 @@ namespace Ooze.Typed.Tests.Integration
             using var scope = _fixture.CreateServiceProvider().CreateScope();
             var provider = scope.ServiceProvider;
 
-            var context = provider.GetRequiredService<DatabaseContext>();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+            await using var context = _fixture.CreateContext();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -64,8 +64,8 @@ namespace Ooze.Typed.Tests.Integration
             using var scope = _fixture.CreateServiceProvider().CreateScope();
             var provider = scope.ServiceProvider;
 
-            var context = provider.GetRequiredService<DatabaseContext>();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+            await using var context = _fixture.CreateContext();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)

@@ -24,11 +24,11 @@ internal class OozeTypedResolver : IOozeTypedResolver
         return query;
     }
 
-    public IQueryable<TEntity> Sort<TEntity, TSorters>(
+    public IQueryable<TEntity> Sort<TEntity>(
         IQueryable<TEntity> query,
-        TSorters sorters)
+        IEnumerable<Sorter> sorters)
     {
-        var sorterHandler = _serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity, TSorters>>();
+        var sorterHandler = _serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity>>();
         query = sorterHandler.Apply(query, sorters);
 
         return query;
@@ -45,15 +45,15 @@ internal class OozeTypedResolver : IOozeTypedResolver
     }
 }
 
-internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolver<TEntity, TFilters, TSorters>
+internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity, TFilters>
 {
+    private readonly IOozeSorterHandler<TEntity> _sorterHandler;
     private readonly IOozeFilterHandler<TEntity, TFilters> _filterHandler;
-    private readonly IOozeSorterHandler<TEntity, TSorters> _sorterHandler;
     private readonly IOozePagingHandler<TEntity> _pagingHandler;
     private IQueryable<TEntity> _query = null;
 
     public OozeTypedResolver(
-        IOozeSorterHandler<TEntity, TSorters> sorterHandler,
+        IOozeSorterHandler<TEntity> sorterHandler,
         IOozeFilterHandler<TEntity, TFilters> filterHandler,
         IOozePagingHandler<TEntity> pagingHandler)
     {
@@ -62,25 +62,25 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
         _pagingHandler = pagingHandler;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
+    public IOozeTypedResolver<TEntity, TFilters> WithQuery(IQueryable<TEntity> query)
     {
         _query = query;
         return this;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> Sort(TSorters sorters)
+    public IOozeTypedResolver<TEntity, TFilters> Sort(IEnumerable<Sorter> sorters)
     {
         _query = _sorterHandler.Apply(_query, sorters);
         return this;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> Filter(TFilters filters)
+    public IOozeTypedResolver<TEntity, TFilters> Filter(TFilters filters)
     {
         _query = _filterHandler.Apply(_query, filters);
         return this;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions)
+    public IOozeTypedResolver<TEntity, TFilters> Page(PagingOptions pagingOptions)
     {
         _query = _pagingHandler.Apply(_query, pagingOptions);
         return this;
@@ -91,7 +91,7 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
 
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
-        TSorters sorters,
+        IEnumerable<Sorter> sorters,
         TFilters filters,
         PagingOptions pagingOptions)
     {

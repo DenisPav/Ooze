@@ -1,11 +1,12 @@
 ﻿using Ooze.Typed.Sorters;
 
-public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
+public class BlogSortersProvider : IOozeSorterProvider<Blog>
 {
-    public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
+    public IEnumerable<ISortDefinition<Blog>> GetSorters()
     {
-        return Sorters.CreateFor<Blog, BlogSorters>()
-            .Add(blog => blog.Id, sorter => sorter.BlogIdSort)
+        return Sorters.CreateFor<Blog>()
+            .Add(blog => blog.Id)
+            .Add(blog => blog.Name)
             .Build();
     }
 }

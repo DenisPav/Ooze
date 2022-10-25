@@ -15,11 +15,11 @@ namespace Ooze.Typed.Extensions
         {
             var providerType = typeof(TProvider);
             var implementedInterfaces = providerType.GetInterfaces()
-                .Where(@type => type.IsGenericType);
+                .Where(@type => type.IsGenericType)
+                .ToList();
             var filterProvider = implementedInterfaces.SingleOrDefault(@interface => typeof(IOozeFilterProvider<,>).IsAssignableFrom(@interface.GetGenericTypeDefinition()));
-            var sorterProvider = implementedInterfaces.SingleOrDefault(@interface => typeof(IOozeSorterProvider<,>).IsAssignableFrom(@interface.GetGenericTypeDefinition()));
-
-
+            var sorterProvider = implementedInterfaces.SingleOrDefault(@interface => typeof(IOozeSorterProvider<>).IsAssignableFrom(@interface.GetGenericTypeDefinition()));
+            
             if (filterProvider is not null)
             {
                 _services.Add(new ServiceDescriptor(filterProvider, providerType, providerLifetime));
@@ -35,9 +35,9 @@ namespace Ooze.Typed.Extensions
         internal IOozeServiceCollectionBuilder AddCommonServices()
         {
             _services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
-            _services.AddScoped(typeof(IOozeTypedResolver<,,>), typeof(OozeTypedResolver<,,>));
+            _services.AddScoped(typeof(IOozeTypedResolver<,>), typeof(OozeTypedResolver<,>));
             _services.AddScoped(typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>));
-            _services.AddScoped(typeof(IOozeSorterHandler<,>), typeof(OozeSorterHandler<,>));
+            _services.AddScoped(typeof(IOozeSorterHandler<>), typeof(OozeSorterHandler<>));
             _services.AddScoped(typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>));
 
             return this;

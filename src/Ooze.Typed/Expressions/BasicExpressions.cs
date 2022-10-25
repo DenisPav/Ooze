@@ -121,6 +121,17 @@ internal static class BasicExpressions
 
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }
+    
+    internal static string GetExpressionName<TEntity, TTarget>(Expression<Func<TEntity, TTarget>> expression)
+    {
+        if (!(expression.Body is MemberExpression memberExpression))
+        {
+            throw new Exception("Passed expression not correctly defined");
+        }
+
+        var memberName = memberExpression.Member.Name;
+        return memberName;
+    }
 
     internal static OozeValue<TType> CreateWrapperObject<TType>(TType value)
     {
