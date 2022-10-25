@@ -1,30 +1,24 @@
 ﻿using System.Linq.Expressions;
+using Ooze.Typed.Expressions;
 
 namespace Ooze.Typed.Sorters
 {
-    internal class SorterBuilder<TEntity, TSorters> : ISorterBuilder<TEntity, TSorters>
+    internal class SorterBuilder<TEntity> : ISorterBuilder<TEntity>
     {
-        readonly IList<SortDefinition<TEntity, TSorters>> _sortDefinitions = new List<SortDefinition<TEntity, TSorters>>();
+        readonly IList<SortDefinition<TEntity>> _sortDefinitions = new List<SortDefinition<TEntity>>();
 
-        public ISorterBuilder<TEntity, TSorters> Add<TProperty>(
-            Expression<Func<TEntity, TProperty>> dataExpression,
-            Func<TSorters, SortDirection?> sorterFunc)
+        public ISorterBuilder<TEntity> Add<TProperty>(Expression<Func<TEntity, TProperty>> dataExpression)
         {
-            _sortDefinitions.Add(new SortDefinition<TEntity, TSorters>
+            _sortDefinitions.Add(new SortDefinition<TEntity>
             {
                 DataExpression = dataExpression,
-                ShouldRun = sorters => sorterFunc(sorters) != null,
-                GetSortDirection = sorters =>
-                {
-                    var sortDirection = sorterFunc(sorters).GetValueOrDefault(SortDirection.Ascending);
-                    return sortDirection;
-                }
+                PropertyName = BasicExpressions.GetExpressionName(dataExpression)
             });
 
             return this;
         }
 
-        public IEnumerable<ISortDefinition<TEntity, TSorters>> Build()
+        public IEnumerable<ISortDefinition<TEntity>> Build()
             => _sortDefinitions;
     }
 }

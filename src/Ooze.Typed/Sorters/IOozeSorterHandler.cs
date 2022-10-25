@@ -1,9 +1,9 @@
 ﻿namespace Ooze.Typed.Sorters
 {
-    internal interface IOozeSorterHandler<TEntity, TSorters>
+    internal interface IOozeSorterHandler<TEntity>
     {
         IQueryable<TEntity> Apply(
             IQueryable<TEntity> query,
-            TSorters sorters);
+            IEnumerable<Sorter> sorters);
     }
 }

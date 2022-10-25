@@ -1,12 +1,13 @@
 ﻿using Ooze.Typed.Paging;
+using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed;
 
 public interface IOozeTypedResolver
 {
-    IQueryable<TEntity> Sort<TEntity, TSorters>(
+    IQueryable<TEntity> Sort<TEntity>(
         IQueryable<TEntity> query,
-        TSorters sorters);
+        IEnumerable<Sorter> sorters);
     IQueryable<TEntity> Filter<TEntity, TFilters>(
         IQueryable<TEntity> query,
         TFilters filters);
@@ -15,12 +16,12 @@ public interface IOozeTypedResolver
         PagingOptions pagingOptions);
 }
 
-public interface IOozeTypedResolver<TEntity, TFilters, TSorters>
+public interface IOozeTypedResolver<TEntity, TFilters>
 {
-    IOozeTypedResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query);
-    IOozeTypedResolver<TEntity, TFilters, TSorters> Sort(TSorters sorters);
-    IOozeTypedResolver<TEntity, TFilters, TSorters> Filter(TFilters filters);
-    IOozeTypedResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions);
+    IOozeTypedResolver<TEntity, TFilters> WithQuery(IQueryable<TEntity> query);
+    IOozeTypedResolver<TEntity, TFilters> Sort(IEnumerable<Sorter> sorters);
+    IOozeTypedResolver<TEntity, TFilters> Filter(TFilters filters);
+    IOozeTypedResolver<TEntity, TFilters> Page(PagingOptions pagingOptions);
     IQueryable<TEntity> Apply();
-    IQueryable<TEntity> Apply(IQueryable<TEntity> query, TSorters sorters, TFilters filters, PagingOptions pagingOptions);
+    IQueryable<TEntity> Apply(IQueryable<TEntity> query, IEnumerable<Sorter> sorters, TFilters filters, PagingOptions pagingOptions);
 }

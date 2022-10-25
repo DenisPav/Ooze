@@ -1,7 +1,7 @@
 ﻿namespace Ooze.Typed.Sorters
 {
-    public interface IOozeSorterProvider<TEntity, TSorters>
+    public interface IOozeSorterProvider<TEntity>
     {
-        IEnumerable<ISortDefinition<TEntity, TSorters>> GetSorters();
+        IEnumerable<ISortDefinition<TEntity>> GetSorters();
     }
 }

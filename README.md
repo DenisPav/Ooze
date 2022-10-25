@@ -83,15 +83,15 @@ services.AddOozeTyped()
 
 ## Adding sorters 🔼🔽
 Similarly how you can define filter definitions, you can create sorter definitions which can be then used
-by `Ooze` to sort your queries. This is done by implementing `IOozeSorterProvider<TEntity, TSorters>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
+by `Ooze` to sort your queries. This is done by implementing `IOozeSorterProvider<TEntity>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
 ```csharp
-public class MyClassSortersProvider : IOozeSorterProvider<MyClass, MyClassSorters>
+public class MyClassSortersProvider : IOozeSorterProvider<MyClass>
 {
-    public IEnumerable<ISortDefinition<MyClass, MyClassSorters>> GetSorters()
+    public IEnumerable<ISortDefinition<MyClass>> GetSorters()
     {
-        return Sorters.CreateFor<MyClass, MyClassSorters>()
-            //add sorting on Id property in direction specified in IdSort if the sorter is present
-            .Add(x => x.Id, sorter => sorter.IdSort)
+        return Sorters.CreateFor<MyClass>()
+            //add sorting on Id property in provided direction
+            .Add(x => x.Id)
             .Build();
     }
 }
@@ -99,7 +99,7 @@ public class MyClassSortersProvider : IOozeSorterProvider<MyClass, MyClassSorter
 Sorters are added to `Ooze` in same manner as Filters so you can reuse the example mentioned there.
 
 **NOTE:**
-Sorters by default use `SortDirection` enumeration in order to specify property sorting direction.
+Sorters by default  `Sorters` record class which uses combination of name and `SortDirection` enumeration in order to specify property sorting direction.
 
 ## Paging 📰
 Paging is done via `.Page` method on resolver. You just need to pass instance of `PagingOptions` to the before mentioned method. For example:
@@ -115,28 +115,30 @@ query = resolver
 ```
 
 ## Applying definitions 🧪
-In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters, TSorter>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is an more elaborate example below:
+In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is an more elaborate example below:
 ```csharp
 //lets say you have an route which gets filters/sorters from request body
 app.MapPost("/", (
     DatabaseContext db,
-    IOozeTypedResolver<MyEntity, MyEntityFilters, MyEntitySorters> resolver,
-    MyEntityFilters filters) =>
+    IOozeTypedResolver<MyEntity, MyEntityFilters> resolver,
+    Input model) =>
 {
     IQueryable<MyEntity> query = db.Set<MyEntity>();
 
     query = resolver
         .WithQuery(query)
-        .Filter(filters)
-        //you can also .Sort or .Page this if needed
+        .Filter(model.Filters)
+        //you can also .Sort(model.Sorters) or .Page(model.Paging) this query if needed
         .Apply();
 
     return query;
 });
+
+public record class Input(BlogFilters Filters, IEnumerable<Sorter> Sorters);
 ```
 
 **NOTE:**
-Example below is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web).
+Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web).
 
 
 <details>

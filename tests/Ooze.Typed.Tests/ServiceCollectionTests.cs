@@ -16,9 +16,9 @@ public class ServiceCollectionTests
         var requiredInterfaces = new (Type ContractType, Type ImplementationType)[]
         {
             (typeof(IOozeTypedResolver), typeof(OozeTypedResolver)),
-            (typeof(IOozeTypedResolver<,,>), typeof(OozeTypedResolver<,,>)),
+            (typeof(IOozeTypedResolver<,>), typeof(OozeTypedResolver<,>)),
             (typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>)),
-            (typeof(IOozeSorterHandler<,>), typeof(OozeSorterHandler<,>)),
+            (typeof(IOozeSorterHandler<>), typeof(OozeSorterHandler<>)),
             (typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>))
         };
 
@@ -36,14 +36,14 @@ public class ServiceCollectionTests
     public void Should_Have_Custom_Provider_Implementation()
     {
         var services = new ServiceCollection();
-        var oozeBuilder = services.AddOozeTyped()
+        services.AddOozeTyped()
             .Add<BlogFiltersProvider>()
             .Add<BlogSortersProvider>();
 
         var requiredInterfaces = new (Type ContractType, Type ImplementationType)[]
         {
             (typeof(IOozeFilterProvider<Blog, BlogFilters>), typeof(BlogFiltersProvider)),
-            (typeof(IOozeSorterProvider<Blog, BlogSorters>), typeof(BlogSortersProvider)),
+            (typeof(IOozeSorterProvider<Blog>), typeof(BlogSortersProvider)),
         };
 
         foreach (var (ContractType, ImplementationType) in requiredInterfaces)
@@ -63,8 +63,8 @@ public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
         => Enumerable.Empty<IFilterDefinition<Blog, BlogFilters>>();
 }
 
-public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
+public class BlogSortersProvider : IOozeSorterProvider<Blog>
 {
-    public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
-        => Enumerable.Empty<ISortDefinition<Blog, BlogSorters>>();
+    public IEnumerable<ISortDefinition<Blog>> GetSorters()
+        => Enumerable.Empty<ISortDefinition<Blog>>();
 }

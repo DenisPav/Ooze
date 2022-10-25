@@ -2,29 +2,31 @@
 
 namespace Ooze.Typed.Sorters
 {
-    internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity, TSorters>
+    internal class OozeSorterHandler<TEntity> : IOozeSorterHandler<TEntity>
     {
-        private readonly IEnumerable<IOozeSorterProvider<TEntity, TSorters>> _sortProviders;
+        private readonly IEnumerable<IOozeSorterProvider<TEntity>> _sortProviders;
 
         public OozeSorterHandler(
-            IEnumerable<IOozeSorterProvider<TEntity, TSorters>> sortProviders)
+            IEnumerable<IOozeSorterProvider<TEntity>> sortProviders)
         {
             _sortProviders = sortProviders;
         }
 
         public IQueryable<TEntity> Apply(
             IQueryable<TEntity> query,
-            TSorters sorters)
+            IEnumerable<Sorter> sorters)
         {
+            var sortersDictionary = sorters.ToDictionary(x => x.Name, x => x.Direction);
             var validSorters = _sortProviders.SelectMany(provider => provider.GetSorters())
-                .Cast<SortDefinition<TEntity, TSorters>>()
-                .Where(sorter => sorter.ShouldRun(sorters));
-
-
-            foreach (var sortDefinition in validSorters)
+                .Cast<SortDefinition<TEntity>>()
+                .Where(sorterDefinition => sortersDictionary.ContainsKey(sorterDefinition.PropertyName))
+                .ToDictionary(sorterDefinition => sorterDefinition.PropertyName);
+            
+            foreach (var sorter in sorters)
             {
+                var sortDefinition = validSorters[sorter.Name];
                 var sorterType = BasicExpressions.GetMemberExpression(sortDefinition.DataExpression.Body).Type;
-                var direction = sortDefinition.GetSortDirection(sorters);
+                var direction = sortersDictionary[sortDefinition.PropertyName];
 
                 if(query.Expression.Type == typeof(IOrderedQueryable<TEntity>))
                 {
