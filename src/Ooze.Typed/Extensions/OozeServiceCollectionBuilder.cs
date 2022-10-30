@@ -7,18 +7,25 @@ namespace Ooze.Typed.Extensions
 {
     internal class OozeServiceCollectionBuilder : IOozeServiceCollectionBuilder
     {
+        private static readonly Type FilterProviderType = typeof(IOozeFilterProvider<,>);
+        private static readonly Type SorterProviderType = typeof(IOozeSorterProvider<>);
         private readonly IServiceCollection _services;
 
         public OozeServiceCollectionBuilder(IServiceCollection services) => _services = services;
-
+        
         public IOozeServiceCollectionBuilder Add<TProvider>(ServiceLifetime providerLifetime = ServiceLifetime.Singleton)
         {
             var providerType = typeof(TProvider);
             var implementedInterfaces = providerType.GetInterfaces()
                 .Where(@type => type.IsGenericType)
                 .ToList();
-            var filterProvider = implementedInterfaces.SingleOrDefault(@interface => typeof(IOozeFilterProvider<,>).IsAssignableFrom(@interface.GetGenericTypeDefinition()));
-            var sorterProvider = implementedInterfaces.SingleOrDefault(@interface => typeof(IOozeSorterProvider<>).IsAssignableFrom(@interface.GetGenericTypeDefinition()));
+            var filterProvider = implementedInterfaces.SingleOrDefault(@interface => CheckTypePredicate(@interface, FilterProviderType));
+            var sorterProvider = implementedInterfaces.SingleOrDefault(@interface => CheckTypePredicate(@interface, SorterProviderType));
+            
+            if(filterProvider is null && sorterProvider is null)
+            {
+                throw new ArgumentException("Passed Type is not valid Ooze provider", nameof(TProvider));
+            }
             
             if (filterProvider is not null)
             {
@@ -31,6 +38,9 @@ namespace Ooze.Typed.Extensions
 
             return this;
         }
+
+        private static bool CheckTypePredicate(Type interfaceType, Type providerType)
+            => providerType.IsAssignableFrom(interfaceType.GetGenericTypeDefinition());
 
         internal IOozeServiceCollectionBuilder AddCommonServices()
         {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Ooze.Typed.Paging;
 using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed.Web.Controllers
@@ -33,7 +34,34 @@ namespace Ooze.Typed.Web.Controllers
             var results = await query.ToListAsync();
             return Ok(results);
         }
+        
+        [HttpPost("/typed")]
+        public async Task<IActionResult> PostTyped(Input model)
+        {
+            IQueryable<Blog> query = _db.Set<Blog>();
+
+            query = _resolver.Apply(query, model.Sorters, model.Filters, model.Paging);
+            
+            var results = await query.ToListAsync();
+            return Ok(results);
+        }
+        
+        [HttpPost("/typed-expanded")]
+        public async Task<IActionResult> PostTypedExpanded(Input model)
+        {
+            IQueryable<Blog> query = _db.Set<Blog>();
+
+            query = _resolver
+                .WithQuery(query)
+                .Sort(model.Sorters)
+                .Filter(model.Filters)
+                .Page(model.Paging)
+                .Apply();
+            
+            var results = await query.ToListAsync();
+            return Ok(results);
+        }
     }
 
-    public record class Input(BlogFilters Filters, IEnumerable<Sorter> Sorters);
+    public record class Input(BlogFilters Filters, IEnumerable<Sorter> Sorters, PagingOptions Paging);
 }
