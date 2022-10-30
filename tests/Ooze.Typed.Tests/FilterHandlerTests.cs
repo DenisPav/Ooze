@@ -36,11 +36,12 @@ public class FilterHandlerTests
         sutInstance.Provider2.GetFilters().Returns(Enumerable.Empty<FilterDefinition<Blog, BlogFilters>>());
 
         var resultingQuery = sutInstance.Handler.Apply(sutInstance.Query, new BlogFilters(1, "dsads", 231));
-
+        var fakeFilters = new BlogFilters(null, null, null);
+        
         sutInstance.Provider1.Received(1).GetFilters();
         sutInstance.Provider2.Received(1).GetFilters();
-        filterDefinition1.Received(1).ShouldRun(Arg.Any<BlogFilters>());
-        filterDefinition2.Received(1).ShouldRun(Arg.Any<BlogFilters>());
+        filterDefinition1.Received(1).ShouldRun(fakeFilters);
+        filterDefinition2.Received(1).ShouldRun(fakeFilters);
         Assert.False(sutInstance.Query == resultingQuery);
     }
 
