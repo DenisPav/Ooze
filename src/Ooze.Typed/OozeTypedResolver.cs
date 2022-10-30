@@ -18,6 +18,9 @@ internal class OozeTypedResolver : IOozeTypedResolver
         IQueryable<TEntity> query,
         TFilters filters)
     {
+        if (filters is null)
+            return query;
+        
         var filterHandler = _serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
         query = filterHandler.Apply(query, filters);
 
@@ -28,6 +31,9 @@ internal class OozeTypedResolver : IOozeTypedResolver
         IQueryable<TEntity> query,
         IEnumerable<Sorter> sorters)
     {
+        if (sorters == null || sorters?.Count() == 0)
+            return query;
+        
         var sorterHandler = _serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity>>();
         query = sorterHandler.Apply(query, sorters);
 
@@ -38,6 +44,9 @@ internal class OozeTypedResolver : IOozeTypedResolver
         IQueryable<TEntity> query,
         PagingOptions pagingOptions)
     {
+        if (pagingOptions == null)
+            return query;
+        
         var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = sorterHandler.Apply(query, pagingOptions);
 
@@ -70,18 +79,27 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
 
     public IOozeTypedResolver<TEntity, TFilters> Sort(IEnumerable<Sorter> sorters)
     {
+        if (sorters == null || sorters?.Count() == 0)
+            return this;
+        
         _query = _sorterHandler.Apply(_query, sorters);
         return this;
     }
 
     public IOozeTypedResolver<TEntity, TFilters> Filter(TFilters filters)
     {
+        if (filters is null)
+            return this;
+        
         _query = _filterHandler.Apply(_query, filters);
         return this;
     }
 
     public IOozeTypedResolver<TEntity, TFilters> Page(PagingOptions pagingOptions)
     {
+        if (pagingOptions == null)
+            return this;
+        
         _query = _pagingHandler.Apply(_query, pagingOptions);
         return this;
     }
