@@ -16,17 +16,17 @@ namespace Ooze.Typed.Sorters
             IQueryable<TEntity> query,
             IEnumerable<Sorter> sorters)
         {
-            var sortersDictionary = sorters.ToDictionary(x => x.Name, x => x.Direction);
             var validSorters = _sortProviders.SelectMany(provider => provider.GetSorters())
                 .Cast<SortDefinition<TEntity>>()
-                .Where(sorterDefinition => sortersDictionary.ContainsKey(sorterDefinition.PropertyName))
                 .ToDictionary(sorterDefinition => sorterDefinition.PropertyName);
+            var sortersDictionary = sorters.Where(sorter => validSorters.ContainsKey(sorter.Name))
+                .ToDictionary(x => x.Name, x => x.Direction);
             
-            foreach (var sorter in sorters)
+            foreach (var sorter in sortersDictionary.Keys)
             {
-                var sortDefinition = validSorters[sorter.Name];
+                var sortDefinition = validSorters[sorter];
                 var sorterType = BasicExpressions.GetMemberExpression(sortDefinition.DataExpression.Body).Type;
-                var direction = sortersDictionary[sortDefinition.PropertyName];
+                var direction = sortersDictionary[sorter];
 
                 if(query.Expression.Type == typeof(IOrderedQueryable<TEntity>))
                 {
