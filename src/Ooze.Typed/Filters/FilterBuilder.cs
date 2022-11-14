@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace Ooze.Typed.Filters;
 
-internal partial class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter>
+internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter>
 {
     readonly IList<FilterDefinition<TEntity, TFilter>> _filterDefinitions = new List<FilterDefinition<TEntity, TFilter>>();
 
