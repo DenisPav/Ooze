@@ -14,7 +14,7 @@ namespace Ooze.Typed.Tests.Integration
         [Fact]
         public async Task Should_Correctly_Sort_Data_Descending_By_Single_Field()
         {
-            using var scope = _fixture.CreateServiceProvider().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
@@ -30,7 +30,7 @@ namespace Ooze.Typed.Tests.Integration
                 .Apply();
 
             var results = await query.ToListAsync();
-            Assert.True(results.Count == 100);
+            Assert.True(results.Count == DatabaseContext.TotalCountOfFakes);
             Assert.True(results[0].Id == 100);
             Assert.True(results[99].Id == 1);
         }
@@ -38,7 +38,7 @@ namespace Ooze.Typed.Tests.Integration
         [Fact]
         public async Task Should_Correctly_Sort_Data_Ascending_By_Single_Field()
         {
-            using var scope = _fixture.CreateServiceProvider().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
@@ -54,7 +54,7 @@ namespace Ooze.Typed.Tests.Integration
                 .Apply();
 
             var results = await query.ToListAsync();
-            Assert.True(results.Count == 100);
+            Assert.True(results.Count == DatabaseContext.TotalCountOfFakes);
             Assert.True(results[0].Id == 1);
             Assert.True(results[99].Id == 100);
         }
@@ -62,7 +62,7 @@ namespace Ooze.Typed.Tests.Integration
         [Fact]
         public async Task Should_Correctly_Sort_Data_Ascending_By_Multple_Fields()
         {
-            using var scope = _fixture.CreateServiceProvider().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
@@ -79,7 +79,7 @@ namespace Ooze.Typed.Tests.Integration
                 .Apply();
 
             var results = await query.ToListAsync();
-            Assert.True(results.Count == 100);
+            Assert.True(results.Count == DatabaseContext.TotalCountOfFakes);
             Assert.True(results[0].Id == 1);
             Assert.True(results[1].Id == 2);
         }
@@ -87,7 +87,7 @@ namespace Ooze.Typed.Tests.Integration
         [Fact]
         public async Task Should_Not_Sort_Data_If_Sort_Not_Provided()
         {
-            using var scope = _fixture.CreateServiceProvider().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
@@ -100,7 +100,7 @@ namespace Ooze.Typed.Tests.Integration
                 .Apply();
 
             var results = await query.ToListAsync();
-            Assert.True(results.Count == 100);
+            Assert.True(results.Count == DatabaseContext.TotalCountOfFakes);
             Assert.True(results[0].Id == 1);
             Assert.True(results[99].Id == 100);
         }

@@ -8,23 +8,22 @@ namespace Ooze.Typed.Tests.Integration.Setup
     public class DbFixture<TContext>
         where TContext : DbContext
     {
-        private IServiceCollection CreateServiceColletion()
+        private IServiceCollection CreateServiceColletion<TProvider1>()
         {
             var services = new ServiceCollection()
                 .AddLogging();
             
             services.AddOozeTyped()
-                .Add<PostEqualFiltersProvider>()
-                .Add<PostSortersProvider>();
+                .Add<TProvider1>();
 
             return services;
         }
 
-        public IServiceProvider CreateServiceProvider() => new DefaultServiceProviderFactory(
+        public IServiceProvider CreateServiceProvider<TProvider1>() => new DefaultServiceProviderFactory(
             new ServiceProviderOptions
             {
                 ValidateScopes = true
-            }).CreateServiceProvider(CreateServiceColletion());
+            }).CreateServiceProvider(CreateServiceColletion<TProvider1>());
 
         public DatabaseContext CreateContext()
         {

@@ -4,6 +4,7 @@ namespace Ooze.Typed.Tests.Integration.Setup;
 
 public class DatabaseContext : DbContext
 {
+    public const int TotalCountOfFakes = 100;
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<User> Users { get; set; }
@@ -38,22 +39,24 @@ public class DatabaseContext : DbContext
         await Database.EnsureCreatedAsync();
         Posts.RemoveRange(Posts);
 
-        var posts = Enumerable.Range(1, 100)
-            .Select(_ => new Post
+        var date = new DateTime(2022, 1, 1);
+        var posts = Enumerable.Range(1, TotalCountOfFakes)
+            .Select(id => new Post
             {
-                Id = _,
-                Enabled = _ % 2 == 0,
-                Name = $"{_}_Sample_post",
+                Id = id,
+                Enabled = id % 2 == 0,
+                Name = $"{id}_Sample_post",
+                Date = date.AddDays(id),
                 Comments = new[] {
                     new Comment
                     {
-                        Id = _,
-                        Date = DateTime.Now.AddDays(_),
-                        Text = $"Sample comment {_}",
+                        Id = id,
+                        Date = DateTime.Now.AddDays(id),
+                        Text = $"Sample comment {id}",
                         User = new User
                         {
-                            Id = _,
-                            Email = $"sample_{_}@email.com"
+                            Id = id,
+                            Email = $"sample_{id}@email.com"
                         }
                     }
                 }
