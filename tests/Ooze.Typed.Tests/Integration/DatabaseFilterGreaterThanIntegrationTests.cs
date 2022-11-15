@@ -4,20 +4,20 @@ using Ooze.Typed.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Tests.Integration
 {
-    public class DatabaseFilterEqualIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+    public class DatabaseFilterGreaterThanIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
     {
         readonly DbFixture<DatabaseContext> _fixture;
 
-        public DatabaseFilterEqualIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
+        public DatabaseFilterGreaterThanIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
 
         [Theory]
         [InlineData(1)]
         [InlineData(5)]
         [InlineData(10)]
         [InlineData(100)]
-        public async Task Should_Correctly_Filter_Data_By_Equal_Int_Filter(int postId)
+        public async Task Should_Correctly_Filter_Data_By_Greater_Than_Int_Filter(int postId)
         {
-            using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
@@ -27,10 +27,11 @@ namespace Ooze.Typed.Tests.Integration
             query = oozeResolver.WithQuery(query)
                 .Filter(new PostFilters(postId, null, null, null))
                 .Apply();
+            var expectedCount = DatabaseContext.TotalCountOfFakes - postId;
 
             var results = await query.ToListAsync();
-            Assert.True(results.Count == 1);
-            Assert.True(results[0].Id == postId);
+            Assert.True(results.Count == expectedCount);
+            Assert.True(results.All(x => x.Id > postId));
         }
 
         [Theory]
@@ -38,55 +39,47 @@ namespace Ooze.Typed.Tests.Integration
         [InlineData("5_Sample_post")]
         [InlineData("10_Sample_post")]
         [InlineData("100_Sample_post")]
-        public async Task Should_Correctly_Filter_Data_By_Equal_String_Filter(string postName)
+        public async Task Should_Fail_To_Filter_Data_By_Greater_Than_String_Filter(string postName)
         {
-            using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
             var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
             IQueryable<Post> query = context.Posts;
-            query = oozeResolver.WithQuery(query)
+            Assert.Throws<InvalidOperationException>(() => oozeResolver.WithQuery(query)
                 .Filter(new PostFilters(null, postName, null, null))
-                .Apply();
-
-            var results = await query.ToListAsync();
-            Assert.True(results.Count == 1);
-            Assert.True(results[0].Name == postName);
+                .Apply());
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task Should_Correctly_Filter_Data_By_Equal_Bool_Filter(bool enabled)
+        public async Task Should_Fail_To_Filter_Data_By_Greater_Than_Bool_Filter(bool enabled)
         {
-            using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
             var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
 
             IQueryable<Post> query = context.Posts;
-            query = oozeResolver.WithQuery(query)
+            Assert.Throws<InvalidOperationException>(() => oozeResolver.WithQuery(query)
                 .Filter(new PostFilters(null, null, enabled, null))
-                .Apply();
-
-            var results = await query.ToListAsync();
-            Assert.True(results.Count == 50);
-            Assert.True(results.All(x => x.Enabled == enabled) == true);
+                .Apply());
         }
 
         [Theory]
         [InlineData(2022, 1, 2)]
         [InlineData(2022, 1, 3)]
         [InlineData(2022, 2, 1)]
-        public async Task Should_Correctly_Filter_Data_By_Equal_DateTime_Filter(
+        public async Task Should_Correctly_Filter_Data_By_Greater_Than_DateTime_Filter(
             int year,
             int month,
             int day)
         {
-            using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+            using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
@@ -99,8 +92,8 @@ namespace Ooze.Typed.Tests.Integration
                 .Apply();
 
             var results = await query.ToListAsync();
-            Assert.True(results.Count == 1);
-            Assert.True(results[0].Date == filterDate);
+            Assert.True(results.All(x => x.Date != filterDate));
+            Assert.True(results.All(x => x.Date > filterDate));
         }
     }
 }
