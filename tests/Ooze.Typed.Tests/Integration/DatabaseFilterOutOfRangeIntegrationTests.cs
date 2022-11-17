@@ -1,0 +1,85 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Ooze.Typed.Filters;
+using Ooze.Typed.Tests.Integration.Setup;
+
+namespace Ooze.Typed.Tests.Integration;
+
+public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+{
+    readonly DbFixture<DatabaseContext> _fixture;
+
+    public DatabaseFilterOutOfRangeThanIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
+
+    [Theory]
+    [InlineData(-10, 5)]
+    [InlineData(5, 20)]
+    [InlineData(25, 90)]
+    [InlineData(95, 120)]
+    public async Task Should_Correctly_Filter_Data_By_Out_Of_Range_Int_Filter(
+        int from,
+        int to)
+    {
+        var filter = new RangeFilter<long> { From = from, To = to };
+        using var scope = _fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
+        var provider = scope.ServiceProvider;
+
+        await using var context = _fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+
+        IQueryable<Post> query = context.Posts;
+        query = oozeResolver.WithQuery(query)
+            .Filter(new PostRangeFilters(filter, null, null))
+            .Apply();
+        
+        var results = await query.ToListAsync();
+        var generatedRange = Enumerable.Range(from, to + 1).Select(x => (long)x);
+        Assert.True(results.Any(x => generatedRange.Contains(x.Id) == false));
+    }
+
+    [Theory]
+    [InlineData("-10", "5")]
+    [InlineData("postname", "endpostname")]
+    public async Task Should_Correctly_Filter_Data_By_Out_Of_Range_String_Filter(string from, string to)
+    {
+        var filter = new RangeFilter<string> { From = from, To = to };
+        using var scope = _fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
+        var provider = scope.ServiceProvider;
+
+        await using var context = _fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+
+        IQueryable<Post> query = context.Posts;
+        Assert.Throws<InvalidOperationException>(() => oozeResolver.WithQuery(query)
+            .Filter(new PostRangeFilters(null, filter, null))
+            .Apply());
+    }
+
+    [Fact]
+    public async Task Should_Correctly_Filter_Data_By_Out_Of_Range_DateTime_Filter()
+    {
+        var from = new DateTime(2022, 1, 1);
+        var to = new DateTime(2022, 2, 20);
+        var filter = new RangeFilter<DateTime>
+        {
+            From = from,
+            To = to
+        };
+        
+        using var scope = _fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
+        var provider = scope.ServiceProvider;
+
+        await using var context = _fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+
+        IQueryable<Post> query = context.Posts;
+        query = oozeResolver.WithQuery(query)
+            .Filter(new PostRangeFilters(null, null, filter))
+            .Apply();
+        
+        var results = await query.ToListAsync();
+        var diffDays = to.Subtract(from).Days;
+        var generatedRange = Enumerable.Range(0, diffDays + 1).Select(x => from.AddDays(x));
+        Assert.True(results.Any(x => generatedRange.Contains(x.Date) == false));
+    }
+}
