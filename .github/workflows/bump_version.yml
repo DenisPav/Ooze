@@ -1,6 +1,9 @@
 name: Bump package version
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
