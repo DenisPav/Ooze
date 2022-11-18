@@ -20,11 +20,18 @@ internal class OozeTypedResolver : IOozeTypedResolver
     {
         if (filters is null)
             return query;
-        
+
         var filterHandler = _serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
         query = filterHandler.Apply(query, filters);
 
         return query;
+    }
+
+    public IQueryable<TEntity> Query<TEntity>(
+        IQueryable<TEntity> query,
+        string queryDefinition)
+    {
+        throw new NotImplementedException();
     }
 
     public IQueryable<TEntity> Sort<TEntity>(
@@ -33,7 +40,7 @@ internal class OozeTypedResolver : IOozeTypedResolver
     {
         if (sorters == null || sorters?.Count() == 0)
             return query;
-        
+
         var sorterHandler = _serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity>>();
         query = sorterHandler.Apply(query, sorters);
 
@@ -46,7 +53,7 @@ internal class OozeTypedResolver : IOozeTypedResolver
     {
         if (pagingOptions == null)
             return query;
-        
+
         var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = sorterHandler.Apply(query, pagingOptions);
 
@@ -81,7 +88,7 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
     {
         if (sorters == null || sorters?.Count() == 0)
             return this;
-        
+
         _query = _sorterHandler.Apply(_query, sorters);
         return this;
     }
@@ -90,21 +97,26 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
     {
         if (filters is null)
             return this;
-        
+
         _query = _filterHandler.Apply(_query, filters);
         return this;
+    }
+
+    public IQueryable<TEntity> Query(string queryDefinition)
+    {
+        throw new NotImplementedException();
     }
 
     public IOozeTypedResolver<TEntity, TFilters> Page(PagingOptions pagingOptions)
     {
         if (pagingOptions == null)
             return this;
-        
+
         _query = _pagingHandler.Apply(_query, pagingOptions);
         return this;
     }
 
-    public IQueryable<TEntity> Apply() 
+    public IQueryable<TEntity> Apply()
         => _query;
 
     public IQueryable<TEntity> Apply(

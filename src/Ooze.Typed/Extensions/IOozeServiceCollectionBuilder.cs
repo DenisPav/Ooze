@@ -5,5 +5,6 @@ namespace Ooze.Typed.Extensions
     public interface IOozeServiceCollectionBuilder
     {
         IOozeServiceCollectionBuilder Add<TProvider>(ServiceLifetime providerLifetime = ServiceLifetime.Singleton);
+        IOozeServiceCollectionBuilder AddQueryHandler(Type queryHandlerType);
     }
 }
