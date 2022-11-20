@@ -44,7 +44,7 @@ public interface IQueryFilterDefinition<TEntity>
 {
 }
 
-public interface IQueryFilterProvider<TEntity>
+public interface IOozeQueryFilterProvider<TEntity>
 {
     IEnumerable<IQueryFilterDefinition<TEntity>> GetFilters();
 }

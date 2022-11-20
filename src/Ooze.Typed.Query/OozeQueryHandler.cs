@@ -5,9 +5,9 @@ namespace Ooze.Typed.Query;
 
 internal class OozeQueryHandler<TEntity> : IOozeQueryHandler<TEntity>
 {
-    private readonly IEnumerable<IQueryFilterProvider<TEntity>> _filterProviders;
+    private readonly IEnumerable<IOozeQueryFilterProvider<TEntity>> _filterProviders;
 
-    public OozeQueryHandler(IEnumerable<IQueryFilterProvider<TEntity>> filterProviders)
+    public OozeQueryHandler(IEnumerable<IOozeQueryFilterProvider<TEntity>> filterProviders)
     {
         _filterProviders = filterProviders;
     }

@@ -10,9 +10,9 @@ namespace Ooze.Typed.Extensions
     {
         private static readonly Type FilterProviderType = typeof(IOozeFilterProvider<,>);
         private static readonly Type SorterProviderType = typeof(IOozeSorterProvider<>);
-        private readonly IServiceCollection _services;
+        public IServiceCollection Services { get; init; }
 
-        public OozeServiceCollectionBuilder(IServiceCollection services) => _services = services;
+        public OozeServiceCollectionBuilder(IServiceCollection services) => Services = services;
         
         public IOozeServiceCollectionBuilder Add<TProvider>(ServiceLifetime providerLifetime = ServiceLifetime.Singleton)
         {
@@ -30,11 +30,11 @@ namespace Ooze.Typed.Extensions
             
             if (filterProvider is not null)
             {
-                _services.Add(new ServiceDescriptor(filterProvider, providerType, providerLifetime));
+                Services.Add(new ServiceDescriptor(filterProvider, providerType, providerLifetime));
             }
             if (sorterProvider is not null)
             {
-                _services.Add(new ServiceDescriptor(sorterProvider, providerType, providerLifetime));
+                Services.Add(new ServiceDescriptor(sorterProvider, providerType, providerLifetime));
             }
 
             return this;
@@ -42,7 +42,7 @@ namespace Ooze.Typed.Extensions
 
         public IOozeServiceCollectionBuilder AddQueryHandler(Type queryHandlerType)
         {
-            _services.AddScoped(typeof(IOozeQueryHandler<>), queryHandlerType);
+            Services.AddScoped(typeof(IOozeQueryHandler<>), queryHandlerType);
             return this;
         }
 
@@ -51,11 +51,11 @@ namespace Ooze.Typed.Extensions
 
         internal IOozeServiceCollectionBuilder AddCommonServices()
         {
-            _services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
-            _services.AddScoped(typeof(IOozeTypedResolver<,>), typeof(OozeTypedResolver<,>));
-            _services.AddScoped(typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>));
-            _services.AddScoped(typeof(IOozeSorterHandler<>), typeof(OozeSorterHandler<>));
-            _services.AddScoped(typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>));
+            Services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
+            Services.AddScoped(typeof(IOozeTypedResolver<,>), typeof(OozeTypedResolver<,>));
+            Services.AddScoped(typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>));
+            Services.AddScoped(typeof(IOozeSorterHandler<>), typeof(OozeSorterHandler<>));
+            Services.AddScoped(typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>));
 
             return this;
         }
