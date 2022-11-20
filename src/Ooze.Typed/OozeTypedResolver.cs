@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Paging;
+using Ooze.Typed.Queries;
 using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed;
@@ -31,7 +32,13 @@ internal class OozeTypedResolver : IOozeTypedResolver
         IQueryable<TEntity> query,
         string queryDefinition)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(queryDefinition))
+            return query;
+
+        var queryHandler = _serviceProvider.GetRequiredService<IOozeQueryHandler<TEntity>>();
+        query = queryHandler.Apply(query, queryDefinition);
+
+        return query;
     }
 
     public IQueryable<TEntity> Sort<TEntity>(
@@ -65,16 +72,19 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
 {
     private readonly IOozeSorterHandler<TEntity> _sorterHandler;
     private readonly IOozeFilterHandler<TEntity, TFilters> _filterHandler;
+    private readonly IOozeQueryHandler<TEntity> _queryHandler;
     private readonly IOozePagingHandler<TEntity> _pagingHandler;
     private IQueryable<TEntity> _query = null;
 
     public OozeTypedResolver(
         IOozeSorterHandler<TEntity> sorterHandler,
         IOozeFilterHandler<TEntity, TFilters> filterHandler,
+        IOozeQueryHandler<TEntity> queryHandler,
         IOozePagingHandler<TEntity> pagingHandler)
     {
         _sorterHandler = sorterHandler;
         _filterHandler = filterHandler;
+        _queryHandler = queryHandler;
         _pagingHandler = pagingHandler;
     }
 
@@ -102,9 +112,13 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
         return this;
     }
 
-    public IQueryable<TEntity> Query(string queryDefinition)
+    public IOozeTypedResolver<TEntity, TFilters> Query(string queryDefinition)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(queryDefinition))
+            return this;
+
+        _query = _queryHandler.Apply(_query, queryDefinition);
+        return this;
     }
 
     public IOozeTypedResolver<TEntity, TFilters> Page(PagingOptions pagingOptions)

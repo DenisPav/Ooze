@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Paging;
+using Ooze.Typed.Queries;
 using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed.Extensions
@@ -41,7 +42,8 @@ namespace Ooze.Typed.Extensions
 
         public IOozeServiceCollectionBuilder AddQueryHandler(Type queryHandlerType)
         {
-            throw new NotImplementedException();
+            _services.AddScoped(typeof(IOozeQueryHandler<>), queryHandlerType);
+            return this;
         }
 
         private static bool CheckTypePredicate(Type interfaceType, Type providerType)
