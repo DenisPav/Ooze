@@ -17,7 +17,11 @@ internal static class QueryTokenizer
     #region OperationParsers
 
     private static readonly TextParser<TextSpan> GreaterThanParser = Span.EqualToIgnoreCase(">");
+    // private static readonly TextParser<TextSpan> GreaterThanOrEqualParser = Span.EqualToIgnoreCase(">@");
+    private static readonly TextParser<TextSpan> LessThanParser = Span.EqualToIgnoreCase("<");
+    // private static readonly TextParser<TextSpan> LessThanOrEqualParser = Span.EqualToIgnoreCase("<@");
     private static readonly TextParser<TextSpan> EqualToParser = Span.EqualToIgnoreCase("==");
+    private static readonly TextParser<TextSpan> NotEqualToParser = Span.EqualToIgnoreCase("!=");
     private static readonly TextParser<Unit> OperatorParser;
 
     #endregion
@@ -40,7 +44,15 @@ internal static class QueryTokenizer
 
     static QueryTokenizer()
     {
-        var operations = new[] { GreaterThanParser, EqualToParser };
+        var operations = new[]
+        {
+            GreaterThanParser,
+            // GreaterThanOrEqualParser, 
+            LessThanParser, 
+            // LessThanOrEqualParser, 
+            EqualToParser,
+            NotEqualToParser
+        };
         var combinedOperationParser = operations.Aggregate((agg, current) => agg.Or(current));
         OperatorParser = (
             from @operator in combinedOperationParser

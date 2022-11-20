@@ -21,7 +21,10 @@ internal class OozeQueryHandler<TEntity> : IOozeQueryHandler<TEntity>
             .ToList();
         
         var result = QueryTokenizer.Tokenize(filterDefinitions, queryDefinition);
-        var filterExpression = QueryExpressionCreator.Create<TEntity>(query.Expression, result);
-        return query.Provider.CreateQuery<TEntity>(filterExpression);
+        var expressionResult = QueryExpressionCreator.Create<TEntity>(query.Expression, result);
+        if (expressionResult.Error != null)
+            throw expressionResult.Error;
+        
+        return query.Provider.CreateQuery<TEntity>(expressionResult.Expression);
     }
 }

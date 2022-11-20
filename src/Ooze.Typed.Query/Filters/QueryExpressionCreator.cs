@@ -8,7 +8,7 @@ internal static class QueryExpressionCreator
     private const string ParameterName = "x";
     private const string Where = nameof(Where);
 
-    public static MethodCallExpression Create<TEntity>(
+    public static ExpressionResult Create<TEntity>(
         Expression queryExpression,
         IEnumerable<Token<QueryToken>> queryDefinitionTokens)
     {
@@ -16,16 +16,24 @@ internal static class QueryExpressionCreator
             typeof(TEntity),
             ParameterName
         );
-
+        
         var tokenStack = new Stack<Token<QueryToken>>(queryDefinitionTokens.Reverse());
         var bracketStack = new Stack<Token<QueryToken>>();
-        var createdExpr = CreateExpression<TEntity>(parameterExpression, tokenStack, bracketStack);
-        var finalExpression = Expression.Lambda<Func<TEntity, bool>>(createdExpr, parameterExpression);
-        var quoteExpr = Expression.Quote(finalExpression);
-        var callExpr = Expression.Call(typeof(Queryable), Where, new[] { typeof(TEntity) }, queryExpression,
-            quoteExpr);
 
-        return callExpr;
+        try
+        {
+            var createdExpr = CreateExpression<TEntity>(parameterExpression, tokenStack, bracketStack);
+            var finalExpression = Expression.Lambda<Func<TEntity, bool>>(createdExpr, parameterExpression);
+            var quoteExpr = Expression.Quote(finalExpression);
+            var callExpr = Expression.Call(typeof(Queryable), Where, new[] { typeof(TEntity) }, queryExpression,
+                quoteExpr);
+
+            return new ExpressionResult(callExpr, null);
+        }
+        catch (Exception e)
+        {
+            return new ExpressionResult(null, e);
+        }
     }
 
     private static Expression CreateExpression<TEntity>(
@@ -110,8 +118,7 @@ internal static class QueryExpressionCreator
         var property = typeof(TEntity).GetProperty(token.ToStringValue());
         var currentMemberAccess = Expression.MakeMemberAccess(parameterExpression, property);
         token = tokens.Pop();
-        //TODO: check which operation it is using currently, for now we only assume Equal
-        Func<Expression, Expression, Expression> operationExpressionFactory = Expression.Equal;
+        var operationExpressionFactory = Operations.OperatorExpressionFactories[token.ToStringValue()];
         token = tokens.Pop();
 
         var value = token.ToStringValue();
@@ -123,3 +130,5 @@ internal static class QueryExpressionCreator
         propertyExpressions.Add(finalOperationExpression);
     }
 }
+
+internal record class ExpressionResult(Expression Expression, Exception Error);
