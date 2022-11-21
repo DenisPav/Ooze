@@ -17,12 +17,19 @@ internal static class QueryTokenizer
 
     #region OperationParsers
 
-    private static readonly TextParser<TextSpan> GreaterThanParser = Span.EqualToIgnoreCase(">");
-    // private static readonly TextParser<TextSpan> GreaterThanOrEqualParser = Span.EqualToIgnoreCase(">@");
-    private static readonly TextParser<TextSpan> LessThanParser = Span.EqualToIgnoreCase("<");
-    // private static readonly TextParser<TextSpan> LessThanOrEqualParser = Span.EqualToIgnoreCase("<@");
-    private static readonly TextParser<TextSpan> EqualToParser = Span.EqualToIgnoreCase("==");
-    private static readonly TextParser<TextSpan> NotEqualToParser = Span.EqualToIgnoreCase("!=");
+    public const string GreaterThan = ">>";
+    public const string GreaterThanOrEqual = ">=";
+    public const string LessThan = "<<";
+    public const string LessThanOrEqual = "<=";
+    public const string EqualTo = "==";
+    public const string NotEqualTo = "!=";
+    
+    private static readonly TextParser<TextSpan> GreaterThanOrEqualParser = Span.EqualToIgnoreCase(GreaterThanOrEqual);
+    private static readonly TextParser<TextSpan> GreaterThanParser = Span.EqualToIgnoreCase(GreaterThan).Try().Or(GreaterThanOrEqualParser);
+    private static readonly TextParser<TextSpan> LessThanOrEqualParser = Span.EqualToIgnoreCase(LessThanOrEqual);
+    private static readonly TextParser<TextSpan> LessThanParser = Span.EqualToIgnoreCase(LessThan).Try().Or(LessThanOrEqualParser);
+    private static readonly TextParser<TextSpan> EqualToParser = Span.EqualToIgnoreCase(EqualTo);
+    private static readonly TextParser<TextSpan> NotEqualToParser = Span.EqualToIgnoreCase(NotEqualTo);
     private static readonly TextParser<Unit> OperatorParser;
 
     #endregion
@@ -49,9 +56,7 @@ internal static class QueryTokenizer
         var operations = new[]
         {
             GreaterThanParser,
-            // GreaterThanOrEqualParser, 
-            LessThanParser, 
-            // LessThanOrEqualParser, 
+            LessThanParser,
             EqualToParser,
             NotEqualToParser
         };
