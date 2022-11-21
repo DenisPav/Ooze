@@ -1,4 +1,4 @@
-﻿namespace Ooze.Typed.Query.Filters;
+﻿namespace Ooze.Typed.Query.Tokenization;
 
 internal enum QueryToken
 {

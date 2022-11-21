@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Ooze.Typed.Query.Filters;
+namespace Ooze.Typed.Query.Expressions;
 
 internal static class Operations
 {

@@ -1,7 +1,8 @@
 ﻿using System.Linq.Expressions;
+using Ooze.Typed.Query.Tokenization;
 using Superpower.Model;
 
-namespace Ooze.Typed.Query.Filters;
+namespace Ooze.Typed.Query.Expressions;
 
 internal static class QueryExpressionCreator
 {
@@ -122,7 +123,7 @@ internal static class QueryExpressionCreator
         token = tokens.Pop();
 
         var value = token.ToStringValue();
-        var clearValue = value.Replace("'", string.Empty);
+        var clearValue = value.Replace(QueryTokenizer.ValueTick, string.Empty);
         var convertedValue = Convert.ChangeType(clearValue, property.PropertyType);
         var valueExpression = Expression.Constant(convertedValue);
 

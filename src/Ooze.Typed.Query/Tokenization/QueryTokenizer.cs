@@ -1,9 +1,10 @@
-﻿using Superpower;
+﻿using Ooze.Typed.Query.Filters;
+using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
 using Superpower.Tokenizers;
 
-namespace Ooze.Typed.Query.Filters;
+namespace Ooze.Typed.Query.Tokenization;
 
 internal static class QueryTokenizer
 {
@@ -36,8 +37,9 @@ internal static class QueryTokenizer
 
     #region ValueParsers
 
-    private static readonly TextParser<TextSpan> TickParser = Span.EqualToIgnoreCase("'");
-    private static readonly TextParser<char[]> ValueWithoutTicksParser = Character.Except('\'').Many();
+    public const string ValueTick = "'";
+    private static readonly TextParser<TextSpan> TickParser = Span.EqualToIgnoreCase(ValueTick);
+    private static readonly TextParser<char[]> ValueWithoutTicksParser = Character.Except(ValueTick[0]).Many();
     private static readonly TextParser<Unit> ValueParser;
 
     #endregion
