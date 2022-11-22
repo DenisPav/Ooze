@@ -152,6 +152,9 @@ operators are next:
  * LessThanOrEqual - `<=`
  * Equal - `==`
  * NotEqual - `!=`
+ * StartsWith - `@=`
+ * EndsWith - `=@`
+ * Contains - `%%`
 
 In order for this to work correctly you'll need to add implementation of `IQueryFilterProvider<T>` which will need
 to be registered to `ServiceCollection`. This implementation will contain filter fields which you enable for use in queries. Example implementation can be seen below (based on previous `Blog` example):

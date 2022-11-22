@@ -23,13 +23,19 @@ internal static class QueryTokenizer
     public const string LessThanOrEqual = "<=";
     public const string EqualTo = "==";
     public const string NotEqualTo = "!=";
+    public const string StartsWith = "@=";
+    public const string EndsWith = "=@";
+    public const string Contains = "%%";
     
     private static readonly TextParser<TextSpan> GreaterThanOrEqualParser = Span.EqualToIgnoreCase(GreaterThanOrEqual);
     private static readonly TextParser<TextSpan> GreaterThanParser = Span.EqualToIgnoreCase(GreaterThan).Try().Or(GreaterThanOrEqualParser);
     private static readonly TextParser<TextSpan> LessThanOrEqualParser = Span.EqualToIgnoreCase(LessThanOrEqual);
     private static readonly TextParser<TextSpan> LessThanParser = Span.EqualToIgnoreCase(LessThan).Try().Or(LessThanOrEqualParser);
-    private static readonly TextParser<TextSpan> EqualToParser = Span.EqualToIgnoreCase(EqualTo);
+    private static readonly TextParser<TextSpan> EndsWithParser = Span.EqualToIgnoreCase(EndsWith);
+    private static readonly TextParser<TextSpan> EqualToParser = Span.EqualToIgnoreCase(EqualTo).Try().Or(EndsWithParser);
     private static readonly TextParser<TextSpan> NotEqualToParser = Span.EqualToIgnoreCase(NotEqualTo);
+    private static readonly TextParser<TextSpan> StartsWithParser = Span.EqualToIgnoreCase(StartsWith);
+    private static readonly TextParser<TextSpan> ContainsParser = Span.EqualToIgnoreCase(Contains);
     private static readonly TextParser<Unit> OperatorParser;
 
     #endregion
@@ -58,7 +64,9 @@ internal static class QueryTokenizer
             GreaterThanParser,
             LessThanParser,
             EqualToParser,
-            NotEqualToParser
+            NotEqualToParser,
+            StartsWithParser,
+            ContainsParser
         };
         var combinedOperationParser = operations.Aggregate((agg, current) => agg.Or(current));
         OperatorParser = (

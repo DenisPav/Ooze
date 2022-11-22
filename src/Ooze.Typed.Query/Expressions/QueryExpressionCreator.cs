@@ -104,7 +104,7 @@ internal static class QueryExpressionCreator
     }
 
     /// <summary>
-    /// Take next 3 tokens and create member expression form them.
+    /// Take next 3 tokens and create member expression from them.
     /// </summary>
     /// <param name="parameterExpression">Root parameter used for building expression</param>
     /// <param name="tokens">Current stack of tokens</param>
