@@ -1,4 +1,6 @@
 ﻿using System.Linq.Expressions;
+using Ooze.Typed.Query.Exceptions;
+using Ooze.Typed.Query.Filters;
 using Ooze.Typed.Query.Tokenization;
 using Superpower.Model;
 
@@ -10,6 +12,7 @@ internal static class QueryExpressionCreator
     private const string Where = nameof(Where);
 
     public static ExpressionResult Create<TEntity>(
+        IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
         Expression queryExpression,
         IEnumerable<Token<QueryToken>> queryDefinitionTokens)
     {
@@ -17,13 +20,13 @@ internal static class QueryExpressionCreator
             typeof(TEntity),
             ParameterName
         );
-        
+
         var tokenStack = new Stack<Token<QueryToken>>(queryDefinitionTokens.Reverse());
         var bracketStack = new Stack<Token<QueryToken>>();
 
         try
         {
-            var createdExpr = CreateExpression<TEntity>(parameterExpression, tokenStack, bracketStack);
+            var createdExpr = CreateExpression(filterDefinitions, parameterExpression, tokenStack, bracketStack);
             var finalExpression = Expression.Lambda<Func<TEntity, bool>>(createdExpr, parameterExpression);
             var quoteExpr = Expression.Quote(finalExpression);
             var callExpr = Expression.Call(typeof(Queryable), Where, new[] { typeof(TEntity) }, queryExpression,
@@ -38,6 +41,7 @@ internal static class QueryExpressionCreator
     }
 
     private static Expression CreateExpression<TEntity>(
+        IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
         ParameterExpression parameterExpression,
         Stack<Token<QueryToken>> tokenStack,
         Stack<Token<QueryToken>> bracketStack)
@@ -51,7 +55,8 @@ internal static class QueryExpressionCreator
             switch (token.Kind)
             {
                 case QueryToken.Property:
-                    CreateMemberExpression<TEntity>(parameterExpression, tokenStack, propertyExpressions);
+                    CreateMemberExpression(filterDefinitions, parameterExpression, tokenStack,
+                        propertyExpressions);
                     break;
                 case QueryToken.LogicalOperation:
                     tokenStack.Pop();
@@ -60,14 +65,13 @@ internal static class QueryExpressionCreator
                 case QueryToken.BracketLeft:
                     tokenStack.Pop();
                     bracketStack.Push(token);
-                    var subExpr = CreateExpression<TEntity>(parameterExpression, tokenStack, bracketStack);
+                    var subExpr = CreateExpression(filterDefinitions, parameterExpression, tokenStack, bracketStack);
                     propertyExpressions.Add(subExpr);
                     break;
-
                 case QueryToken.BracketRight:
                     tokenStack.Pop();
                     if (bracketStack.Any() == false)
-                        throw new Exception("no matching start bracket");
+                        throw new ExpressionCreatorException("no matching start bracket");
 
                     bracketStack.Pop();
                     return CreateLogicalExpression(logicalOperationExpressions, propertyExpressions);
@@ -111,12 +115,16 @@ internal static class QueryExpressionCreator
     /// <param name="propertyExpressions">List of member current member expressions</param>
     /// <typeparam name="TEntity">Type of Queryable instance</typeparam>
     private static void CreateMemberExpression<TEntity>(
+        IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
         ParameterExpression parameterExpression,
         Stack<Token<QueryToken>> tokens,
         ICollection<Expression> propertyExpressions)
     {
         var token = tokens.Pop();
-        var property = typeof(TEntity).GetProperty(token.ToStringValue());
+        var queryPropertyName = token.ToStringValue();
+        var property = filterDefinitions.Single(definition =>
+                string.Compare(queryPropertyName, definition.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+            .TargetProperty;
         var currentMemberAccess = Expression.MakeMemberAccess(parameterExpression, property);
         token = tokens.Pop();
         var operationExpressionFactory = Operations.OperatorExpressionFactories[token.ToStringValue()];

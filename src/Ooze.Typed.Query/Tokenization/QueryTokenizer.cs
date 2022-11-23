@@ -1,4 +1,5 @@
-﻿using Ooze.Typed.Query.Filters;
+﻿using Ooze.Typed.Query.Exceptions;
+using Ooze.Typed.Query.Filters;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
@@ -112,6 +113,6 @@ internal static class QueryTokenizer
         if (result.HasValue)
             return result.Value;
 
-        throw new Exception("Failed to parse query definition");
+        throw new QueryTokenizerException("Failed to parse query definition");
     }
 }

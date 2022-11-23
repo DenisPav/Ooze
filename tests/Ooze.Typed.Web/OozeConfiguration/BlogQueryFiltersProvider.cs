@@ -8,7 +8,7 @@ public class BlogQueryFiltersProvider : IOozeQueryFilterProvider<Blog>
     {
         return QueryFilters.CreateFor<Blog>()
             .Add(x => x.Id, name: "Id")
-            .Add(x => x.Name, name: "Name")
+            .Add(x => x.Name)
             .Build();
     }
 }

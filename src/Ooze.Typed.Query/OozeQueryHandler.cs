@@ -30,10 +30,10 @@ internal class OozeQueryHandler<TEntity> : IOozeQueryHandler<TEntity>
 
         var result = QueryTokenizer.Tokenize(filterDefinitions, queryDefinition);
         _log.LogDebug("Query tokenization finished.");
-        var expressionResult = QueryExpressionCreator.Create<TEntity>(query.Expression, result);
+        var expressionResult = QueryExpressionCreator.Create<TEntity>(filterDefinitions, query.Expression, result);
         if (expressionResult.Error != null)
             throw expressionResult.Error;
-        
+
         _log.LogDebug("Created expression: [{expression}].", expressionResult.Expression);
         return query.Provider.CreateQuery<TEntity>(expressionResult.Expression);
     }
