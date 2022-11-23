@@ -18,7 +18,6 @@ internal class QueryFilterBuilder<TEntity> : IQueryFilterBuilder<TEntity>
                 ? GetExpressionName(dataExpression)
                 : name,
             TargetProperty = typeof(TEntity).GetProperty(GetExpressionName(dataExpression)),
-            DataExpression = dataExpression
         });
 
         return this;
