@@ -40,12 +40,6 @@ namespace Ooze.Typed.Extensions
             return this;
         }
 
-        public IOozeServiceCollectionBuilder AddQueryHandler(Type queryHandlerType)
-        {
-            Services.AddScoped(typeof(IOozeQueryHandler<>), queryHandlerType);
-            return this;
-        }
-
         private static bool CheckTypePredicate(Type interfaceType, Type providerType)
             => providerType.IsAssignableFrom(interfaceType.GetGenericTypeDefinition());
 

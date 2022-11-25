@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Extensions;
+using Ooze.Typed.Queries;
 using Ooze.Typed.Query.Filters;
 
 namespace Ooze.Typed.Query.Extensions;
@@ -9,7 +10,10 @@ public static class OozeQueryServiceCollectionExtensions
     private static readonly Type QueryFilterProviderType = typeof(IOozeQueryFilterProvider<>);
 
     public static IOozeServiceCollectionBuilder AddQueryHandler(this IOozeServiceCollectionBuilder oozeBuilder)
-        => oozeBuilder.AddQueryHandler(typeof(OozeQueryHandler<>));
+    {
+        oozeBuilder.Services.AddScoped(typeof(IOozeQueryHandler<>), typeof(OozeQueryHandler<>));
+        return oozeBuilder;
+    }
 
     public static IOozeServiceCollectionBuilder AddQueryFilter<TQueryFilter>(
         this IOozeServiceCollectionBuilder oozeBuilder,
