@@ -74,13 +74,13 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
     private readonly IOozeFilterHandler<TEntity, TFilters> _filterHandler;
     private readonly IOozeQueryHandler<TEntity> _queryHandler;
     private readonly IOozePagingHandler<TEntity> _pagingHandler;
-    private IQueryable<TEntity> _query = null;
+    private IQueryable<TEntity> _query;
 
     public OozeTypedResolver(
         IOozeSorterHandler<TEntity> sorterHandler,
         IOozeFilterHandler<TEntity, TFilters> filterHandler,
-        IOozeQueryHandler<TEntity> queryHandler,
-        IOozePagingHandler<TEntity> pagingHandler)
+        IOozePagingHandler<TEntity> pagingHandler,
+        IOozeQueryHandler<TEntity> queryHandler = null)
     {
         _sorterHandler = sorterHandler;
         _filterHandler = filterHandler;
