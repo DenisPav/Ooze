@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.ComponentModel;
+using System.Linq.Expressions;
 using Ooze.Typed.Query.Exceptions;
 using Ooze.Typed.Query.Filters;
 using Ooze.Typed.Query.Tokenization;
@@ -27,6 +28,9 @@ internal static class QueryExpressionCreator
         try
         {
             var createdExpr = CreateExpression(filterDefinitions, parameterExpression, tokenStack, bracketStack);
+            if (bracketStack.Any())
+                throw new ExpressionCreatorException("no matching ending bracket");
+
             var finalExpression = Expression.Lambda<Func<TEntity, bool>>(createdExpr, parameterExpression);
             var quoteExpr = Expression.Quote(finalExpression);
             var callExpr = Expression.Call(typeof(Queryable), Where, new[] { typeof(TEntity) }, queryExpression,
@@ -36,7 +40,7 @@ internal static class QueryExpressionCreator
         }
         catch (Exception e)
         {
-            return new ExpressionResult(null, e);
+            return new ExpressionResult(null, new ExpressionCreatorException(e.Message));
         }
     }
 
@@ -75,6 +79,9 @@ internal static class QueryExpressionCreator
 
                     bracketStack.Pop();
                     return CreateLogicalExpression(logicalOperationExpressions, propertyExpressions);
+                case QueryToken.Operation:
+                case QueryToken.Value:
+                    throw new ExpressionCreatorException("wrong order of tokens found in query");
             }
         }
 
@@ -132,7 +139,8 @@ internal static class QueryExpressionCreator
 
         var value = token.ToStringValue();
         var clearValue = value.Replace(QueryTokenizer.ValueTick, string.Empty);
-        var convertedValue = Convert.ChangeType(clearValue, property.PropertyType);
+        // var convertedValue = Convert.ChangeType(clearValue, property.PropertyType);
+        var convertedValue = TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(clearValue);
         var valueExpression = Expression.Constant(convertedValue);
 
         var finalOperationExpression = operationExpressionFactory(currentMemberAccess, valueExpression);

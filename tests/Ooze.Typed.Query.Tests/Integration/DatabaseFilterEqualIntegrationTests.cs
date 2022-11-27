@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Ooze.Typed.Query.Exceptions;
 using Ooze.Typed.Query.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Query.Tests.Integration
@@ -47,7 +48,7 @@ namespace Ooze.Typed.Query.Tests.Integration
             var oozeResolver = provider.GetRequiredService<IOozeTypedResolver>();
 
             IQueryable<Post> query = context.Posts;
-            Assert.Throws<ArgumentException>(() => oozeResolver.Query(query, queryDefinition));
+            Assert.Throws<ExpressionCreatorException>(() => oozeResolver.Query(query, queryDefinition));
         }
     }
 }
