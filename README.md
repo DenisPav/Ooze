@@ -172,6 +172,13 @@ public class BlogQueryFiltersProvider : IOozeQueryFilterProvider<Blog>
 }
 ```
 
+After registering required services/dependencies you just need to call `Query` method on instance of Ooze resolver. Example can be seen below:
+
+```csharp
+var sampleLanguageQuery = "Id >> '3' && Name != 'Test'";
+var filteredQueryable = resolver.Query(sampleLanguageQuery);
+```
+
 <details>
 <summary>Old Version (not typed) in this dropdown</summary>
 <br>
