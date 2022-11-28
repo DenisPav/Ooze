@@ -1,6 +1,4 @@
-﻿using Ooze.Typed.Sorters;
-
-namespace Ooze.Typed.Tests;
+﻿namespace Ooze.Typed.Tests;
 
 public class SorterBuilderTests
 {

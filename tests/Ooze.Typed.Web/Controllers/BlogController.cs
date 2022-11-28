@@ -30,22 +30,22 @@ namespace Ooze.Typed.Web.Controllers
             query = _nonTypedResolver
                 .Filter(query, model.Filters);
             query = _nonTypedResolver.Sort(query, model.Sorters);
-            
+
             var results = await query.ToListAsync();
             return Ok(results);
         }
-        
+
         [HttpPost("/typed")]
         public async Task<IActionResult> PostTyped(Input model)
         {
             IQueryable<Blog> query = _db.Set<Blog>();
 
             query = _resolver.Apply(query, model.Sorters, model.Filters, model.Paging);
-            
+
             var results = await query.ToListAsync();
             return Ok(results);
         }
-        
+
         [HttpPost("/typed-expanded")]
         public async Task<IActionResult> PostTypedExpanded(Input model)
         {
@@ -57,7 +57,22 @@ namespace Ooze.Typed.Web.Controllers
                 .Filter(model.Filters)
                 .Page(model.Paging)
                 .Apply();
-            
+
+            var results = await query.ToListAsync();
+            return Ok(results);
+        }
+
+        [HttpPost("/typed-query")]
+        public async Task<IActionResult> PostTypedQuery()
+        {
+            IQueryable<Blog> query = _db.Set<Blog>();
+            var testQuery = "Id > '3' && (Name == 'This' || Id != '30') && Name == 'That'";
+
+            query = _resolver
+                .WithQuery(query)
+                .Query(testQuery)
+                .Apply();
+
             var results = await query.ToListAsync();
             return Ok(results);
         }
