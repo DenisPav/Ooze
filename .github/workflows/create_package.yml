@@ -33,7 +33,11 @@ jobs:
         run: dotnet nuget add source https://nuget.pkg.github.com/DenisPav/index.json -u DenisPav -p ${OOZE_TOKEN} --store-password-in-clear-text
         env:
           OOZE_TOKEN: ${{ secrets.OozeToken }}
-      - name: Push packages to GitHub registry
+      - name: Push package to GitHub registry
         run: dotnet nuget push ./src/Ooze.Typed/pkg/*.nupkg -k ${OOZE_TOKEN} -s https://nuget.pkg.github.com/DenisPav/index.json --skip-duplicate --no-symbols
+        env:
+          OOZE_TOKEN: ${{ secrets.OozeToken }}
+      - name: Push Query package to GitHub registry
+        run: dotnet nuget push ./src/Ooze.Typed.Query/pkg/*.nupkg -k ${OOZE_TOKEN} -s https://nuget.pkg.github.com/DenisPav/index.json --skip-duplicate --no-symbols
         env:
           OOZE_TOKEN: ${{ secrets.OozeToken }}
