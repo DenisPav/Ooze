@@ -12,27 +12,24 @@ internal class QueryFilterBuilder<TEntity> : IQueryFilterBuilder<TEntity>
         Expression<Func<TEntity, TProperty>> dataExpression,
         string name = null)
     {
+        if (dataExpression.Body is not MemberExpression memberExpression)
+        {
+            throw new MemberExpressionException($"Query filter expression incorrect! Please check your filter provider! Expression used: [{dataExpression}]");
+        }
+        
         _filterDefinitions.Add(new QueryFilterDefinition<TEntity>
         {
             Name = string.IsNullOrEmpty(name)
-                ? GetExpressionName(dataExpression)
+                ? GetExpressionName(memberExpression)
                 : name,
-            TargetProperty = typeof(TEntity).GetProperty(GetExpressionName(dataExpression)),
+            TargetProperty = typeof(TEntity).GetProperty(GetExpressionName(memberExpression)),
         });
 
         return this;
     }
 
-    private static string GetExpressionName<TTarget>(Expression<Func<TEntity, TTarget>> expression)
-    {
-        if (expression.Body is not MemberExpression memberExpression)
-        {
-            throw new MemberExpressionException($"Query filter expression incorrect! Please check your filter provider! Expression used: [{expression}]");
-        }
-
-        var memberName = memberExpression.Member.Name;
-        return memberName;
-    }
+    private static string GetExpressionName(MemberExpression expression)
+        => expression.Member.Name;
 
     public IEnumerable<IQueryFilterDefinition<TEntity>> Build()
     {
