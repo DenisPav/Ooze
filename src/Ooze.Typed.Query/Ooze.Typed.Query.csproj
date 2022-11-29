@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <PackageId>Ooze.Typed.Query</PackageId>
-    <Version>1.0.24</Version>
+    <Version>1.0.25</Version>
     <RepositoryUrl>https://github.com/DenisPav/Ooze</RepositoryUrl>
     <Description>
       This package provides Query language implementation for Ooze.Typed
