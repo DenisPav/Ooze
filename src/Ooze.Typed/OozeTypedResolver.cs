@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Paging;
-using Ooze.Typed.Queries;
 using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed;
@@ -24,19 +23,6 @@ internal class OozeTypedResolver : IOozeTypedResolver
 
         var filterHandler = _serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
         query = filterHandler.Apply(query, filters);
-
-        return query;
-    }
-
-    public IQueryable<TEntity> Query<TEntity>(
-        IQueryable<TEntity> query,
-        string queryDefinition)
-    {
-        if (string.IsNullOrEmpty(queryDefinition))
-            return query;
-
-        var queryHandler = _serviceProvider.GetRequiredService<IOozeQueryHandler<TEntity>>();
-        query = queryHandler.Apply(query, queryDefinition);
 
         return query;
     }
@@ -72,19 +58,16 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
 {
     private readonly IOozeSorterHandler<TEntity> _sorterHandler;
     private readonly IOozeFilterHandler<TEntity, TFilters> _filterHandler;
-    private readonly IOozeQueryHandler<TEntity> _queryHandler;
     private readonly IOozePagingHandler<TEntity> _pagingHandler;
     private IQueryable<TEntity> _query;
 
     public OozeTypedResolver(
         IOozeSorterHandler<TEntity> sorterHandler,
         IOozeFilterHandler<TEntity, TFilters> filterHandler,
-        IOozePagingHandler<TEntity> pagingHandler,
-        IOozeQueryHandler<TEntity> queryHandler = null)
+        IOozePagingHandler<TEntity> pagingHandler)
     {
         _sorterHandler = sorterHandler;
         _filterHandler = filterHandler;
-        _queryHandler = queryHandler;
         _pagingHandler = pagingHandler;
     }
 
@@ -109,15 +92,6 @@ internal class OozeTypedResolver<TEntity, TFilters> : IOozeTypedResolver<TEntity
             return this;
 
         _query = _filterHandler.Apply(_query, filters);
-        return this;
-    }
-
-    public IOozeTypedResolver<TEntity, TFilters> Query(string queryDefinition)
-    {
-        if (string.IsNullOrEmpty(queryDefinition))
-            return this;
-
-        _query = _queryHandler.Apply(_query, queryDefinition);
         return this;
     }
 

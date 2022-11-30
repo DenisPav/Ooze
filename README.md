@@ -140,45 +140,6 @@ public record class Input(BlogFilters Filters, IEnumerable<Sorter> Sorters);
 **NOTE:**
 Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web).
 
-## Ooze.Typed.Query 🔎
-Additional package for `Ooze.Typed` which enables `Queries`. This is a concept where you can write actual
-expression as a string representation for filtering. For example if you have bunch of `Posts` which have `Id` and `Name` columns, you could filter them out via something like `Id >= '3' && Name != 'My Post'`. This in turn will be translated into the correct expression and applied to your `IQueryable` instance.
-
-Supported logical operations for queries are AND (`&&`) and OR (`||`). On the other side of things supported value
-operators are next:
- * GreaterThan - `>>`
- * GreaterThanOrEqual -`>=`
- * LessThan - `<<`
- * LessThanOrEqual - `<=`
- * Equal - `==`
- * NotEqual - `!=`
- * StartsWith - `@=`
- * EndsWith - `=@`
- * Contains - `%%`
-
-In order for this to work correctly you'll need to add implementation of `IQueryFilterProvider<T>` which will need
-to be registered to `ServiceCollection`. This implementation will contain filter fields which you enable for use in queries. Example implementation can be seen below (based on previous `Blog` example):
-
-```csharp
-public class BlogQueryFiltersProvider : IOozeQueryFilterProvider<Blog>
-{
-    public IEnumerable<IQueryFilterDefinition<Blog>> GetFilters()
-    {
-        return QueryFilters.CreateFor<Blog>()
-            .Add(x => x.Id, name: "Id")
-            .Add(x => x.Name, name: "Name")
-            .Build();
-    }
-}
-```
-
-After registering required services/dependencies you just need to call `Query` method on instance of Ooze resolver. Example can be seen below:
-
-```csharp
-var sampleLanguageQuery = "Id >> '3' && Name != 'Test'";
-var filteredQueryable = resolver.Query(sampleLanguageQuery);
-```
-
 <details>
 <summary>Old Version (not typed) in this dropdown</summary>
 <br>

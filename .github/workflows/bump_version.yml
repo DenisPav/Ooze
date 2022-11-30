@@ -21,8 +21,6 @@ jobs:
         run: dotnet build --no-restore
       - name: Run tests
         run: dotnet test ./tests/Ooze.Typed.Tests/Ooze.Typed.Tests.csproj
-      - name: Run Query tests
-        run: dotnet test ./tests/Ooze.Typed.Query.Tests/Ooze.Typed.Query.Tests.csproj
       - name: Bump version
         id: bump
         shell: pwsh
@@ -32,9 +30,6 @@ jobs:
           $newVersion = "{0}.{1}.{2}" -f $version.Major, $version.Minor, ($version.Build + 1)
           $xml.Project.PropertyGroup.Version = $newVersion
           $xml.Save("./src/Ooze.Typed/Ooze.Typed.csproj")
-          $xml = [Xml] (Get-Content .\src\Ooze.Typed.Query\Ooze.Typed.Query.csproj)
-          $xml.Project.PropertyGroup.Version = $newVersion
-          $xml.Save("./src/Ooze.Typed.Query/Ooze.Typed.Query.csproj")
           echo "::set-output name=newVersion::$newVersion"
       - name: Commit changes
         run: |
@@ -42,6 +37,5 @@ jobs:
           git config user.name "ooze"
           git config user.email "ooze@users.noreply.github.com"
           git add ./src/Ooze.Typed/Ooze.Typed.csproj
-          git add ./src/Ooze.Typed.Query/Ooze.Typed.Query.csproj
           git commit -m "Bump project version to ${{ steps.bump.outputs.newVersion }}"
           git push
