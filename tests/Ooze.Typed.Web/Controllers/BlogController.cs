@@ -61,21 +61,6 @@ namespace Ooze.Typed.Web.Controllers
             var results = await query.ToListAsync();
             return Ok(results);
         }
-
-        [HttpPost("/typed-query")]
-        public async Task<IActionResult> PostTypedQuery()
-        {
-            IQueryable<Blog> query = _db.Set<Blog>();
-            var testQuery = "Id > '3' && (Name == 'This' || Id != '30') && Name == 'That'";
-
-            query = _resolver
-                .WithQuery(query)
-                .Query(testQuery)
-                .Apply();
-
-            var results = await query.ToListAsync();
-            return Ok(results);
-        }
     }
 
     public record class Input(BlogFilters Filters, IEnumerable<Sorter> Sorters, PagingOptions Paging);

@@ -4,7 +4,6 @@ namespace Ooze.Typed.Extensions
 {
     public interface IOozeServiceCollectionBuilder
     {
-        IServiceCollection Services { get; }
         IOozeServiceCollectionBuilder Add<TProvider>(ServiceLifetime providerLifetime = ServiceLifetime.Singleton);
     }
 }
