@@ -25,13 +25,13 @@ public class DatabaseFilterRangeThanIntegrationTests : IClassFixture<DbFixture<D
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
             .Filter(new PostRangeFilters(filter, null, null))
             .Apply();
-        
+
         var results = await query.ToListAsync();
         Assert.True(results.All(x => x.Id >= filter.From));
         Assert.True(results.All(x => x.Id <= filter.To));
@@ -47,7 +47,7 @@ public class DatabaseFilterRangeThanIntegrationTests : IClassFixture<DbFixture<D
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         Assert.Throws<InvalidOperationException>(() => oozeResolver.WithQuery(query)
@@ -65,12 +65,12 @@ public class DatabaseFilterRangeThanIntegrationTests : IClassFixture<DbFixture<D
             From = from,
             To = to
         };
-        
+
         using var scope = _fixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)

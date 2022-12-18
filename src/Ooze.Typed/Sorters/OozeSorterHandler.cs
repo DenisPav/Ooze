@@ -2,31 +2,32 @@
 
 namespace Ooze.Typed.Sorters
 {
-    internal class OozeSorterHandler<TEntity> : IOozeSorterHandler<TEntity>
+    internal class OozeSorterHandler<TEntity, TSorter> : IOozeSorterHandler<TEntity, TSorter>
     {
-        private readonly IEnumerable<IOozeSorterProvider<TEntity>> _sortProviders;
+        private readonly IEnumerable<IOozeSorterProvider<TEntity, TSorter>> _sortProviders;
 
         public OozeSorterHandler(
-            IEnumerable<IOozeSorterProvider<TEntity>> sortProviders)
+            IEnumerable<IOozeSorterProvider<TEntity, TSorter>> sortProviders)
         {
             _sortProviders = sortProviders;
         }
 
         public IQueryable<TEntity> Apply(
             IQueryable<TEntity> query,
-            IEnumerable<Sorter> sorters)
+            IEnumerable<TSorter> sorters)
         {
-            var validSorters = _sortProviders.SelectMany(provider => provider.GetSorters())
-                .Cast<SortDefinition<TEntity>>()
-                .ToDictionary(sorterDefinition => sorterDefinition.PropertyName);
-            var sortersDictionary = sorters.Where(sorter => validSorters.ContainsKey(sorter.Name))
-                .ToDictionary(x => x.Name, x => x.Direction);
-            
-            foreach (var sorter in sortersDictionary.Keys)
+            var sortDefinitions = _sortProviders.SelectMany(provider => provider.GetSorters())
+                .Cast<SortDefinition<TEntity, TSorter>>()
+                .ToList();
+
+            foreach (var sorter in sorters)
             {
-                var sortDefinition = validSorters[sorter];
+                var sortDefinition = sortDefinitions.SingleOrDefault(definition => definition.ShouldRun(sorter));
+                if(sortDefinition is null)
+                    continue;
+                
                 var sorterType = BasicExpressions.GetMemberExpression(sortDefinition.DataExpression.Body).Type;
-                var direction = sortersDictionary[sorter];
+                var direction = sortDefinition.GetSortDirection(sorter);
 
                 if(query.Expression.Type == typeof(IOrderedQueryable<TEntity>))
                 {

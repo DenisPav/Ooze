@@ -2,7 +2,7 @@
 {
     public static class Sorters
     {
-        public static ISorterBuilder<TEntity> CreateFor<TEntity>()
-            => new SorterBuilder<TEntity>();
+        public static ISorterBuilder<TEntity, TSorters> CreateFor<TEntity, TSorters>()
+            => new SorterBuilder<TEntity, TSorters>();
     }
 }

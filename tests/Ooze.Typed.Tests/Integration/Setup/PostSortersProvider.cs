@@ -2,11 +2,11 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class PostSortersProvider : IOozeSorterProvider<Post>
+public class PostSortersProvider : IOozeSorterProvider<Post, PostSorters>
 {
-    public IEnumerable<ISortDefinition<Post>> GetSorters()
-        => Sorters.Sorters.CreateFor<Post>()
-            .Add(post => post.Id)
-            .Add(post => post.Enabled)
+    public IEnumerable<ISortDefinition<Post, PostSorters>> GetSorters()
+        => Sorters.Sorters.CreateFor<Post, PostSorters>()
+            .Add(post => post.Id, sort => sort.Id)
+            .Add(post => post.Enabled, sort => sort.Enabled)
             .Build();
 }

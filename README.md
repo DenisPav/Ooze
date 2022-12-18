@@ -83,15 +83,15 @@ services.AddOozeTyped()
 
 ## Adding sorters 🔼🔽
 Similarly how you can define filter definitions, you can create sorter definitions which can be then used
-by `Ooze` to sort your queries. This is done by implementing `IOozeSorterProvider<TEntity>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
+by `Ooze` to sort your queries. This is done by implementing `IOozeSorterProvider<TEntity, TSorter>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
 ```csharp
-public class MyClassSortersProvider : IOozeSorterProvider<MyClass>
+public class MyClassSortersProvider : IOozeSorterProvider<MyClass, MyClassSorters>
 {
-    public IEnumerable<ISortDefinition<MyClass>> GetSorters()
+    public IEnumerable<ISortDefinition<MyClass, MyClassSorters>> GetSorters()
     {
-        return Sorters.CreateFor<MyClass>()
+        return Sorters.CreateFor<MyClass, MyClassSorters>()
             //add sorting on Id property in provided direction
-            .Add(x => x.Id)
+            .Add(x => x.Id, sort => sort.Id)
             .Build();
     }
 }
@@ -99,7 +99,7 @@ public class MyClassSortersProvider : IOozeSorterProvider<MyClass>
 Sorters are added to `Ooze` in same manner as Filters so you can reuse the example mentioned there.
 
 **NOTE:**
-Sorters by default  `Sorters` record class which uses combination of name and `SortDirection` enumeration in order to specify property sorting direction.
+Sorters by default use `SortDirection` enumeration in order to specify property sorting direction.
 
 ## Paging 📰
 Paging is done via `.Page` method on resolver. You just need to pass instance of `PagingOptions` to the before mentioned method. For example:

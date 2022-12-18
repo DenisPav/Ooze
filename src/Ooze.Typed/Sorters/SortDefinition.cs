@@ -2,9 +2,10 @@
 
 namespace Ooze.Typed.Sorters
 {
-    internal class SortDefinition<TEntity> : ISortDefinition<TEntity>
+    internal class SortDefinition<TEntity, TSorters> : ISortDefinition<TEntity, TSorters>
     {
         public LambdaExpression DataExpression { get; internal set; }
-        public string PropertyName { get; internal set; }
+        public Func<TSorters, bool> ShouldRun { get; set; }
+        public Func<TSorters, SortDirection?> GetSortDirection { get; set; }
     }
 }
