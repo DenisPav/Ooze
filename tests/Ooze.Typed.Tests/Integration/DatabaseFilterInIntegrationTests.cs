@@ -24,7 +24,7 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -48,7 +48,7 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -69,7 +69,7 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)

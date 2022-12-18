@@ -8,7 +8,7 @@ namespace Ooze.Typed.Extensions
     internal class OozeServiceCollectionBuilder : IOozeServiceCollectionBuilder
     {
         private static readonly Type FilterProviderType = typeof(IOozeFilterProvider<,>);
-        private static readonly Type SorterProviderType = typeof(IOozeSorterProvider<>);
+        private static readonly Type SorterProviderType = typeof(IOozeSorterProvider<,>);
         private readonly IServiceCollection _services;
 
         public OozeServiceCollectionBuilder(IServiceCollection services) => _services = services;
@@ -45,9 +45,9 @@ namespace Ooze.Typed.Extensions
         internal IOozeServiceCollectionBuilder AddCommonServices()
         {
             _services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
-            _services.AddScoped(typeof(IOozeTypedResolver<,>), typeof(OozeTypedResolver<,>));
+            _services.AddScoped(typeof(IOozeTypedResolver<,,>), typeof(OozeTypedResolver<,,>));
             _services.AddScoped(typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>));
-            _services.AddScoped(typeof(IOozeSorterHandler<>), typeof(OozeSorterHandler<>));
+            _services.AddScoped(typeof(IOozeSorterHandler<,>), typeof(OozeSorterHandler<,>));
             _services.AddScoped(typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>));
 
             return this;

@@ -18,11 +18,11 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
             var sorters = new[]
             {
-                new Sorter("Id", SortDirection.Descending)
+                new PostSorters(SortDirection.Descending, null, null)
             };
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -42,11 +42,11 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
             var sorters = new[]
             {
-                new Sorter("Id", SortDirection.Ascending)
+                new PostSorters(SortDirection.Ascending, null, null)
             };
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -66,12 +66,12 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
             var sorters = new[]
             {
-                new Sorter("Id", SortDirection.Ascending),
-                new Sorter("Enabled", SortDirection.Ascending)
+                new PostSorters(SortDirection.Ascending, null, null),
+                new PostSorters(null, null, SortDirection.Ascending)
             };
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -91,9 +91,9 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
-            var sorters = Enumerable.Empty<Sorter>();
+            var sorters = Enumerable.Empty<PostSorters>();
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
                 .Sort(sorters)

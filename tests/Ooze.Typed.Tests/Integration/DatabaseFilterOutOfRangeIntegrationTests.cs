@@ -25,13 +25,13 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
             .Filter(new PostRangeFilters(filter, null, null))
             .Apply();
-        
+
         var results = await query.ToListAsync();
         var generatedRange = Enumerable.Range(from, to + 1).Select(x => (long)x);
         Assert.True(results.Any(x => generatedRange.Contains(x.Id) == false));
@@ -47,7 +47,7 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         Assert.Throws<InvalidOperationException>(() => oozeResolver.WithQuery(query)
@@ -65,18 +65,18 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
             From = from,
             To = to
         };
-        
+
         using var scope = _fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters>>();
+        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
             .Filter(new PostRangeFilters(null, null, filter))
             .Apply();
-        
+
         var results = await query.ToListAsync();
         var diffDays = to.Subtract(from).Days;
         var generatedRange = Enumerable.Range(0, diffDays + 1).Select(x => from.AddDays(x));

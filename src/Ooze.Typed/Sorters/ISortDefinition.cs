@@ -1,5 +1,5 @@
 ﻿namespace Ooze.Typed.Sorters
 {
-    public interface ISortDefinition<TEntity>
+    public interface ISortDefinition<TEntity, TSorters>
     { }
 }

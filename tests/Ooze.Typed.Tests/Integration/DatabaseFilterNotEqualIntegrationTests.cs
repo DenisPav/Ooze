@@ -21,7 +21,7 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -44,7 +44,7 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -65,7 +65,7 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
             IQueryable<Post> query = context.Posts;
             query = oozeResolver.WithQuery(query)
@@ -90,7 +90,7 @@ namespace Ooze.Typed.Tests.Integration
             var provider = scope.ServiceProvider;
 
             await using var context = _fixture.CreateContext();
-            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters>>();
+            var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
             var filterDate = new DateTime(year, month, day);
             IQueryable<Post> query = context.Posts;
