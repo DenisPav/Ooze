@@ -123,7 +123,7 @@ namespace Ooze.Configuration
 
         delegate Func<IServiceProvider, IOozeProvider> CreateProvider(string name, Expression expression, Type propType);
 
-        static Func<IServiceProvider, IOozeProvider> CreateFilterFactory(string name, Expression expression, Type propType) 
+        static Func<IServiceProvider, IOozeProvider> CreateFilterFactory(string name, Expression expression, Type propType)
             => sp => new OozeFilterProvider<TEntity>(sp.GetRequiredService<OozeConfiguration>(), name);
 
         static Func<IServiceProvider, IOozeProvider> CreateSorterFactory(string name, Expression expression, Type propType)

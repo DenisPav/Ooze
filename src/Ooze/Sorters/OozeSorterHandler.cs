@@ -33,7 +33,7 @@ namespace Ooze.Sorters
             var sorterProviders = _providerLocator.SortersFor<TEntity>();
             var parsedSorters = GetParsedSorters(sorters);
 
-            foreach (var parsedSorter in parsedSorters)            
+            foreach (var parsedSorter in parsedSorters)
             {
                 var sorter = sorterProviders.SingleOrDefault(sorter => string.Equals(sorter.Name, parsedSorter.Sorter, StringComparison.InvariantCultureIgnoreCase));
 

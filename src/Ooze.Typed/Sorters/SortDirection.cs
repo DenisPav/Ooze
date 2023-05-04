@@ -1,10 +1,9 @@
-﻿namespace Ooze.Typed.Sorters
-{
-    public enum SortDirection
-    {
-        Ascending,
-        Descending
-    }
+﻿namespace Ooze.Typed.Sorters;
 
-    public record class Sorter(string Name, SortDirection Direction);
+public enum SortDirection
+{
+    Ascending,
+    Descending
 }
+
+public record class Sorter(string Name, SortDirection Direction);

@@ -10,7 +10,7 @@ namespace Ooze.Configuration
         public ParameterExpression Param { get; set; }
         public IEnumerable<ParsedExpressionDefinition> Sorters { get; set; }
         public IEnumerable<ParsedExpressionDefinition> Filters { get; set; }
-        public IEnumerable<Func<IServiceProvider, IOozeProvider>> ProviderFactories 
+        public IEnumerable<Func<IServiceProvider, IOozeProvider>> ProviderFactories
             => Sorters.Select(sorter => sorter.ProviderFactory)
                 .Concat(Filters.Select(filter => filter.ProviderFactory));
     }

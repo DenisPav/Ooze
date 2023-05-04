@@ -49,7 +49,7 @@ namespace Ooze.Web
                         Id = _,
                         Enabled = _ % 2 == 0,
                         Name = _.ToString(),
-                        Comments = new[] { 
+                        Comments = new[] {
                             new Comment
                             {
                                 Id = _,

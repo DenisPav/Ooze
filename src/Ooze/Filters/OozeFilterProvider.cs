@@ -33,7 +33,7 @@ namespace Ooze.Filters
             {
                 return query;
             }
-            
+
             var callExpr = FilterExpression<TEntity>(entityConfiguration.Param, filter, filterDefinition, query.Expression, operation);
             return query.Provider
                 .CreateQuery<TEntity>(callExpr);

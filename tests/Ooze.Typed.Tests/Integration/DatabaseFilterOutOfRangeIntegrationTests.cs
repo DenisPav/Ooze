@@ -34,7 +34,7 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
 
         var results = await query.ToListAsync();
         var generatedRange = Enumerable.Range(from, to + 1).Select(x => (long)x);
-        Assert.True(results.Any(x => generatedRange.Contains(x.Id) == false));
+        Assert.Contains(results, x => generatedRange.Contains(x.Id) == false);
     }
 
     [Theory]
@@ -80,6 +80,6 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
         var results = await query.ToListAsync();
         var diffDays = to.Subtract(from).Days;
         var generatedRange = Enumerable.Range(0, diffDays + 1).Select(x => from.AddDays(x));
-        Assert.True(results.Any(x => generatedRange.Contains(x.Date) == false));
+        Assert.Contains(results, x => generatedRange.Contains(x.Date) == false);
     }
 }

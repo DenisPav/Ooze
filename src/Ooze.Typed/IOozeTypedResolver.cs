@@ -1,5 +1,4 @@
 ﻿using Ooze.Typed.Paging;
-using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed;
 

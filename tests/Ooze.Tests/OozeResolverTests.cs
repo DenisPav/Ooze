@@ -10,7 +10,6 @@ using System;
 using Ooze.Query;
 using Ooze.Selections;
 using Ooze.Paging;
-using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace Ooze.Tests

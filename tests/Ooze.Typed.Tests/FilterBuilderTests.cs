@@ -100,7 +100,7 @@ public class FilterBuilderTests
 
         var filters = Filters.Filters.CreateFor<Blog, BlogFilters>()
             .Add(filter => filter.IdFilter.HasValue, fakeFilterHandler)
-            .Add(filter => string.IsNullOrEmpty(filter.NameFilter) == false 
+            .Add(filter => string.IsNullOrEmpty(filter.NameFilter) == false
                 && filter.NameFilter.Contains("123"), fakeFilterHandler)
             .Add(filter => filter.NumberOfCommentsFilter > 3, fakeFilterHandler)
             .Build()
