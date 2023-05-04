@@ -27,17 +27,17 @@ internal static class BasicExpressions
         TProperty filterValue)
         => BasicOperationExpressionFactory(dataExpression, filterValue, Expression.LessThan);
 
-    internal static Expression<Func<TEntity, bool>> BasicOperationExpressionFactory<TEntity, TProperty>(
+    private static Expression<Func<TEntity, bool>> BasicOperationExpressionFactory<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         TProperty filterValue,
         Func<Expression, Expression, Expression> operationFactory)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
         var result = GetWrappedConstantExpression(filterValue);
-        var opreationExpression = operationFactory(memberAccessExpression, result);
-        var parameter = memberAccessExpression.Expression as ParameterExpression;
+        var operationExpression = operationFactory(memberAccessExpression, result);
+        var parameter = ExtractParameterExpression(memberAccessExpression);
 
-        return GetLambdaExpression<TEntity>(opreationExpression, parameter);
+        return GetLambdaExpression<TEntity>(operationExpression, parameter);
     }
 
     internal static Expression<Func<TEntity, bool>> In<TEntity, TProperty>(
@@ -49,12 +49,12 @@ internal static class BasicExpressions
         var genericMethod = CommonMethods.EnumerableContains.MakeGenericMethod(typeof(TProperty));
         var collectionConstantExpression = GetWrappedConstantExpression(filterValue);
         var callExpression = Call(genericMethod, collectionConstantExpression, memberAccessExpression);
-        var parameter = memberAccessExpression.Expression as ParameterExpression;
-        Expression lambaBody = isNegated
+        var parameter = ExtractParameterExpression(memberAccessExpression);
+        Expression lambdaBody = isNegated
             ? Not(callExpression)
             : callExpression;
 
-        return GetLambdaExpression<TEntity>(lambaBody, parameter);
+        return GetLambdaExpression<TEntity>(lambdaBody, parameter);
     }
 
     internal static Expression<Func<TEntity, bool>> Range<TEntity, TProperty>(
@@ -69,12 +69,12 @@ internal static class BasicExpressions
         var lessThenOrEqualFromExpression = LessThanOrEqual(fromConstantExpression, memberAccessExpression);
         var lessThenOrEqualToExpression = LessThanOrEqual(memberAccessExpression, toConstantExpression);
         var andAlsoExpression = AndAlso(lessThenOrEqualFromExpression, lessThenOrEqualToExpression);
-        var parameter = memberAccessExpression.Expression as ParameterExpression;
-        Expression lambaBody = isNegated
+        var parameter = ExtractParameterExpression(memberAccessExpression);
+        Expression lambdaBody = isNegated
             ? Not(andAlsoExpression)
             : andAlsoExpression;
 
-        return GetLambdaExpression<TEntity>(lambaBody, parameter);
+        return GetLambdaExpression<TEntity>(lambdaBody, parameter);
     }
 
     internal static Expression<Func<TEntity, bool>> StringOperation<TEntity>(
@@ -86,12 +86,12 @@ internal static class BasicExpressions
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
         var stringConstant = GetWrappedConstantExpression(filterValue);
         var callExpression = Call(memberAccessExpression, operationMethod, stringConstant);
-        var parameter = memberAccessExpression.Expression as ParameterExpression;
-        Expression lambaBody = isNegated
+        var parameter = ExtractParameterExpression(memberAccessExpression);
+        Expression lambdaBody = isNegated
             ? Not(callExpression)
             : callExpression;
 
-        return GetLambdaExpression<TEntity>(lambaBody, parameter);
+        return GetLambdaExpression<TEntity>(lambdaBody, parameter);
     }
 
     internal static MemberExpression GetMemberExpression(Expression expressionBody)
@@ -106,12 +106,12 @@ internal static class BasicExpressions
         return memberAccessExpression;
     }
 
-    internal static Expression<Func<TEntity, bool>> GetLambdaExpression<TEntity>(
+    private static Expression<Func<TEntity, bool>> GetLambdaExpression<TEntity>(
         Expression body,
         params ParameterExpression[] parameterExpressions)
         => Lambda<Func<TEntity, bool>>(body, parameterExpressions);
 
-    internal static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
+    private static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
     {
         var constantType = typeof(TProperty);
         var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
@@ -121,17 +121,20 @@ internal static class BasicExpressions
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }
 
-    internal static string GetExpressionName<TEntity, TTarget>(Expression<Func<TEntity, TTarget>> expression)
+    private static ParameterExpression ExtractParameterExpression(MemberExpression memberExpression)
     {
-        if (!(expression.Body is MemberExpression memberExpression))
-        {
-            throw new Exception("Passed expression not correctly defined");
-        }
-
-        var memberName = memberExpression.Member.Name;
-        return memberName;
+        var intermediateExpression = memberExpression.Expression;
+        while (intermediateExpression is MemberExpression member)
+            intermediateExpression = member.Expression;
+        return intermediateExpression as ParameterExpression;
     }
 
+    /// <summary>
+    /// Used by CommonMethods to create a wrapped object which will be resolve as an parameter in the EF query
+    /// </summary>
+    /// <param name="value">Value to wrap</param>
+    /// <typeparam name="TType">Type of value which is being wrapped</typeparam>
+    /// <returns>Wrapped value</returns>
     internal static OozeValue<TType> CreateWrapperObject<TType>(TType value)
     {
         return new OozeValue<TType>
