@@ -1,9 +1,8 @@
-﻿namespace Ooze.Typed.Paging
+﻿namespace Ooze.Typed.Paging;
+
+internal interface IOozePagingHandler<TEntity>
 {
-    internal interface IOozePagingHandler<TEntity>
-    {
-        IQueryable<TEntity> Apply(
-            IQueryable<TEntity> query,
-            PagingOptions pagingOptions);
-    }
+    IQueryable<TEntity> Apply(
+        IQueryable<TEntity> query,
+        PagingOptions pagingOptions);
 }

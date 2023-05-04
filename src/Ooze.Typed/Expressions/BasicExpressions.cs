@@ -1,5 +1,4 @@
 ﻿using Ooze.Typed.Filters;
-using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using static System.Linq.Expressions.Expression;
@@ -121,7 +120,7 @@ internal static class BasicExpressions
 
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }
-    
+
     internal static string GetExpressionName<TEntity, TTarget>(Expression<Func<TEntity, TTarget>> expression)
     {
         if (!(expression.Body is MemberExpression memberExpression))

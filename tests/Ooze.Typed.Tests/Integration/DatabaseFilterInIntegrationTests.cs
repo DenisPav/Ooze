@@ -30,13 +30,13 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
         query = oozeResolver.WithQuery(query)
             .Filter(new PostInFilters(castedIds, null, null))
             .Apply();
-            
-            
+
+
         var results = await query.ToListAsync();
         Assert.True(results.Count == validIds.Count());
         Assert.True(results.All(x => validIds.Contains(x.Id)));
     }
-        
+
     [Theory]
     [InlineData("1_Sample_post", "2_Sample_post", "3_Sample_post", "4_Sample_post")]
     [InlineData("5_Sample_post", "6_Sample_post", "7_Sample_post", "8_Sample_post")]
@@ -54,13 +54,13 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
         query = oozeResolver.WithQuery(query)
             .Filter(new PostInFilters(null, postNames, null))
             .Apply();
-            
-            
+
+
         var results = await query.ToListAsync();
         Assert.True(results.Count <= postNames.Length);
         Assert.True(results.All(x => postNames.Contains(x.Name)));
     }
-        
+
     [Theory]
     [ClassData(typeof(DateData))]
     public async Task Should_Correctly_Filter_Data_By_In_DateTime_Filter(params DateTime[] dates)
@@ -75,8 +75,8 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
         query = oozeResolver.WithQuery(query)
             .Filter(new PostInFilters(null, null, dates))
             .Apply();
-            
-            
+
+
         var results = await query.ToListAsync();
         Assert.True(results.Count <= dates.Length);
         Assert.True(results.All(x => dates.Contains(x.Date)));

@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Ooze.Typed.Extensions
+namespace Ooze.Typed.Extensions;
+
+public interface IOozeServiceCollectionBuilder
 {
-    public interface IOozeServiceCollectionBuilder
-    {
-        IOozeServiceCollectionBuilder Add<TProvider>(ServiceLifetime providerLifetime = ServiceLifetime.Singleton);
-    }
+    IOozeServiceCollectionBuilder Add<TProvider>(ServiceLifetime providerLifetime = ServiceLifetime.Singleton);
 }

@@ -14,7 +14,7 @@ public class SorterHandlerTests
 
         sutInstance.Provider1.GetSorters().Returns(Enumerable.Empty<SortDefinition<Blog, BlogSorters>>());
         sutInstance.Provider2.GetSorters().Returns(Enumerable.Empty<SortDefinition<Blog, BlogSorters>>());
-        
+
         var resultingQuery = sutInstance.Handler.Apply(sutInstance.Query, Enumerable.Empty<BlogSorters>());
 
         sutInstance.Provider1.Received(1).GetSorters();
@@ -33,18 +33,18 @@ public class SorterHandlerTests
         sorterDefinition.GetSortDirection = _ => SortDirection.Ascending;
         sorterDefinition.DataExpression = sorterExpr;
 
-        sutInstance.Provider1.GetSorters().Returns(new []{ sorterDefinition });
+        sutInstance.Provider1.GetSorters().Returns(new[] { sorterDefinition });
         sutInstance.Provider2.GetSorters().Returns(Enumerable.Empty<SortDefinition<Blog, BlogSorters>>());
-        
+
         Assert.Equal(typeof(EnumerableQuery<Blog>), sutInstance.Query.Expression.Type);
-        var resultingQuery = sutInstance.Handler.Apply(sutInstance.Query, new []{ new BlogSorters(SortDirection.Ascending, null, null) });
+        var resultingQuery = sutInstance.Handler.Apply(sutInstance.Query, new[] { new BlogSorters(SortDirection.Ascending, null, null) });
 
         sutInstance.Provider1.Received(1).GetSorters();
         sutInstance.Provider2.Received(1).GetSorters();
         Assert.False(sutInstance.Query == resultingQuery);
         Assert.Equal(typeof(IOrderedQueryable<Blog>), resultingQuery.Expression.Type);
     }
-    
+
     class SUT
     {
         public IOozeSorterProvider<Blog, BlogSorters> Provider1 { get; }

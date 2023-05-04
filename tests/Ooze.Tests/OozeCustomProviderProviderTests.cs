@@ -33,7 +33,7 @@ namespace Ooze.Tests
         public class SampleEntity
         { }
 
-        public class NotUsedEntity 
+        public class NotUsedEntity
         { }
 
         internal class OozeCustomProviderProviderContext

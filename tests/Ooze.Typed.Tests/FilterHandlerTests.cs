@@ -37,7 +37,7 @@ public class FilterHandlerTests
 
         var resultingQuery = sutInstance.Handler.Apply(sutInstance.Query, new BlogFilters(1, "dsads", 231));
         var fakeFilters = new BlogFilters(null, null, null);
-        
+
         sutInstance.Provider1.Received(1).GetFilters();
         sutInstance.Provider2.Received(1).GetFilters();
         filterDefinition1.Received(1).ShouldRun(fakeFilters);
@@ -49,27 +49,27 @@ public class FilterHandlerTests
     public void Should_Call_Correct_FilterExpressionFactory()
     {
         var sutInstance = new SUT();
-        
+
         var filterDefinition1 = Substitute.For<FilterDefinition<Blog, BlogFilters>>();
         filterDefinition1.FilterExpressionFactory = filters => blog => true;
         filterDefinition1.ShouldRun = x => true;
         var filterDefinition2 = Substitute.For<FilterDefinition<Blog, BlogFilters>>();
         filterDefinition2.FilterExpressionFactory = filters => blog => false;
         filterDefinition2.ShouldRun = x => false;
-        
+
         sutInstance.Provider1.GetFilters().Returns(new[] { filterDefinition1, filterDefinition2 });
         sutInstance.Provider2.GetFilters().Returns(Enumerable.Empty<FilterDefinition<Blog, BlogFilters>>());
-        
+
         var resultingQuery = sutInstance.Handler.Apply(sutInstance.Query, new BlogFilters(1, "dsads", 231));
         var fakeFilters = new BlogFilters(null, null, null);
-        
+
         sutInstance.Provider1.Received(1).GetFilters();
         sutInstance.Provider2.Received(1).GetFilters();
         filterDefinition1.Received(1).ShouldRun(fakeFilters);
         filterDefinition2.Received(1).ShouldRun(fakeFilters);
         filterDefinition1.Received(1).FilterExpressionFactory(fakeFilters);
         filterDefinition2.DidNotReceive().FilterExpressionFactory(fakeFilters);
-        
+
         Assert.False(sutInstance.Query == resultingQuery);
     }
 
