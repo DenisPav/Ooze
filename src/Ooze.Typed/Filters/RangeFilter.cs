@@ -2,6 +2,6 @@
 
 public class RangeFilter<TType>
 {
-    public TType From { get; set; }
-    public TType To { get; set; }
+    public TType? From { get; set; }
+    public TType? To { get; set; }
 }

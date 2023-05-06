@@ -103,7 +103,7 @@ internal static class BasicExpressions
             _ => throw new Exception("not handled yet")
         };
 
-        return memberAccessExpression;
+        return memberAccessExpression!;
     }
 
     private static Expression<Func<TEntity, bool>> GetLambdaExpression<TEntity>(
@@ -116,7 +116,7 @@ internal static class BasicExpressions
         var constantType = typeof(TProperty);
         var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
         var createWrapper = CommonMethods.CreateWrapperObject.MakeGenericMethod(correctType);
-        var wrapper = createWrapper?.Invoke(null, new object[] { constant });
+        var wrapper = createWrapper?.Invoke(null, new object[] { constant! });
 
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }
@@ -126,7 +126,8 @@ internal static class BasicExpressions
         var intermediateExpression = memberExpression.Expression;
         while (intermediateExpression is MemberExpression member)
             intermediateExpression = member.Expression;
-        return intermediateExpression as ParameterExpression;
+        return intermediateExpression as ParameterExpression 
+               ?? throw new Exception("Passed member expression can not be extracted correctly!");
     }
 
     /// <summary>

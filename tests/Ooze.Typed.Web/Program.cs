@@ -16,5 +16,5 @@ builder.Services.Configure<ApiBehaviorOptions>(opts =>
 
 var app = builder.Build();
 app.UseRouting();
-app.MapDefaultControllerRoute();
+app.MapControllers();
 app.Run();
