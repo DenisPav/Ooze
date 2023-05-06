@@ -13,7 +13,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => filterFunc(filter) != null,
             FilterExpressionFactory = filter => BasicExpressions.Equal(dataExpression, filterFunc(filter))
         });
@@ -27,7 +26,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => filterFunc(filter) != null,
             FilterExpressionFactory = filter => BasicExpressions.NotEqual(dataExpression, filterFunc(filter))
         });
@@ -41,7 +39,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => filterFunc(filter) != null,
             FilterExpressionFactory = filter => BasicExpressions.GreaterThan(dataExpression, filterFunc(filter))
         });
@@ -55,7 +52,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => filterFunc(filter) != null,
             FilterExpressionFactory = filter => BasicExpressions.LessThan(dataExpression, filterFunc(filter))
         });
@@ -69,7 +65,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter =>
             {
                 var value = filterFunc(filter);
@@ -87,7 +82,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter =>
             {
                 var value = filterFunc(filter);
@@ -105,7 +99,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter =>
             {
                 var value = filterFunc(filter);
@@ -123,7 +116,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter =>
             {
                 var value = filterFunc(filter);
@@ -141,7 +133,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
                 => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringStartsWith)
@@ -156,7 +147,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
                 => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringStartsWith, true)
@@ -171,7 +161,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
                 => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringEndsWith)
@@ -186,7 +175,6 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
-            DataExpression = dataExpression,
             ShouldRun = filter => string.IsNullOrEmpty(filterFunc(filter)) == false,
             FilterExpressionFactory = filter
                 => BasicExpressions.StringOperation(dataExpression, filterFunc(filter), CommonMethods.StringEndsWith, true)
