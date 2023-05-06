@@ -17,7 +17,7 @@ public interface IOozeTypedResolver
         PagingOptions pagingOptions);
 }
 
-public interface IOozeTypedResolver<TEntity, TFilters, TSorters>
+public interface IOozeTypedResolver<TEntity, in TFilters, in TSorters>
 {
     IOozeTypedResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query);
     IOozeTypedResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters> sorters);

@@ -4,7 +4,7 @@ namespace Ooze.Typed.Sorters;
 
 internal class SortDefinition<TEntity, TSorters> : ISortDefinition<TEntity, TSorters>
 {
-    public LambdaExpression DataExpression { get; internal set; }
-    public Func<TSorters, bool> ShouldRun { get; set; }
-    public Func<TSorters, SortDirection?> GetSortDirection { get; set; }
+    public LambdaExpression DataExpression { get; internal set; } = null!;
+    public Func<TSorters, bool> ShouldRun { get; set; } = null!;
+    public Func<TSorters, SortDirection?> GetSortDirection { get; set; } = null!;
 }
