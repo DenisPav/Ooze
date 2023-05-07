@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Ooze.Typed.Filters;
 
 namespace Ooze.Typed.Tests;
@@ -79,14 +80,16 @@ public class FilterHandlerTests
         public IOozeFilterProvider<Blog, BlogFilters> Provider2 { get; }
         public IQueryable<Blog> Query { get; }
         public IOozeFilterHandler<Blog, BlogFilters> Handler { get; }
+        private ILogger<OozeFilterHandler<Blog, BlogFilters>> Log { get; }
 
         public SUT()
         {
             Provider1 = Substitute.For<IOozeFilterProvider<Blog, BlogFilters>>();
             Provider2 = Substitute.For<IOozeFilterProvider<Blog, BlogFilters>>();
+            Log = Substitute.For<ILogger<OozeFilterHandler<Blog, BlogFilters>>>();
 
             Query = Enumerable.Empty<Blog>().AsQueryable();
-            Handler = new OozeFilterHandler<Blog, BlogFilters>(new[] { Provider1, Provider2 });
+            Handler = new OozeFilterHandler<Blog, BlogFilters>(new[] { Provider1, Provider2 }, Log);
         }
     }
 }

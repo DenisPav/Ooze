@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Ooze.Typed.Sorters;
 
@@ -51,14 +52,16 @@ public class SorterHandlerTests
         public IOozeSorterProvider<Blog, BlogSorters> Provider2 { get; }
         public IQueryable<Blog> Query { get; }
         public IOozeSorterHandler<Blog, BlogSorters> Handler { get; }
+        private ILogger<OozeSorterHandler<Blog, BlogSorters>> Log { get; }
 
         public SUT()
         {
             Provider1 = Substitute.For<IOozeSorterProvider<Blog, BlogSorters>>();
             Provider2 = Substitute.For<IOozeSorterProvider<Blog, BlogSorters>>();
+            Log = Substitute.For<ILogger<OozeSorterHandler<Blog, BlogSorters>>>();
 
             Query = Enumerable.Empty<Blog>().AsQueryable();
-            Handler = new OozeSorterHandler<Blog, BlogSorters>(new[] { Provider1, Provider2 });
+            Handler = new OozeSorterHandler<Blog, BlogSorters>(new[] { Provider1, Provider2 }, Log);
         }
     }
 }
