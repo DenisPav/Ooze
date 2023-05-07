@@ -126,7 +126,7 @@ internal static class BasicExpressions
         var intermediateExpression = memberExpression.Expression;
         while (intermediateExpression is MemberExpression member)
             intermediateExpression = member.Expression;
-        return intermediateExpression as ParameterExpression 
+        return intermediateExpression as ParameterExpression
                ?? throw new Exception("Passed member expression can not be extracted correctly!");
     }
 
