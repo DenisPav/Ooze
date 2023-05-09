@@ -23,21 +23,24 @@ public class Startup
 }
 ```
 
+This call will register internal services needed by `Ooze` and will in turn return a related "builder" via which you can then register your `provider` implementations.
+
 ## Adding Filters 🗡️🧀
-After registering Ooze you need to create your filter definition. This can be done by implementing `IOozeFilterProvider<TEntity, TFilter>` interface. After impementing you can use static `Filters` class to start of the builder which will in turn create your filter definitions. Example can be seen below:
+After registering Ooze you need to create your filter definition. This can be done by implementing `IOozeFilterProvider<TEntity, TFilter>` interface. After creating implementation you can use static `Filters` class to start of the builder which will in turn create your filter definitions. Example can be seen below:
 ```csharp
 public class MyClassFiltersProvider : IOozeFilterProvider<MyClass, MyClassFilters>
 {
     public IEnumerable<IFilterDefinition<MyClass, MyClassFilters>> GetFilters()
     {
         return Filters.CreateFor<MyClass, MyClassFilters>()
+            //add equality filter onto MyClass instance over Id property and use Id property from incoming filter instance in that operation
             .Equal(x => x.Id, filter => filter.Id)
             //...add other filters if needed
             .Build();
     }
 }
 ```
-There are some default filter operations that come when you install Ooze. They can be found on example below:
+There are some default filter operations that come when you install `Ooze`. They can be found on example below:
 ```csharp
 public IEnumerable<IFilterDefinition<MyClass, MyClassFilters>> GetFilters()
 {
@@ -81,16 +84,18 @@ services.AddOozeTyped()
     .Add<MyClassFiltersProvider>();
 ```
 
+By default all the provider implementations that you register via `.Add<TProvider>()` method will be registered to `IServiceCollection` as a `Singleton` but you can provide your own `LifeTime` by providing `ServiceLifetime` argument into the method.
+
 ## Adding sorters 🔼🔽
 Similarly how you can define filter definitions, you can create sorter definitions which can be then used
-by `Ooze` to sort your queries. This is done by implementing `IOozeSorterProvider<TEntity, TSorter>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
+by `Ooze` to sort your queries. This is done by implementing `IOozeSorterProvider<TEntity, TSorters>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
 ```csharp
 public class MyClassSortersProvider : IOozeSorterProvider<MyClass, MyClassSorters>
 {
     public IEnumerable<ISortDefinition<MyClass, MyClassSorters>> GetSorters()
     {
         return Sorters.CreateFor<MyClass, MyClassSorters>()
-            //add sorting on Id property in provided direction
+            //add sorting on Id property in provided direction from sorter instance
             .Add(x => x.Id, sort => sort.Id)
             .Build();
     }
@@ -115,12 +120,12 @@ query = resolver
 ```
 
 ## Applying definitions 🧪
-In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is an more elaborate example below:
+In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters, TSorters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is an more elaborate example below:
 ```csharp
 //lets say you have an route which gets filters/sorters from request body
 app.MapPost("/", (
     DatabaseContext db,
-    IOozeTypedResolver<MyEntity, MyEntityFilters> resolver,
+    IOozeTypedResolver<MyEntity, MyEntityFilters, MyEntitySorters> resolver,
     Input model) =>
 {
     IQueryable<MyEntity> query = db.Set<MyEntity>();
@@ -128,14 +133,14 @@ app.MapPost("/", (
     query = resolver
         .WithQuery(query)
         .Filter(model.Filters)
-        //you can also .Sort(model.Sorters) or .Page(model.Paging) this query if needed
+        //you can also use .Sort(model.Sorters) or .Page(model.Paging) method, or if you don't want to sort or page or even filter something out, you can always remove the calls.
         .Apply();
 
     return query;
 });
 
-public record class Input(BlogFilters Filters, IEnumerable<Sorter> Sorters);
+public record class Input(MyEntityFilters Filters, MyEntitySorters Sorters, PagingOptions Paging);
 ```
 
 **NOTE:**
-Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web).
+Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web). Ooze only cares that you provide instances of your `filters`,  `sorters` which will be then applied to `IQueryable` instances.

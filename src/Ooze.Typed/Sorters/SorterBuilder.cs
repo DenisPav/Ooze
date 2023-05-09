@@ -4,7 +4,7 @@ namespace Ooze.Typed.Sorters;
 
 internal class SorterBuilder<TEntity, TSorters> : ISorterBuilder<TEntity, TSorters>
 {
-    readonly IList<SortDefinition<TEntity, TSorters>> _sortDefinitions =
+    private readonly IList<SortDefinition<TEntity, TSorters>> _sortDefinitions =
         new List<SortDefinition<TEntity, TSorters>>();
 
     public ISorterBuilder<TEntity, TSorters> Add<TProperty>(

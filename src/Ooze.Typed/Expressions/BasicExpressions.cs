@@ -131,7 +131,7 @@ internal static class BasicExpressions
     }
 
     /// <summary>
-    /// Used by CommonMethods to create a wrapped object which will be resolve as an parameter in the EF query
+    /// Used by CommonMethods to create a wrapped object which will be resolved as an parameter in the EF generated SQL query
     /// </summary>
     /// <param name="value">Value to wrap</param>
     /// <typeparam name="TType">Type of value which is being wrapped</typeparam>
