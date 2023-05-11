@@ -1,6 +1,6 @@
 ﻿namespace Ooze.Typed.Sorters;
 
-internal interface IOozeSorterHandler<TEntity, TSorter>
+internal interface IOozeSorterHandler<TEntity, in TSorter>
 {
     IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,

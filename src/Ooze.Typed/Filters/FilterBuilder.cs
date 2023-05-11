@@ -3,9 +3,10 @@ using System.Linq.Expressions;
 
 namespace Ooze.Typed.Filters;
 
+/// <inheritdoc />
 internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter>
 {
-    readonly IList<FilterDefinition<TEntity, TFilter>> _filterDefinitions = new List<FilterDefinition<TEntity, TFilter>>();
+    private readonly IList<FilterDefinition<TEntity, TFilter>> _filterDefinitions = new List<FilterDefinition<TEntity, TFilter>>();
 
     public IFilterBuilder<TEntity, TFilter> Equal<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,

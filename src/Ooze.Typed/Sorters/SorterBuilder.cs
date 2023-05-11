@@ -2,6 +2,7 @@
 
 namespace Ooze.Typed.Sorters;
 
+/// <inheritdoc/>
 internal class SorterBuilder<TEntity, TSorters> : ISorterBuilder<TEntity, TSorters>
 {
     private readonly IList<SortDefinition<TEntity, TSorters>> _sortDefinitions =

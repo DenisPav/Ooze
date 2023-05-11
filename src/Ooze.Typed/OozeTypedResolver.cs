@@ -6,6 +6,7 @@ using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed;
 
+/// <inheritdoc />
 internal class OozeTypedResolver : IOozeTypedResolver
 {
     private readonly IServiceProvider _serviceProvider;
@@ -71,6 +72,7 @@ internal class OozeTypedResolver : IOozeTypedResolver
     }
 }
 
+/// <inheritdoc />
 internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolver<TEntity, TFilters, TSorters>
 {
     private readonly IOozeSorterHandler<TEntity, TSorters> _sorterHandler;
