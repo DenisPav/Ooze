@@ -111,7 +111,7 @@ internal static class BasicExpressions
         params ParameterExpression[] parameterExpressions)
         => Lambda<Func<TEntity, bool>>(body, parameterExpressions);
 
-    private static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
+    internal static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
     {
         var constantType = typeof(TProperty);
         var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
@@ -121,7 +121,7 @@ internal static class BasicExpressions
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }
 
-    private static ParameterExpression ExtractParameterExpression(MemberExpression memberExpression)
+    internal static ParameterExpression ExtractParameterExpression(MemberExpression memberExpression)
     {
         var intermediateExpression = memberExpression.Expression;
         while (intermediateExpression is MemberExpression member)
