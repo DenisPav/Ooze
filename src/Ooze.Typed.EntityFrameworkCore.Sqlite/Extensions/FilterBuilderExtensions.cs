@@ -4,20 +4,21 @@ using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using static System.Linq.Expressions.Expression;
 
-namespace Ooze.Typed.EntityFrameworkCore.Extensions;
+namespace Ooze.Typed.EntityFrameworkCore.Sqlite.Extensions;
 
 public static class FilterBuilderExtensions
 {
-    private static readonly Type DbFunctionsExtensionsType = typeof(DbFunctionsExtensions);
-    private const string LikeMethod = nameof(DbFunctionsExtensions.Like);
+    private static readonly Type DbFunctionsExtensionsType = typeof(SqliteDbFunctionsExtensions);
+    private const string GlobMethod = nameof(SqliteDbFunctionsExtensions.Glob);
     private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
 
-    public static IFilterBuilder<TEntity, TFilter> Like<TEntity, TFilter>(
+    public static IFilterBuilder<TEntity, TFilter> Glob<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, string>> dataExpression,
         Func<TFilter, string> filterFunc)
     {
         bool FilterShouldRun(TFilter filter) => string.IsNullOrEmpty(filterFunc(filter)) == false;
+
         Expression<Func<TEntity, bool>> FilterExpressionFactory(TFilter filter)
         {
             var filterValue = filterFunc(filter);
@@ -26,7 +27,7 @@ public static class FilterBuilderExtensions
             var constantExpression = BasicExpressions.GetWrappedConstantExpression(filterValue);
             var callExpression = Call(
                 DbFunctionsExtensionsType,
-                LikeMethod,
+                GlobMethod,
                 Type.EmptyTypes,
                 EfPropertyExpression,
                 memberAccessExpression!,
