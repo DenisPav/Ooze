@@ -25,11 +25,11 @@ jobs:
         run: |
           cd ./src/Ooze.Typed
           dotnet pack -c Release -o pkg
-      - name: Add nuget source
-        run: dotnet nuget add source https://nuget.pkg.github.com/DenisPav/index.json -u DenisPav -p ${OOZE_TOKEN} --store-password-in-clear-text
-        env:
-          OOZE_TOKEN: ${{ secrets.OozeToken }}
+      # - name: Add nuget source
+      #   run: dotnet nuget add source https://nuget.pkg.github.com/DenisPav/index.json -u DenisPav -p ${OOZE_TOKEN} --store-password-in-clear-text
+      #   env:
+      #     OOZE_TOKEN: ${{ secrets.OozeToken }}
       - name: Push package to GitHub registry
-        run: dotnet nuget push ./src/Ooze.Typed/pkg/*.nupkg -k ${OOZE_TOKEN} -s https://nuget.pkg.github.com/DenisPav/index.json --skip-duplicate --no-symbols
+        run: dotnet nuget push ./src/Ooze.Typed/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
         env:
-          OOZE_TOKEN: ${{ secrets.OozeToken }}
+          NUGET_KEY: ${{ secrets.NUGET_KEY }}

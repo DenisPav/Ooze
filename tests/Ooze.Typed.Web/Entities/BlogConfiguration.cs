@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+namespace Ooze.Typed.Web.Entities;
+
 public class BlogConfiguration : IEntityTypeConfiguration<Blog>
 {
     public void Configure(EntityTypeBuilder<Blog> builder)

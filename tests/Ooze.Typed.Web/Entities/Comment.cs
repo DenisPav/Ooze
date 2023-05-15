@@ -1,4 +1,6 @@
-﻿public class Comment
+﻿namespace Ooze.Typed.Web.Entities;
+
+public class Comment
 {
     public int Id { get; set; }
     public string Text { get; set; }

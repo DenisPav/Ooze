@@ -1,24 +1,30 @@
-﻿using Ooze.Typed.Expressions;
+﻿using Microsoft.Extensions.Logging;
+using Ooze.Typed.Expressions;
 
 namespace Ooze.Typed.Sorters;
 
-internal class OozeSorterHandler<TEntity, TSorter> : IOozeSorterHandler<TEntity, TSorter>
+internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity, TSorters>
 {
-    private readonly IEnumerable<IOozeSorterProvider<TEntity, TSorter>> _sortProviders;
+    private readonly IEnumerable<IOozeSorterProvider<TEntity, TSorters>> _sortProviders;
+    private readonly ILogger<OozeSorterHandler<TEntity, TSorters>> _log;
 
     public OozeSorterHandler(
-        IEnumerable<IOozeSorterProvider<TEntity, TSorter>> sortProviders)
+        IEnumerable<IOozeSorterProvider<TEntity, TSorters>> sortProviders,
+        ILogger<OozeSorterHandler<TEntity, TSorters>> log)
     {
         _sortProviders = sortProviders;
+        _log = log;
     }
 
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
-        IEnumerable<TSorter> sorters)
+        IEnumerable<TSorters> sorters)
     {
+        _log.LogDebug("Processing available sorters!");
+
         if (query == null) throw new ArgumentNullException(nameof(query));
         var sortDefinitions = _sortProviders.SelectMany(provider => provider.GetSorters())
-            .Cast<SortDefinition<TEntity, TSorter>>()
+            .Cast<SortDefinition<TEntity, TSorters>>()
             .ToList();
 
         foreach (var sorter in sorters)
@@ -39,6 +45,8 @@ internal class OozeSorterHandler<TEntity, TSorter> : IOozeSorterHandler<TEntity,
                     : CommonMethods.ThenByDescending
                         .MakeGenericMethod(typeof(TEntity), sorterType)
                         .Invoke(null, new object[] { query, sortDefinition.DataExpression }) as IQueryable<TEntity>)!;
+
+                _log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
             }
             else
             {
@@ -49,6 +57,8 @@ internal class OozeSorterHandler<TEntity, TSorter> : IOozeSorterHandler<TEntity,
                     : CommonMethods.OrderByDescending
                         .MakeGenericMethod(typeof(TEntity), sorterType)
                         .Invoke(null, new object[] { query, sortDefinition.DataExpression }) as IQueryable<TEntity>)!;
+
+                _log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
             }
         }
 

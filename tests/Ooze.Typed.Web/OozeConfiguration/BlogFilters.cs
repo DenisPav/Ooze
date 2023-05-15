@@ -6,4 +6,5 @@ public class BlogFilters
     public int? BlogId { get; set; } = default!;
     public IEnumerable<int> BlogIds { get; set; } = default!;
     public RangeFilter<int> BlogRange { get; set; } = default!;
+    public bool? IsNameDate { get; set; } = default!;
 }

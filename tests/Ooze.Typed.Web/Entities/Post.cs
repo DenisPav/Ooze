@@ -1,4 +1,6 @@
-﻿public class Post
+﻿namespace Ooze.Typed.Web.Entities;
+
+public class Post
 {
     public int Id { get; set; }
     public string Name { get; set; }

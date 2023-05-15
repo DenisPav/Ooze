@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ooze.Typed\Ooze.Typed.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Ooze.Typed\Expressions\BasicExpressions.cs">
+      <Link>Expressions\BasicExpressions.cs</Link>
+    </Compile>
+    <Compile Include="..\Ooze.Typed\Expressions\CommonMethods.cs">
+      <Link>Expressions\CommonMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\Ooze.Typed\Expressions\OozeValue.cs">
+      <Link>Expressions\OozeValue.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+</Project>

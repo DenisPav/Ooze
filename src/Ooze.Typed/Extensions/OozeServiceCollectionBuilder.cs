@@ -5,6 +5,7 @@ using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed.Extensions;
 
+/// <inheritdoc />
 internal class OozeServiceCollectionBuilder : IOozeServiceCollectionBuilder
 {
     private static readonly Type FilterProviderType = typeof(IOozeFilterProvider<,>);

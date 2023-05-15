@@ -100,7 +100,7 @@ internal static class BasicExpressions
         {
             UnaryExpression unaryExpression => unaryExpression.Operand as MemberExpression,
             MemberExpression memberExpression => memberExpression,
-            _ => throw new Exception("not handled yet")
+            _ => throw new Exception("Error while extracting member expression!")
         };
 
         return memberAccessExpression!;
@@ -111,7 +111,7 @@ internal static class BasicExpressions
         params ParameterExpression[] parameterExpressions)
         => Lambda<Func<TEntity, bool>>(body, parameterExpressions);
 
-    private static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
+    internal static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
     {
         var constantType = typeof(TProperty);
         var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
@@ -121,17 +121,17 @@ internal static class BasicExpressions
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }
 
-    private static ParameterExpression ExtractParameterExpression(MemberExpression memberExpression)
+    internal static ParameterExpression ExtractParameterExpression(MemberExpression memberExpression)
     {
         var intermediateExpression = memberExpression.Expression;
         while (intermediateExpression is MemberExpression member)
             intermediateExpression = member.Expression;
-        return intermediateExpression as ParameterExpression 
+        return intermediateExpression as ParameterExpression
                ?? throw new Exception("Passed member expression can not be extracted correctly!");
     }
 
     /// <summary>
-    /// Used by CommonMethods to create a wrapped object which will be resolve as an parameter in the EF query
+    /// Used by CommonMethods to create a wrapped object which will be resolved as an parameter in the EF generated SQL query
     /// </summary>
     /// <param name="value">Value to wrap</param>
     /// <typeparam name="TType">Type of value which is being wrapped</typeparam>
