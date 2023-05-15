@@ -2,7 +2,7 @@
 This package provides simple mechanism for applying filters, sorters, paging to your `IQueryable<T>` queries. Packages are available on the `Github package repository` so you can install them from there.
 
 ## Installation ⚙
-You can find latest versions on nuget. See below badge for more information.
+You can find latest versions on nuget [on this location](https://www.nuget.org/packages/Ooze.Typed/).
 
 ![Nuget](https://img.shields.io/nuget/v/Ooze.Typed?style=for-the-badge)
 
