@@ -1,5 +1,7 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
+using Ooze.Typed.Web;
+using Ooze.Typed.Web.Entities;
 
 public class SeedService : IHostedService
 {
@@ -14,8 +16,16 @@ public class SeedService : IHostedService
     {
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var sqlServerDb = scope.ServiceProvider.GetRequiredService<SqlServerDatabaseContext>();
 
-        if (await db.Set<Blog>().AnyAsync())
+        await Task.WhenAll(SeedRecords(db, cancellationToken), SeedRecords(sqlServerDb, cancellationToken));
+    }
+
+    private static async Task SeedRecords(
+        DbContext db,
+        CancellationToken cancellationToken)
+    {
+        if (await db.Set<Blog>().AnyAsync(cancellationToken))
         {
             return;
         }
@@ -35,8 +45,8 @@ public class SeedService : IHostedService
 
 
         var blogs = blogFaker.Generate(500);
-        await db.Set<Blog>().AddRangeAsync(blogs);
-        await db.SaveChangesAsync();
+        await db.Set<Blog>().AddRangeAsync(blogs, cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

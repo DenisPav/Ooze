@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Ooze.Typed.Web.Entities;
+namespace Ooze.Typed.Web.Entities.SqlServerConfigurations;
 
 public class PostConfiguration : IEntityTypeConfiguration<Post>
 {
