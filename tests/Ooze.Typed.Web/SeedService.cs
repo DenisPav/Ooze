@@ -37,14 +37,14 @@ public class SeedService : IHostedService
         var postFaker = new Faker<Post>()
             .RuleFor(post => post.Name, f => f.Name.FullName())
             .RuleFor(post => post.Body, f => f.Lorem.Paragraph())
-            .RuleFor(post => post.Comment, f => commentFaker.Generate(60));
+            .RuleFor(post => post.Comment, f => commentFaker.Generate(20));
 
         var blogFaker = new Faker<Blog>()
             .RuleFor(blog => blog.Name, f => f.Name.FullName())
-            .RuleFor(blog => blog.Posts, f => postFaker.Generate(100));
+            .RuleFor(blog => blog.CreatedAt, f => f.Date.Past())
+            .RuleFor(blog => blog.Posts, f => postFaker.Generate(25));
 
-
-        var blogs = blogFaker.Generate(500);
+        var blogs = blogFaker.Generate(100);
         await db.Set<Blog>().AddRangeAsync(blogs, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }

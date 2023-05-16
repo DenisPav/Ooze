@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ooze.Typed.Web;
 
@@ -11,9 +12,11 @@ using Ooze.Typed.Web;
 namespace Ooze.Typed.Web.Migrations.SqlServer
 {
     [DbContext(typeof(SqlServerDatabaseContext))]
-    partial class SqlServerDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230516185347_blog_date")]
+    partial class blogdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
