@@ -30,6 +30,15 @@ jobs:
           $newVersion = "{0}.{1}.{2}" -f $version.Major, $version.Minor, ($version.Build + 1)
           $xml.Project.PropertyGroup.Version = $newVersion
           $xml.Save("./src/Ooze.Typed/Ooze.Typed.csproj")
+          $xml = [Xml] (Get-Content .\src\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj)
+          $xml.Project.PropertyGroup.Version = $newVersion
+          $xml.Save("./src/Ooze.Typed.EntityFrameworkCore/Ooze.Typed.EntityFrameworkCore.csproj")
+          $xml = [Xml] (Get-Content .\src\Ooze.Typed.EntityFrameworkCore.Sqlite\Ooze.Typed.EntityFrameworkCore.Sqlite.csproj)
+          $xml.Project.PropertyGroup.Version = $newVersion
+          $xml.Save("./src/Ooze.Typed.EntityFrameworkCore.Sqlite/Ooze.Typed.EntityFrameworkCore.Sqlite.csproj")
+          $xml = [Xml] (Get-Content .\src\Ooze.Typed.EntityFrameworkCore.SqlServer\Ooze.Typed.EntityFrameworkCore.SqlServer.csproj)
+          $xml.Project.PropertyGroup.Version = $newVersion
+          $xml.Save("./src/Ooze.Typed.EntityFrameworkCore.SqlServer/Ooze.Typed.EntityFrameworkCore.SqlServer.csproj")
           echo "::set-output name=newVersion::$newVersion"
       - name: Commit changes
         run: |
