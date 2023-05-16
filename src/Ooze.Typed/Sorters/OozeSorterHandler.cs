@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Linq.Expressions;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Ooze.Typed.Expressions;
 
 namespace Ooze.Typed.Sorters;
@@ -35,33 +37,35 @@ internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity
 
             var sorterType = BasicExpressions.GetMemberExpression(sortDefinition.DataExpression.Body).Type;
             var direction = sortDefinition.GetSortDirection(sorter);
+            MethodInfo? method = null;
 
             if (query!.Expression.Type == typeof(IOrderedQueryable<TEntity>))
             {
-                query = (direction == SortDirection.Ascending
+                method = direction == SortDirection.Ascending
                     ? CommonMethods.ThenBy
-                        .MakeGenericMethod(typeof(TEntity), sorterType)
-                        .Invoke(null, new object[] { query, sortDefinition.DataExpression }) as IQueryable<TEntity>
-                    : CommonMethods.ThenByDescending
-                        .MakeGenericMethod(typeof(TEntity), sorterType)
-                        .Invoke(null, new object[] { query, sortDefinition.DataExpression }) as IQueryable<TEntity>)!;
-
-                _log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
+                    : CommonMethods.ThenByDescending;
             }
             else
             {
-                query = (direction == SortDirection.Ascending
+                method = direction == SortDirection.Ascending
                     ? CommonMethods.OrderBy
-                        .MakeGenericMethod(typeof(TEntity), sorterType)
-                        .Invoke(null, new object[] { query, sortDefinition.DataExpression }) as IQueryable<TEntity>
-                    : CommonMethods.OrderByDescending
-                        .MakeGenericMethod(typeof(TEntity), sorterType)
-                        .Invoke(null, new object[] { query, sortDefinition.DataExpression }) as IQueryable<TEntity>)!;
-
-                _log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
+                    : CommonMethods.OrderByDescending;
             }
+            
+            _log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
+            query = CreateSortedQueryable(query, method, sorterType, sortDefinition.DataExpression);
         }
 
         return query;
+    }
+
+    private static IQueryable<TEntity> CreateSortedQueryable(
+        IQueryable<TEntity> query,
+        MethodInfo method,
+        Type sorterType,
+        LambdaExpression dataExpression)
+    {
+        return (method.MakeGenericMethod(typeof(TEntity), sorterType)
+            .Invoke(null, new object[] { query, dataExpression }) as IQueryable<TEntity>)!;
     }
 }
