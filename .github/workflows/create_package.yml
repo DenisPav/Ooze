@@ -25,11 +25,14 @@ jobs:
         run: |
           cd ./src/Ooze.Typed
           dotnet pack -c Release -o pkg
-      # - name: Add nuget source
-      #   run: dotnet nuget add source https://nuget.pkg.github.com/DenisPav/index.json -u DenisPav -p ${OOZE_TOKEN} --store-password-in-clear-text
-      #   env:
-      #     OOZE_TOKEN: ${{ secrets.OozeToken }}
+          cd ../Ooze.Typed.EntityFrameworkCore
+          dotnet pack -c Release -o pkg
+          cd ../Ooze.Typed.EntityFrameworkCore.SqlServer
+          dotnet pack -c Release -o pkg
       - name: Push package to Nuget registry
-        run: dotnet nuget push ./src/Ooze.Typed/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
+        run: |
+          dotnet nuget push ./src/Ooze.Typed/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
+          dotnet nuget push ./src/Ooze.Typed.EntityFrameworkCore/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
+          dotnet nuget push ./src/Ooze.Typed.EntityFrameworkCore.SqlServer/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}

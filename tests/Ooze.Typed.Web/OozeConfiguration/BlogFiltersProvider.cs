@@ -11,8 +11,10 @@ public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
             .Equal(blog => blog.Id, filter => filter.BlogId)
             .Range(blog => blog.Id, filter => filter.BlogRange)
             .In(blog => blog.Id, filter => filter.BlogIds)
-            // .Like(blog => blog.Name, filter => filter.Name)
+            .Like(blog => blog.Name, filter => filter.Name)
             .IsDate(blog => blog.Name, filter => filter.IsNameDate)
+            .IsNumeric(blog => blog.Name, filter => filter.IsNameNumeric)
+            .DateDiffDayEqual(blog => blog.CreatedAt.Value, filter => filter.DateDiffFilter)
             .Build();
     }
 }
