@@ -6,12 +6,24 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Typed.EntityFrameworkCore.Extensions;
 
+/// <summary>
+/// Entity framework extensions for FilterBuilder
+/// </summary>
 public static class FilterBuilderExtensions
 {
     private static readonly Type DbFunctionsExtensionsType = typeof(DbFunctionsExtensions);
     private const string LikeMethod = nameof(DbFunctionsExtensions.Like);
     private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
 
+    /// <summary>
+    /// Applies a like filter over specified entity property and passed filter like expression
+    /// </summary>
+    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="dataExpression">Expression targeting entity property for like filtering</param>
+    /// <param name="filterFunc">Filter delegate targeting property with like expression</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TFilter">Filter type</typeparam>
+    /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     public static IFilterBuilder<TEntity, TFilter> Like<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, string>> dataExpression,
