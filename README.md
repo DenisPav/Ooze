@@ -1,10 +1,23 @@
 # Ooze.Typed 🌳💧🔧 
+![Nuget](https://img.shields.io/nuget/v/Ooze.Typed)
+![framework](https://img.shields.io/badge/framework-.net%207.0-green)
+![GitHub Repo stars](https://img.shields.io/github/stars/DenisPav/Ooze)
+![Nuget](https://img.shields.io/nuget/dt/Ooze.Typed)
+
 This package provides simple mechanism for applying filters, sorters, paging to your `IQueryable<T>` queries. Packages are available on the `Github package repository` so you can install them from there.
 
 ## Installation ⚙
 You can find latest versions on nuget [on this location](https://www.nuget.org/packages/Ooze.Typed/).
 
-![Nuget](https://img.shields.io/nuget/v/Ooze.Typed?style=for-the-badge)
+## Additional filter extensions 🎁
+Except base `Ooze.Typed` package there are few more that add additional filter extensions to the filter builder that you use in your provider implementations. These are listed below:
+ - [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
+ - [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
+ - [Ooze.Typed.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.SqlServer/)
+ - `Ooze.Typed.EntityFrameworkCore.Psql` - TBD
+ - `Ooze.Typed.EntityFrameworkCore.MySql` - TBD
+
+These packages provide additional provider specific `EF` extensions to the filter builder pipeline.
 
 ## Registering Ooze 🧰
 After installation you'll need to register Ooze to your services collection. To do so you need to call `.AddOozeTyped()` method. Example of this can be seen below:
