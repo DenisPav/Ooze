@@ -14,7 +14,7 @@ public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
             .Like(blog => blog.Name, filter => filter.Name)
             .IsDate(blog => blog.Name, filter => filter.IsNameDate)
             .IsNumeric(blog => blog.Name, filter => filter.IsNameNumeric)
-            .DateDiffDayEqual(blog => blog.CreatedAt.Value, filter => filter.DateDiffFilter)
+            .IsDateDiffYear(blog => blog.CreatedAt.Value, filter => filter.DateDiffFilter, DateDiffOperation.NotEqual)
             .Build();
     }
 }
