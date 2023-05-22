@@ -51,7 +51,7 @@ internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity
                     ? CommonMethods.OrderBy
                     : CommonMethods.OrderByDescending;
             }
-            
+
             _log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
             query = CreateSortedQueryable(query, method, sorterType, sortDefinition.DataExpression);
         }

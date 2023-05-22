@@ -64,7 +64,7 @@ public class BlogController : ControllerBase
         var results = await query.ToListAsync();
         return Ok(results);
     }
-    
+
     [HttpPost("/sql-server")]
     public async Task<IActionResult> PostSqlServer(Input model)
     {
