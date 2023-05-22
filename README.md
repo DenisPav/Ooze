@@ -159,3 +159,35 @@ public record class Input(MyEntityFilters Filters, MyEntitySorters Sorters, Pagi
 
 **NOTE:**
 Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web). Ooze only cares that you provide instances of your `filters`,  `sorters` which will be then applied to `IQueryable` instances.
+
+
+## Filter extensions 🎁
+As previously mentioned additional packages contains some usefull extensions when working with specific "flavor" of EF. For example you might be using `Sqlite` or `SqlServer` or `Postgres` etc. For these situations you can install these specific packages which contain extensions methods for the specific flavor. More about what is supported on each of the packages can be seen below.
+
+### [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
+This packages depends on EF Core packages and exposes next extensions:
+ - `Like()` - EF.Eunctions.Like
+
+### [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
+This packages depends on EF Core Sqlite package and package mentioned beforehand and exposes next extensions:
+ - `Glob()` - EF.Functions.Glob
+
+### [Ooze.Typed.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.SqlServer/)
+This package depends on EF Core SqlServer package and package mentioned beforehand and exposes next extensions:
+ - `IsDate()` - EF.Functions.IsDate
+ - `IsNumeric()` - EF.Functions.IsNumeric
+ - `IsDateDiffDay()` - EF.Functions.DateDiffDay
+ - `IsDateDiffMonth()` - EF.Functions.DateDiffMonth
+ - `IsDateDiffWeek()` - EF.Functions.DateDiffWeek
+ - `IsDateDiffYear()` - EF.Functions.DateDiffYear
+ - `IsDateDiffHour()` - EF.Functions.DateDiffHour
+ - `IsDateDiffMinute()` - EF.Functions.DateDiffMinute
+ - `IsDateDiffSecond()` - EF.Functions.DateDiffSecond
+ - `IsDateDiffMilisecond()` - EF.Functions.DateDiffMilisecond
+ - `IsDateDiffMicrosecond()` - EF.Functions.DateDiffMicrosecond
+ - `IsDateDiffNanosecond()` - EF.Functions.DateDiffNanosecond
+
+### `Ooze.Typed.EntityFrameworkCore.Psql` 
+TBD
+### `Ooze.Typed.EntityFrameworkCore.MySql`
+TBD

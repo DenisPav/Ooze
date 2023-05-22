@@ -23,6 +23,7 @@ public static class FilterBuilderExtensions
     private const string DateDiffSecondMethod = nameof(SqlServerDbFunctionsExtensions.DateDiffSecond);
     private const string DateDiffMillisecondMethod = nameof(SqlServerDbFunctionsExtensions.DateDiffMillisecond);
     private const string DateDiffMicrosecondMethod = nameof(SqlServerDbFunctionsExtensions.DateDiffMicrosecond);
+    private const string DateDiffNanosecondMethod = nameof(SqlServerDbFunctionsExtensions.DateDiffNanosecond);
     private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
 
     /// <summary>
@@ -272,6 +273,26 @@ public static class FilterBuilderExtensions
         DateDiffOperation operation,
         int diffConstant = 0)
         => filterBuilder.IsDateDiffFilter(DateDiffMicrosecondMethod, dataExpression, filterFunc, operation,
+            diffConstant);
+    
+    /// <summary>
+    /// Creates DateDiffNanosecond filter over entity property and filter value
+    /// </summary>
+    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
+    /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
+    /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TFilter">Filter type</typeparam>
+    /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
+    public static IFilterBuilder<TEntity, TFilter> IsDateDiffNanosecond<TEntity, TFilter>(
+        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+        Expression<Func<TEntity, DateTime?>> dataExpression,
+        Func<TFilter, DateTime?> filterFunc,
+        DateDiffOperation operation,
+        int diffConstant = 0)
+        => filterBuilder.IsDateDiffFilter(DateDiffNanosecondMethod, dataExpression, filterFunc, operation,
             diffConstant);
 
     private static IFilterBuilder<TEntity, TFilter> IsDateDiffFilter<TEntity, TFilter>(
