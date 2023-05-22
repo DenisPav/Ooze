@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace Ooze.Typed.Web.Migrations.SqlServer
+namespace Ooze.Typed.Web.Migrations.SqlServer;
+
+/// <inheritdoc />
+public partial class initial : Migration
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }
