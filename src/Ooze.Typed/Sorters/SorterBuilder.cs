@@ -8,7 +8,7 @@ internal class SorterBuilder<TEntity, TSorters> : ISorterBuilder<TEntity, TSorte
     private readonly IList<SortDefinition<TEntity, TSorters>> _sortDefinitions =
         new List<SortDefinition<TEntity, TSorters>>();
 
-    public ISorterBuilder<TEntity, TSorters> Add<TProperty>(
+    public ISorterBuilder<TEntity, TSorters> SortBy<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TSorters, SortDirection?> sorterFunc)
     {

@@ -7,8 +7,8 @@ public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
     public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
     {
         return Sorters.CreateFor<Blog, BlogSorters>()
-            .Add(blog => blog.Id, sort => sort.BlogIdSort)
-            .Add(blog => blog.Name, sort => sort.BlogNameSort)
+            .SortBy(blog => blog.Id, sort => sort.BlogIdSort)
+            .SortBy(blog => blog.Name, sort => sort.BlogNameSort)
             .Build();
     }
 }
@@ -47,8 +47,8 @@ public class CommentsSortersProvider : IOozeSorterProvider<Comment, CommentSorte
     public IEnumerable<ISortDefinition<Comment, CommentSorters>> GetSorters()
     {
         return Sorters.CreateFor<Comment, CommentSorters>()
-            .Add(comment => comment.Post.Id, sort => sort.IdSort)
-            .Add(comment => comment.Text, sort => sort.NameSort)
+            .SortBy(comment => comment.Post.Id, sort => sort.IdSort)
+            .SortBy(comment => comment.Text, sort => sort.NameSort)
             .Build();
     }
 }

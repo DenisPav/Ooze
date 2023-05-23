@@ -16,7 +16,7 @@ public interface ISorterBuilder<TEntity, TSorters>
     /// <param name="sorterFunc">Delegate targeting property of sorter class</param>
     /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple sorter definitions</returns>
-    ISorterBuilder<TEntity, TSorters> Add<TProperty>(
+    ISorterBuilder<TEntity, TSorters> SortBy<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TSorters, SortDirection?> sorterFunc);
 
