@@ -14,6 +14,7 @@ public static class FilterBuilderExtensions
     private static readonly Type DbFunctionsExtensionsType = typeof(SqlServerDbFunctionsExtensions);
     private const string IsDateMethod = nameof(SqlServerDbFunctionsExtensions.IsDate);
     private const string IsNumericMethod = nameof(SqlServerDbFunctionsExtensions.IsNumeric);
+    private const string ContainsMethod = nameof(SqlServerDbFunctionsExtensions.Contains);
     private const string DateDiffDayMethod = nameof(SqlServerDbFunctionsExtensions.DateDiffDay);
     private const string DateDiffMonthMethod = nameof(SqlServerDbFunctionsExtensions.DateDiffMonth);
     private const string DateDiffWeekMethod = nameof(SqlServerDbFunctionsExtensions.DateDiffWeek);
@@ -96,6 +97,44 @@ public static class FilterBuilderExtensions
                 : Not(callExpression);
 
             return Lambda<Func<TEntity, bool>>(notExpression, parameterExpression);
+        }
+
+        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        return filterBuilder;
+    }
+    
+    /// <summary>
+    /// Creates a Contains filter over specified property and filter
+    /// </summary>
+    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TFilter">Filter type</typeparam>
+    /// <typeparam name="TProperty">Targeted property type</typeparam>
+    /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
+    public static IFilterBuilder<TEntity, TFilter> Contains<TEntity, TFilter, TProperty>(
+        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Func<TFilter, string?> filterFunc)
+    {
+        bool FilterShouldRun(TFilter filter) => filterFunc(filter) != null;
+
+        Expression<Func<TEntity, bool>> FilterExpressionFactory(TFilter filter)
+        {
+            var filterValue = filterFunc(filter);
+            var memberAccessExpression = BasicExpressions.GetMemberExpression(dataExpression.Body);
+            var parameterExpression = BasicExpressions.ExtractParameterExpression(memberAccessExpression);
+            var constantExpression = BasicExpressions.GetWrappedConstantExpression(filterValue);
+            var callExpression = Call(
+                DbFunctionsExtensionsType,
+                ContainsMethod,
+                Type.EmptyTypes,
+                EfPropertyExpression,
+                memberAccessExpression!,
+                constantExpression);
+            
+            return Lambda<Func<TEntity, bool>>(callExpression, parameterExpression);
         }
 
         filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
