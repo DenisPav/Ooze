@@ -111,7 +111,7 @@ public class MyClassSortersProvider : IOozeSorterProvider<MyClass, MyClassSorter
     {
         return Sorters.CreateFor<MyClass, MyClassSorters>()
             //add sorting on Id property in provided direction from sorter instance
-            .Add(x => x.Id, sort => sort.Id)
+            .SortBy(x => x.Id, sort => sort.Id)
             .Build();
     }
 }
@@ -176,6 +176,7 @@ This packages depends on EF Core Sqlite package and package mentioned beforehand
 This package depends on EF Core SqlServer package and package mentioned beforehand and exposes next extensions:
  - `IsDate()` - EF.Functions.IsDate
  - `IsNumeric()` - EF.Functions.IsNumeric
+ - `Contains()` - EF.Functions.Contains
  - `IsDateDiffDay()` - EF.Functions.DateDiffDay
  - `IsDateDiffMonth()` - EF.Functions.DateDiffMonth
  - `IsDateDiffWeek()` - EF.Functions.DateDiffWeek

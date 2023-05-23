@@ -14,9 +14,9 @@ public class SorterBuilderTests
     public void Should_Have_Correct_Number_Of_Sorters()
     {
         var sorters = Sorters.Sorters.CreateFor<Blog, BlogSorters>()
-            .Add(blog => blog.Id, sort => sort.IdSort)
-            .Add(blog => blog.Name, sort => sort.NameSort)
-            .Add(blog => blog.NumberOfComments, sort => sort.NumberOfCommentsSort)
+            .SortBy(blog => blog.Id, sort => sort.IdSort)
+            .SortBy(blog => blog.Name, sort => sort.NameSort)
+            .SortBy(blog => blog.NumberOfComments, sort => sort.NumberOfCommentsSort)
             .Build();
 
         Assert.True(sorters.Count() == 3);
