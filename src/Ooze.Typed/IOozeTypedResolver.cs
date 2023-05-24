@@ -1,4 +1,5 @@
-﻿using Ooze.Typed.Paging;
+﻿using System.Linq.Expressions;
+using Ooze.Typed.Paging;
 
 namespace Ooze.Typed;
 
@@ -44,6 +45,21 @@ public interface IOozeTypedResolver
     IQueryable<TEntity> Page<TEntity>(
         IQueryable<TEntity> query,
         PagingOptions pagingOptions);
+
+    /// <summary>
+    /// Applies valid cursor paging options over <see cref="IQueryable"/> instance. 
+    /// </summary>
+    /// <param name="query">Base <see cref="IQueryable"/> instance</param>
+    /// <param name="cursorPropertyExpression">Expression targeting entity property to use for cursor paging</param>
+    /// <param name="pagingOptions">Instance of paging options</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TAfter">After type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    IQueryable<TEntity> PageWithCursor<TEntity, TAfter, TProperty>(
+        IQueryable<TEntity> query,
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions);
 }
 
 /// <summary>
@@ -86,6 +102,18 @@ public interface IOozeTypedResolver<TEntity, in TFilters, in TSorters>
     IOozeTypedResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions);
 
     /// <summary>
+    /// Applies valid paging options over <see cref="IQueryable"/> instance. 
+    /// </summary>
+    /// <param name="cursorPropertyExpression">Expression targeting entity property to use for cursor paging</param>
+    /// <param name="pagingOptions">Instance of cursor paging options</param>
+    /// <typeparam name="TAfter">After type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    IOozeTypedResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions);
+
+    /// <summary>
     /// Return update <see cref="IQueryable"/> instance
     /// </summary>
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
@@ -104,4 +132,22 @@ public interface IOozeTypedResolver<TEntity, in TFilters, in TSorters>
         IEnumerable<TSorters> sorters,
         TFilters filters,
         PagingOptions pagingOptions);
+
+    /// <summary>
+    /// Applies multiple operations over <see cref="IQueryable"/> instance 
+    /// </summary>
+    /// <param name="query">Base <see cref="IQueryable"/> instance</param>
+    /// <param name="sorters">Sorter definitions to apply over <see cref="IQueryable"/> instance</param>
+    /// <param name="filters">Filter definitions to apply over <see cref="IQueryable"/> instance</param>
+    /// <param name="cursorPropertyExpression">Expression targeting entity property to use for cursor paging</param>
+    /// <param name="pagingOptions">Instance of cursor paging options</param>
+    /// <typeparam name="TAfter">After type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    IQueryable<TEntity> Apply<TAfter, TProperty>(
+        IQueryable<TEntity> query,
+        IEnumerable<TSorters> sorters,
+        TFilters filters,
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions);
 }
