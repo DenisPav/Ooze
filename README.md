@@ -134,6 +134,22 @@ query = resolver
         .Apply();
 ```
 
+#### Cursor paging 👉
+There is also additional support for cursor paging via `.PageWithCursor` method on the resolver. If you want to use cursor paging you'll be suing `CursorPagingOptions<T>` in this case and you'll need to pass a property you want to use as a cursor source. Example of this can be found in the next example:
+```csharp
+query = resolver
+        .WithQuery(query)
+        .PageWithCursor(
+            entity => entity.Id,
+            new CursorPagingOptions<int>
+            {
+                After = 0,
+                Size = 3,
+            }
+        )
+        .Apply();
+```
+
 ## Applying definitions 🧪
 In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters, TSorters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is an more elaborate example below:
 ```csharp
