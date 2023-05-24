@@ -106,7 +106,7 @@ internal static class BasicExpressions
         return memberAccessExpression!;
     }
 
-    private static Expression<Func<TEntity, bool>> GetLambdaExpression<TEntity>(
+    internal static Expression<Func<TEntity, bool>> GetLambdaExpression<TEntity>(
         Expression body,
         params ParameterExpression[] parameterExpressions)
         => Lambda<Func<TEntity, bool>>(body, parameterExpressions);

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Paging;
 using Ooze.Typed.Sorters;
@@ -67,6 +69,23 @@ internal class OozeTypedResolver : IOozeTypedResolver
 
         var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = sorterHandler.Apply(query, pagingOptions);
+
+        return query;
+    }
+    
+    public IQueryable<TEntity> PageWithCursor<TEntity, TAfter, TProperty>(
+        IQueryable<TEntity> query,
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions)
+    {
+        if (pagingOptions == null)
+        {
+            _log.LogDebug("Pagination options are not present");
+            return query;
+        }
+        
+        var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        query = sorterHandler.ApplyCursor(query, cursorPropertyExpression, pagingOptions);
 
         return query;
     }
@@ -138,6 +157,20 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
         _query = _pagingHandler.Apply(_query, pagingOptions);
         return this;
     }
+    
+    public IOozeTypedResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions)
+    {
+        if (pagingOptions == null)
+        {
+            _log.LogDebug("Pagination options are not present");
+            return this;
+        }
+
+        _query = _pagingHandler.ApplyCursor(_query, cursorPropertyExpression, pagingOptions);
+        return this;
+    }
 
     public IQueryable<TEntity> Apply()
         => _query;
@@ -152,6 +185,20 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
             .Sort(sorters)
             .Filter(filters)
             .Page(pagingOptions)
+            .Apply();
+    }
+    
+    public IQueryable<TEntity> Apply<TAfter, TProperty>(
+        IQueryable<TEntity> query,
+        IEnumerable<TSorters> sorters,
+        TFilters filters,
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions)
+    {
+        return WithQuery(query)
+            .Sort(sorters)
+            .Filter(filters)
+            .PageWithCursor(cursorPropertyExpression, pagingOptions)
             .Apply();
     }
 }
