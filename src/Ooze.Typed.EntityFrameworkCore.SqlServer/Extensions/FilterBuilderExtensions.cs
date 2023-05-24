@@ -102,7 +102,7 @@ public static class FilterBuilderExtensions
         filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
-    
+
     /// <summary>
     /// Creates a Contains filter over specified property and filter
     /// </summary>
@@ -133,7 +133,7 @@ public static class FilterBuilderExtensions
                 EfPropertyExpression,
                 memberAccessExpression!,
                 constantExpression);
-            
+
             return Lambda<Func<TEntity, bool>>(callExpression, parameterExpression);
         }
 
@@ -313,7 +313,7 @@ public static class FilterBuilderExtensions
         int diffConstant = 0)
         => filterBuilder.IsDateDiffFilter(DateDiffMicrosecondMethod, dataExpression, filterFunc, operation,
             diffConstant);
-    
+
     /// <summary>
     /// Creates DateDiffNanosecond filter over entity property and filter value
     /// </summary>

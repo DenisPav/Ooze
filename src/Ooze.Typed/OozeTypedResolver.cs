@@ -1,7 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Paging;
 using Ooze.Typed.Sorters;
@@ -72,7 +71,7 @@ internal class OozeTypedResolver : IOozeTypedResolver
 
         return query;
     }
-    
+
     public IQueryable<TEntity> PageWithCursor<TEntity, TAfter, TProperty>(
         IQueryable<TEntity> query,
         Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
@@ -83,7 +82,7 @@ internal class OozeTypedResolver : IOozeTypedResolver
             _log.LogDebug("Pagination options are not present");
             return query;
         }
-        
+
         var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = sorterHandler.ApplyCursor(query, cursorPropertyExpression, pagingOptions);
 
@@ -157,7 +156,7 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
         _query = _pagingHandler.Apply(_query, pagingOptions);
         return this;
     }
-    
+
     public IOozeTypedResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
         Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
         CursorPagingOptions<TAfter>? pagingOptions)
@@ -187,7 +186,7 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
             .Page(pagingOptions)
             .Apply();
     }
-    
+
     public IQueryable<TEntity> Apply<TAfter, TProperty>(
         IQueryable<TEntity> query,
         IEnumerable<TSorters> sorters,

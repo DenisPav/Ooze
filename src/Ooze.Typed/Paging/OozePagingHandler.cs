@@ -36,7 +36,7 @@ internal class OozePagingHandler<TEntity> : IOozePagingHandler<TEntity>
         var cursorExpression = GreaterThan(memberAccessExpression, constant);
 
         var lambdaExpression = BasicExpressions.GetLambdaExpression<TEntity>(cursorExpression, parameter);
-        
+
         return query.Where(lambdaExpression)
             .Take(pagingOptions.Size);
     }
