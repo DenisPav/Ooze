@@ -20,7 +20,7 @@ public class SqlServerIntegrationTests : IAsyncLifetime
         services.AddOozeTyped()
             .Add<PostFiltersProvider>()
             .Add<PostSortersProvider>();
-        
+
         return services;
     }
 
@@ -48,12 +48,13 @@ public class SqlServerIntegrationTests : IAsyncLifetime
         query = resolver.Filter(query, new PostFilters(true, null));
 
         var sql = query.ToQueryString();
-        Assert.Contains(sql, "ISDATE");
-        
+        var sqlContainsCall = sql.Contains("ISDATE", StringComparison.InvariantCultureIgnoreCase);
+        Assert.True(sqlContainsCall);
+
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
     }
-    
+
     [Fact]
     public async Task IsNumeric_Should_Update_Query_And_Return_Correct_Items()
     {
@@ -64,8 +65,9 @@ public class SqlServerIntegrationTests : IAsyncLifetime
         query = resolver.Filter(query, new PostFilters(null, true));
 
         var sql = query.ToQueryString();
-        Assert.Contains(sql, "ISNUMERIC");
-        
+        var sqlContainsCall = sql.Contains("ISNUMERIC", StringComparison.InvariantCultureIgnoreCase);
+        Assert.True(sqlContainsCall);
+
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
     }
