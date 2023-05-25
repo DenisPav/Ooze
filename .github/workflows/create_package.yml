@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
       - name: Run tests
-        run: dotnet test ./tests/Ooze.Typed.Tests/Ooze.Typed.Tests.csproj
+        run: dotnet test
       - name: Create packages
         run: |
           cd ./src/Ooze.Typed
