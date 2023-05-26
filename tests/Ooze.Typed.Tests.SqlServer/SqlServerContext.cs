@@ -5,7 +5,7 @@ namespace Ooze.Typed.Tests.SqlServer;
 public class SqlServerContext : DbContext
 {
     public SqlServerContext(DbContextOptions options) : base(options)
-    {}
+    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,7 +29,7 @@ public class SqlServerContext : DbContext
 
     public async Task Seed()
     {
-        var date = new DateTime(2022, 1, 1);
+        var date = new DateTime(2022, 1, 1, 20, 20, 22);
         var posts = Enumerable.Range(1, 100)
             .Select(id => new Post
             {
@@ -53,7 +53,7 @@ public class SqlServerContext : DbContext
                 }
             });
 
-        
+
         Set<Post>().AddRange(posts);
         await SaveChangesAsync();
     }

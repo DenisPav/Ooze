@@ -2,4 +2,4 @@
 
 namespace Ooze.Typed.Tests.SqlServer;
 
-public record class PostSorters(SortDirection? Id, SortDirection? Name, SortDirection? Enabled);
+public record PostSorters(SortDirection? Id, SortDirection? Name, SortDirection? Enabled);
