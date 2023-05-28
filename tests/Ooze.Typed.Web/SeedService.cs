@@ -1,7 +1,8 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
-using Ooze.Typed.Web;
 using Ooze.Typed.Web.Entities;
+
+namespace Ooze.Typed.Web;
 
 public class SeedService : IHostedService
 {
@@ -17,8 +18,12 @@ public class SeedService : IHostedService
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
         var sqlServerDb = scope.ServiceProvider.GetRequiredService<SqlServerDatabaseContext>();
+        var postgresDb = scope.ServiceProvider.GetRequiredService<PostgresDatabaseContext>();
 
-        await Task.WhenAll(SeedRecords(db, cancellationToken), SeedRecords(sqlServerDb, cancellationToken));
+        await Task.WhenAll(
+            SeedRecords(db, cancellationToken),
+            SeedRecords(sqlServerDb, cancellationToken),
+            SeedRecords(postgresDb, cancellationToken));
     }
 
     private static async Task SeedRecords(
@@ -41,7 +46,7 @@ public class SeedService : IHostedService
 
         var blogFaker = new Faker<Blog>()
             .RuleFor(blog => blog.Name, f => f.Name.FullName())
-            .RuleFor(blog => blog.CreatedAt, f => f.Date.Past())
+            .RuleFor(blog => blog.CreatedAt, f => f.Date.Past().ToUniversalTime())
             .RuleFor(blog => blog.Posts, f => postFaker.Generate(25));
 
         var blogs = blogFaker.Generate(100);

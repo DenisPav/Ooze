@@ -6,6 +6,7 @@ using Ooze.Typed.Web;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;").EnableSensitiveDataLogging());
 builder.Services.AddDbContext<SqlServerDatabaseContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")).EnableSensitiveDataLogging());
+builder.Services.AddDbContext<PostgresDatabaseContext>(opts => opts.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")).EnableSensitiveDataLogging());
 builder.Services.AddHostedService<SeedService>();
 builder.Services.AddOozeTyped()
     .Add<BlogFiltersProvider>()

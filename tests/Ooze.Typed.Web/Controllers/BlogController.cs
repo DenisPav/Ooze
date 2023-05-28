@@ -10,17 +10,20 @@ public class BlogController : ControllerBase
 {
     private readonly DatabaseContext _db;
     private readonly SqlServerDatabaseContext _sqlServerDb;
+    private readonly PostgresDatabaseContext _postgresDb;
     private readonly IOozeTypedResolver _nonTypedResolver;
     private readonly IOozeTypedResolver<Blog, BlogFilters, BlogSorters> _resolver;
 
     public BlogController(
         DatabaseContext db,
         SqlServerDatabaseContext sqlServerDb,
+        PostgresDatabaseContext postgresDb,
         IOozeTypedResolver nonTypedResolver,
         IOozeTypedResolver<Blog, BlogFilters, BlogSorters> resolver)
     {
         _db = db;
         _sqlServerDb = sqlServerDb;
+        _postgresDb = postgresDb;
         _nonTypedResolver = nonTypedResolver;
         _resolver = resolver;
     }
@@ -69,6 +72,19 @@ public class BlogController : ControllerBase
     public async Task<IActionResult> PostSqlServer(Input model)
     {
         IQueryable<Blog> query = _sqlServerDb.Set<Blog>();
+
+        query = _nonTypedResolver
+            .Filter(query, model.Filters);
+        query = _nonTypedResolver.Sort(query, model.Sorters);
+
+        var results = await query.ToListAsync();
+        return Ok(results);
+    }
+    
+    [HttpPost("/postgres")]
+    public async Task<IActionResult> PostPostgres(Input model)
+    {
+        IQueryable<Blog> query = _postgresDb.Set<Blog>();
 
         query = _nonTypedResolver
             .Filter(query, model.Filters);

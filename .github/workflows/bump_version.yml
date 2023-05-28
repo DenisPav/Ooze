@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
       - name: Run tests
-        run: dotnet test ./tests/Ooze.Typed.Tests/Ooze.Typed.Tests.csproj
+        run: dotnet test
       - name: Bump version
         id: bump
         shell: pwsh
@@ -39,6 +39,9 @@ jobs:
           $xml = [Xml] (Get-Content .\src\Ooze.Typed.EntityFrameworkCore.SqlServer\Ooze.Typed.EntityFrameworkCore.SqlServer.csproj)
           $xml.Project.PropertyGroup.Version = $newVersion
           $xml.Save("./src/Ooze.Typed.EntityFrameworkCore.SqlServer/Ooze.Typed.EntityFrameworkCore.SqlServer.csproj")
+          $xml = [Xml] (Get-Content .\src\Ooze.Typed.EntityFrameworkCore.Npgsql\Ooze.Typed.EntityFrameworkCore.Npgsql.csproj)
+          $xml.Project.PropertyGroup.Version = $newVersion
+          $xml.Save("./src/Ooze.Typed.EntityFrameworkCore.Npgsql/Ooze.Typed.EntityFrameworkCore.Npgsql.csproj")
           echo "::set-output name=newVersion::$newVersion"
       - name: Commit changes
         run: |
@@ -49,5 +52,6 @@ jobs:
           git add ./src/Ooze.Typed.EntityFrameworkCore/Ooze.Typed.EntityFrameworkCore.csproj
           git add ./src/Ooze.Typed.EntityFrameworkCore.Sqlite/Ooze.Typed.EntityFrameworkCore.Sqlite.csproj
           git add ./src/Ooze.Typed.EntityFrameworkCore.SqlServer/Ooze.Typed.EntityFrameworkCore.SqlServer.csproj
+          git add ./src/Ooze.Typed.EntityFrameworkCore.Npgsql/Ooze.Typed.EntityFrameworkCore.Npgsql.csproj
           git commit -m "Bump project version to ${{ steps.bump.outputs.newVersion }}"
           git push

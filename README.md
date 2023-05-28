@@ -14,7 +14,7 @@ Except base `Ooze.Typed` package there are few more that add additional filter e
  - [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
  - [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
  - [Ooze.Typed.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.SqlServer/)
- - `Ooze.Typed.EntityFrameworkCore.Psql` - TBD
+ - [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql/)
  - `Ooze.Typed.EntityFrameworkCore.MySql` - TBD
 
 These packages provide additional provider specific `EF` extensions to the filter builder pipeline.
@@ -205,6 +205,8 @@ This package depends on EF Core SqlServer package and package mentioned beforeha
  - `IsDateDiffNanosecond()` - EF.Functions.DateDiffNanosecond
 
 ### `Ooze.Typed.EntityFrameworkCore.Psql` 
-TBD
+This package depends on EF Core SqlServer package and package mentioned beforehand and exposes next extensions:
+ - `InsensitiveLike()` - EF.Functions.ILike
+
 ### `Ooze.Typed.EntityFrameworkCore.MySql`
 TBD
