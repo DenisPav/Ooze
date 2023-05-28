@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Ooze.Typed.EntityFrameworkCore.Npgsql</PackageId>
-    <Version>1.0.52</Version>
+    <Version>1.0.53</Version>
     <RepositoryUrl>https://github.com/DenisPav/Ooze</RepositoryUrl>
     <Description>
       This package provides simple mechanism for applying filters, sorters, paging to your IQueryable queries. Contains additional extensions for PostgreSQL.
@@ -15,12 +14,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Ooze.Typed\Ooze.Typed.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Include="..\Ooze.Typed\Expressions\BasicExpressions.cs">
       <Link>Expressions\BasicExpressions.cs</Link>
@@ -32,7 +29,6 @@
       <Link>Expressions\OozeValue.cs</Link>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
@@ -42,5 +38,4 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\LICENSE.MD" Pack="true" PackagePath="\" />
   </ItemGroup>
-
 </Project>
