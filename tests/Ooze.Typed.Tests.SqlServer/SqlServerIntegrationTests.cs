@@ -10,7 +10,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public SqlServerIntegrationTests(SqlServerFixture fixture) => _fixture = fixture;
 
     [Fact]
-    public async Task IsDate_Should_Update_Query_And_Return_Correct_Items()
+    public async Task IsDate_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
         await context.Database.EnsureCreatedAsync();
@@ -28,7 +28,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task IsNumeric_Should_Update_Query_And_Return_Correct_Items()
+    public async Task IsNumeric_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -45,7 +45,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffDay_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffDay_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -63,7 +63,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffMonth_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffMonth_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -81,7 +81,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffYear_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffYear_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -99,7 +99,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffWeek_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffWeek_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -117,7 +117,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffHour_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffHour_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -135,7 +135,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffMinute_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffMinute_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -153,7 +153,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffSecond_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffSecond_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -171,7 +171,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffMillisecond_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffMillisecond_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -189,7 +189,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffMicrosecond_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffMicrosecond_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 
@@ -207,7 +207,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     }
 
     [Fact]
-    public async Task DateDiffNanosecond_Should_Update_Query_And_Return_Correct_Items()
+    public async Task DateDiffNanosecond_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
 

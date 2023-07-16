@@ -6,7 +6,7 @@ namespace Ooze.Typed.Tests.Integration;
 
 public class DatabaseFilterEqualIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
 {
-    readonly DbFixture<DatabaseContext> _fixture;
+    private readonly DbFixture<DatabaseContext> _fixture;
 
     public DatabaseFilterEqualIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
 
