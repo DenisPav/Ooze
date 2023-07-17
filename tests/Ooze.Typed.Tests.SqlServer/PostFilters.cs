@@ -1,6 +1,10 @@
 ﻿namespace Ooze.Typed.Tests.SqlServer;
 
 public record PostFilters(
+    long? PostId,
+    long? NotEqualPostId,
+    long? GreaterThanPostId,
+    long? LessThanPostId,
     bool? IsNameDate,
     bool? IsIdNumeric,
     DateTime? DateDiffDay,

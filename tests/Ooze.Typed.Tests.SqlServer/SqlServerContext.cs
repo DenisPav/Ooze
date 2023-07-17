@@ -4,6 +4,8 @@ namespace Ooze.Typed.Tests.SqlServer;
 
 public class SqlServerContext : DbContext
 {
+    public const int TotalRecords = 100;
+    
     public SqlServerContext(DbContextOptions options) : base(options)
     { }
 
@@ -30,7 +32,7 @@ public class SqlServerContext : DbContext
     public async Task Seed()
     {
         var date = new DateTime(2022, 1, 1, 20, 20, 22);
-        var posts = Enumerable.Range(1, 100)
+        var posts = Enumerable.Range(1, TotalRecords)
             .Select(id => new Post
             {
                 Id = 0,

@@ -7,6 +7,10 @@ public class PostFiltersProvider : IOozeFilterProvider<Post, PostFilters>
 {
     public IEnumerable<IFilterDefinition<Post, PostFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostFilters>()
+            .Equal(post => post.Id, filter => filter.PostId)
+            .NotEqual(post => post.Id, filter => filter.NotEqualPostId)
+            .GreaterThan(post => post.Id, filter => filter.GreaterThanPostId)
+            .LessThan(post => post.Id, filter => filter.LessThanPostId)
             .IsDate(post => post.Name, filter => filter.IsNameDate)
             .IsNumeric(post => post.Name, filter => filter.IsIdNumeric)
             .IsDateDiffDay(post => post.Date, filter => filter.DateDiffDay, DateDiffOperation.NotEqual)
