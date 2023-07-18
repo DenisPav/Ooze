@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Ooze.Typed.EntityFrameworkCore.SqlServer</PackageId>
-    <Version>1.0.56</Version>
+    <Version>1.0.57</Version>
     <RepositoryUrl>https://github.com/DenisPav/Ooze</RepositoryUrl>
     <Description>
       This package provides simple mechanism for applying filters, sorters, paging to your IQueryable queries. Contains additional extensions for Sql Server.
