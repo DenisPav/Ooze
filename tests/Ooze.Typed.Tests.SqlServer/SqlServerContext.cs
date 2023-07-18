@@ -37,7 +37,7 @@ public class SqlServerContext : DbContext
             {
                 Id = 0,
                 Enabled = id % 2 == 0,
-                Name = $"{id}_Sample_post",
+                Name = $"{id}_Sample_post_{id}",
                 Date = date.AddDays(id),
                 Comments = new[]
                 {

@@ -42,7 +42,7 @@ internal static class BasicExpressions
 
     internal static Expression<Func<TEntity, bool>> In<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        IEnumerable<TProperty> filterValue,
+        IEnumerable<TProperty>? filterValue,
         bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
@@ -79,7 +79,7 @@ internal static class BasicExpressions
 
     internal static Expression<Func<TEntity, bool>> StringOperation<TEntity>(
         Expression<Func<TEntity, string>> dataExpression,
-        string filterValue,
+        string? filterValue,
         MethodInfo operationMethod,
         bool isNegated = false)
     {

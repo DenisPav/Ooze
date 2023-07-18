@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Ooze.Typed.Filters;
 
 namespace Ooze.Typed.Tests.SqlServer;
 
@@ -20,7 +21,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(postId, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null));
+        query = resolver.Filter(query, new PostFilters(PostId: postId));
 
         var filteredItemsCount = await query.CountAsync();
         Assert.True(filteredItemsCount == 1);
@@ -37,7 +38,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(null, postId, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null));
+        query = resolver.Filter(query, new PostFilters(NotEqualPostId: postId));
 
         var containsPostId = await query.AnyAsync(post => post.Id == postId);
         Assert.True(containsPostId == false);
@@ -54,7 +55,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(null, null, postId, null, null, null, null, null, null, null, null, null, null, null, null, null, null));
+        query = resolver.Filter(query, new PostFilters(GreaterThanPostId: postId));
 
         var filteredItemsCount = await query.CountAsync();
         var expectedCount = SqlServerContext.TotalRecords - postId;
@@ -72,11 +73,177 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(null, null, null, postId, null, null, null, null, null, null, null, null, null, null, null, null, null));
+        query = resolver.Filter(query, new PostFilters(LessThanPostId: postId));
 
         var filteredItemsCount = await query.CountAsync();
         var expectedCount = postId - 1;
         Assert.True(filteredItemsCount == expectedCount);
+    }
+    
+    [Fact]
+    public async Task In_Should_Update_Query_And_Return_Correct_Query()
+    {
+        var postIds = new long[] { 1, 10, 100 };
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(IdIn: postIds));
+
+        var materializedIds = await query.Select(x => x.Id)
+            .ToListAsync();
+        var containsAll = materializedIds.SequenceEqual(postIds);
+        
+        Assert.True(containsAll == true);
+    }
+    
+    [Fact]
+    public async Task NotIn_Should_Update_Query_And_Return_Correct_Query()
+    {
+        var postIds = new long[] { -1, 1000, -100 };
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(IdIn: postIds));
+
+        var materializedIds = await query.Select(x => x.Id)
+            .ToListAsync();
+        var containsAny = materializedIds.Intersect(postIds).Any();
+
+        Assert.True(containsAny == false);
+    }
+    
+    [Theory]
+    [InlineData(-200, 1000)]
+    [InlineData(1, 100)]
+    [InlineData(50, 50)]
+    [InlineData(30, 101)]
+    public async Task Range_Should_Update_Query_And_Return_Correct_Query(
+        long from, 
+        long to)
+    {
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(IdRange: new RangeFilter<long>
+        {
+            From = from,
+            To = to
+        }));
+
+        var materializedIds = await query.Select(x => x.Id)
+            .ToListAsync();
+        var allIdsValid = materializedIds.All(x => x >= from && x <= to);
+
+        Assert.True(allIdsValid == true);
+    }
+    
+    [Theory]
+    [InlineData(-200, 1000)]
+    [InlineData(1, 100)]
+    [InlineData(50, 50)]
+    [InlineData(30, 101)]
+    public async Task OutOfRange_Should_Update_Query_And_Return_Correct_Query(
+        long from, 
+        long to)
+    {
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(IdOutOfRange: new RangeFilter<long>
+        {
+            From = from,
+            To = to
+        }));
+
+        var materializedIds = await query.Select(x => x.Id)
+            .ToListAsync();
+        var allIdsValid = materializedIds.All(x => x < from || x > to);
+
+        Assert.True(allIdsValid == true);
+    }
+    
+    [Theory]
+    [InlineData("1_Sample")]
+    [InlineData("12_Sample")]
+    [InlineData("50_Sample")]
+    public async Task StartsWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
+    {
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(NameStartsWith: prefix));
+
+        var materialized = await query.ToListAsync();
+        var allEntitiesValid = materialized.All(x => x.Name.StartsWith(prefix));
+
+        Assert.True(allEntitiesValid == true);
+    }
+    
+    [Theory]
+    [InlineData("dlkjsad")]
+    [InlineData("3213")]
+    [InlineData("$!#")]
+    public async Task DoesntStartWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
+    {
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(NameDoesntWith: prefix));
+
+        var materialized = await query.ToListAsync();
+        var allEntitiesValid = materialized.All(x => x.Name.StartsWith(prefix) == false);
+
+        Assert.True(allEntitiesValid == true);
+    }
+    
+    [Theory]
+    [InlineData("post_1")]
+    [InlineData("post_12")]
+    [InlineData("post_50")]
+    public async Task EndsWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
+    {
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(NameEndsWith: suffix));
+
+        var materialized = await query.ToListAsync();
+        var allEntitiesValid = materialized.All(x => x.Name.EndsWith(suffix));
+
+        Assert.True(allEntitiesValid == true);
+    }
+    
+    [Theory]
+    [InlineData("dlkjsad")]
+    [InlineData("3213")]
+    [InlineData("$!#")]
+    public async Task DoesntEndWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
+    {
+        await using var context = _fixture.CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(NameDoesntEndWith: suffix));
+
+        var materialized = await query.ToListAsync();
+        var allEntitiesValid = materialized.All(x => x.Name.EndsWith(suffix) == false);
+
+        Assert.True(allEntitiesValid == true);
     }
     
     [Fact]
@@ -87,7 +254,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(null, null, null, null, true, null, null, null, null, null, null, null, null, null, null, null, null));
+        query = resolver.Filter(query, new PostFilters(IsNameDate: true));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("ISDATE", StringComparison.InvariantCultureIgnoreCase);
@@ -104,7 +271,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(null, null, null, null, null, true, null, null, null, null, null, null, null, null, null, null, null));
+        query = resolver.Filter(query, new PostFilters(IsIdNumeric: true));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("ISNUMERIC", StringComparison.InvariantCultureIgnoreCase);
@@ -122,7 +289,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, new DateTime(2022, 5, 20), null, null, null, null, null, null, null, null, null, null));
+            new PostFilters(DateDiffDay: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(day,", StringComparison.InvariantCultureIgnoreCase);
@@ -140,7 +307,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, new DateTime(2022, 5, 20), null, null, null, null, null, null, null, null, null));
+            new PostFilters(DateDiffMonth: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(month,", StringComparison.InvariantCultureIgnoreCase);
@@ -158,7 +325,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, new DateTime(2022, 5, 20), null, null, null, null, null, null, null, null));
+            new PostFilters(DateDiffYear: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(year,", StringComparison.InvariantCultureIgnoreCase);
@@ -176,7 +343,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, null, new DateTime(2022, 5, 20), null, null, null, null, null, null, null));
+            new PostFilters(DateDiffWeek: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(week,", StringComparison.InvariantCultureIgnoreCase);
@@ -194,7 +361,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, null, null, new DateTime(2022, 5, 20), null, null, null, null, null, null));
+            new PostFilters(DateDiffHour: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(hour,", StringComparison.InvariantCultureIgnoreCase);
@@ -212,7 +379,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, null, null, null, new DateTime(2022, 5, 20), null, null, null, null, null));
+            new PostFilters(DateDiffMinute: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(minute,", StringComparison.InvariantCultureIgnoreCase);
@@ -230,7 +397,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, null, null, null, null, new DateTime(2022, 5, 20), null, null, null, null));
+            new PostFilters(DateDiffSecond: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(second,", StringComparison.InvariantCultureIgnoreCase);
@@ -248,7 +415,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, null, null, null, null, null, new DateTime(2022, 2, 2, 20, 20, 22), new DateTime(2022, 2, 2), null, null));
+            new PostFilters(DateDiffMillisecond: new DateTime(2022, 2, 2, 20, 20, 22), DateDiffDayEqual: new DateTime(2022, 2, 2)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(millisecond,", StringComparison.InvariantCultureIgnoreCase);
@@ -266,7 +433,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, null, null, null, null, null, null, new DateTime(2022, 2, 2, 20, 20, 22), new DateTime(2022, 2, 2, 20, 20, 22), null));
+            new PostFilters(DateDiffMicrosecond: new DateTime(2022, 2, 2, 20, 20, 22), DateDiffDayEqual: new DateTime(2022, 2, 2, 20, 20, 22)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(microsecond,", StringComparison.InvariantCultureIgnoreCase);
@@ -284,7 +451,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(null, null, null, null, null, null, null, null, null, null, null, null, null, null, new DateTime(2022, 2, 2, 20, 20, 22), null, new DateTime(2022, 2, 2, 20, 20, 22)));
+            new PostFilters(DateDiffDayEqual: new DateTime(2022, 2, 2, 20, 20, 22), DateDiffNanosecond: new DateTime(2022, 2, 2, 20, 20, 22)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(nanosecond,", StringComparison.InvariantCultureIgnoreCase);
