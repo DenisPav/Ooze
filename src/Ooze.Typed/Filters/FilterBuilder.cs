@@ -62,7 +62,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> In<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, IEnumerable<TProperty>> filterFunc)
+        Func<TFilter, IEnumerable<TProperty>?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
@@ -79,7 +79,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> NotIn<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, IEnumerable<TProperty>> filterFunc)
+        Func<TFilter, IEnumerable<TProperty>?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
@@ -96,7 +96,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> Range<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, RangeFilter<TProperty>> filterFunc)
+        Func<TFilter, RangeFilter<TProperty>?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
@@ -113,7 +113,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> OutOfRange<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, RangeFilter<TProperty>> filterFunc)
+        Func<TFilter, RangeFilter<TProperty>?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
@@ -130,7 +130,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> StartsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc)
+        Func<TFilter, string?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
@@ -144,7 +144,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> DoesntStartWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc)
+        Func<TFilter, string?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
@@ -158,7 +158,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> EndsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc)
+        Func<TFilter, string?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {
@@ -172,7 +172,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> DoesntEndWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc)
+        Func<TFilter, string?> filterFunc)
     {
         _filterDefinitions.Add(new FilterDefinition<TEntity, TFilter>
         {

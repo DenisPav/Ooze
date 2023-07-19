@@ -62,7 +62,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> In<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, IEnumerable<TProperty>> filterFunc);
+        Func<TFilter, IEnumerable<TProperty>?> filterFunc);
 
     /// <summary>
     /// Fluently creates "Not In" filter definition
@@ -73,7 +73,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> NotIn<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, IEnumerable<TProperty>> filterFunc);
+        Func<TFilter, IEnumerable<TProperty>?> filterFunc);
 
     /// <summary>
     /// Fluently creates "Range" filter definition
@@ -84,7 +84,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> Range<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, RangeFilter<TProperty>> filterFunc);
+        Func<TFilter, RangeFilter<TProperty>?> filterFunc);
 
     /// <summary>
     /// Fluently creates "Out of Range" filter definition
@@ -95,7 +95,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> OutOfRange<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TFilter, RangeFilter<TProperty>> filterFunc);
+        Func<TFilter, RangeFilter<TProperty>?> filterFunc);
 
     /// <summary>
     /// Fluently creates "Starts with" filter definition
@@ -105,7 +105,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> StartsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc);
+        Func<TFilter, string?> filterFunc);
 
     /// <summary>
     /// Fluently creates "Doesn't Start With" filter definition
@@ -115,7 +115,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> DoesntStartWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc);
+        Func<TFilter, string?> filterFunc);
 
     /// <summary>
     /// Fluently creates "Ends With" filter definition
@@ -125,7 +125,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> EndsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc);
+        Func<TFilter, string?> filterFunc);
 
     /// <summary>
     /// Fluently creates "Doesn't End With" filter definition
@@ -135,7 +135,7 @@ public interface IFilterBuilder<TEntity, TFilter>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     IFilterBuilder<TEntity, TFilter> DoesntEndWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc);
+        Func<TFilter, string?> filterFunc);
 
     /// <summary>
     /// Fluently creates custom filter definition

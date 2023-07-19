@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Ooze.Typed.Tests.SqlServer;
+namespace Ooze.Typed.Tests.Npgsql;
 
-public class SqlServerContext : DbContext
+public class NpgsqlContext : DbContext
 {
     public const int TotalRecords = 100;
     
-    public SqlServerContext(DbContextOptions options) : base(options)
+    public NpgsqlContext(DbContextOptions options) : base(options)
     { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,13 +38,13 @@ public class SqlServerContext : DbContext
                 Id = 0,
                 Enabled = id % 2 == 0,
                 Name = $"{id}_Sample_post_{id}",
-                Date = date.AddDays(id),
+                Date = date.AddDays(id).ToUniversalTime(),
                 Comments = new[]
                 {
                     new Comment
                     {
                         Id = 0,
-                        Date = DateTime.Now.AddDays(id),
+                        Date = DateTime.Now.AddDays(id).ToUniversalTime(),
                         Text = $"Sample comment {id}",
                         User = new User
                         {

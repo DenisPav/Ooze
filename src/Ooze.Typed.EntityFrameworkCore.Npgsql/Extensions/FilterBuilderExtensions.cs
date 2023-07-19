@@ -15,7 +15,7 @@ public static class FilterBuilderExtensions
     // ReSharper disable once InconsistentNaming
     private const string ILikeMethod = nameof(NpgsqlDbFunctionsExtensions.ILike);
     private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
-    
+
     /// <summary>
     /// Creates a ILike filter over specified property and filter
     /// </summary>
