@@ -17,7 +17,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task Equal_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -26,7 +25,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var filteredItemsCount = await query.CountAsync();
         Assert.True(filteredItemsCount == 1);
     }
-    
+
     [Theory]
     [InlineData(10)]
     [InlineData(1)]
@@ -34,7 +33,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task NotEqual_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -43,7 +41,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var containsPostId = await query.AnyAsync(post => post.Id == postId);
         Assert.True(containsPostId == false);
     }
-    
+
     [Theory]
     [InlineData(1)]
     [InlineData(50)]
@@ -51,7 +49,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task GreaterThan_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -61,7 +58,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var expectedCount = SqlServerContext.TotalRecords - postId;
         Assert.True(filteredItemsCount == expectedCount);
     }
-    
+
     [Theory]
     [InlineData(1)]
     [InlineData(50)]
@@ -69,7 +66,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task LessThan_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -79,13 +75,12 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var expectedCount = postId - 1;
         Assert.True(filteredItemsCount == expectedCount);
     }
-    
+
     [Fact]
     public async Task In_Should_Update_Query_And_Return_Correct_Query()
     {
         var postIds = new long[] { 1, 10, 100 };
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -94,16 +89,15 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var materializedIds = await query.Select(x => x.Id)
             .ToListAsync();
         var containsAll = materializedIds.SequenceEqual(postIds);
-        
+
         Assert.True(containsAll == true);
     }
-    
+
     [Fact]
     public async Task NotIn_Should_Update_Query_And_Return_Correct_Query()
     {
         var postIds = new long[] { -1, 1000, -100 };
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -115,18 +109,17 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         Assert.True(containsAny == false);
     }
-    
+
     [Theory]
     [InlineData(-200, 1000)]
     [InlineData(1, 100)]
     [InlineData(50, 50)]
     [InlineData(30, 101)]
     public async Task Range_Should_Update_Query_And_Return_Correct_Query(
-        long from, 
+        long from,
         long to)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -142,18 +135,17 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         Assert.True(allIdsValid == true);
     }
-    
+
     [Theory]
     [InlineData(-200, 1000)]
     [InlineData(1, 100)]
     [InlineData(50, 50)]
     [InlineData(30, 101)]
     public async Task OutOfRange_Should_Update_Query_And_Return_Correct_Query(
-        long from, 
+        long from,
         long to)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -169,7 +161,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         Assert.True(allIdsValid == true);
     }
-    
+
     [Theory]
     [InlineData("1_Sample")]
     [InlineData("12_Sample")]
@@ -177,7 +169,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task StartsWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -188,7 +179,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Theory]
     [InlineData("dlkjsad")]
     [InlineData("3213")]
@@ -196,7 +187,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task DoesntStartWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -207,7 +197,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Theory]
     [InlineData("post_1")]
     [InlineData("post_12")]
@@ -215,7 +205,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task EndsWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -226,7 +215,7 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Theory]
     [InlineData("dlkjsad")]
     [InlineData("3213")]
@@ -234,7 +223,6 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task DoesntEndWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
@@ -245,12 +233,11 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Fact]
     public async Task IsDate_Should_Update_Query_And_Return_Correct_Query()
     {
         await using var context = _fixture.CreateContext();
-        await context.Database.EnsureCreatedAsync();
 
         var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
         IQueryable<Post> query = context.Set<Post>();
