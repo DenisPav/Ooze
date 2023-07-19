@@ -4,6 +4,8 @@ namespace Ooze.Typed.Tests.Npgsql;
 
 public class NpgsqlContext : DbContext
 {
+    public const int TotalRecords = 100;
+    
     public NpgsqlContext(DbContextOptions options) : base(options)
     { }
 
@@ -30,12 +32,12 @@ public class NpgsqlContext : DbContext
     public async Task Seed()
     {
         var date = new DateTime(2022, 1, 1, 20, 20, 22);
-        var posts = Enumerable.Range(1, 100)
+        var posts = Enumerable.Range(1, TotalRecords)
             .Select(id => new Post
             {
                 Id = 0,
                 Enabled = id % 2 == 0,
-                Name = $"{id}_Sample_post",
+                Name = $"{id}_Sample_post_{id}",
                 Date = date.AddDays(id).ToUniversalTime(),
                 Comments = new[]
                 {
