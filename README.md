@@ -4,7 +4,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/DenisPav/Ooze)
 ![Nuget](https://img.shields.io/nuget/dt/Ooze.Typed)
 
-This package provides simple mechanism for applying filters, sorters, paging to your `IQueryable<T>` queries. Packages are available on the `Github package repository` so you can install them from there.
+This package provides a simple mechanism for applying filters, sorters, paging to your `IQueryable<T>` queries. Packages are available on the `NuGet` so you can install them from there.
 
 ## Installation ⚙
 You can find latest versions on nuget [on this location](https://www.nuget.org/packages/Ooze.Typed/).
@@ -20,7 +20,7 @@ Except base `Ooze.Typed` package there are few more that add additional filter e
 These packages provide additional provider specific `EF` extensions to the filter builder pipeline.
 
 ## Registering Ooze 🧰
-After installation you'll need to register Ooze to your services collection. To do so you need to call `.AddOozeTyped()` method. Example of this can be seen below:
+After installation you'll need to register Ooze to your service collection. To do so you need to call `.AddOozeTyped()` method. Example of this can be seen below:
 ```csharp
 //Example for minimal apis
 var builder = WebApplication.CreateBuilder(args);
@@ -79,11 +79,11 @@ public IEnumerable<IFilterDefinition<MyClass, MyClassFilters>> GetFilters()
             //check if string property starts with filter
             .StartsWith(x => x.Name, filter => filter.Name)
             //check if string property doesn't starts with filter
-            .DoesntStartWith(x => x.Id, filter => filter.RangeFilter)
+            .DoesntStartWith(x => x.Name, filter => filter.Name)
             //check if string property ends with filter
-            .EndsWith(x => x.Id, filter => filter.RangeFilter)
+            .EndsWith(x => x.Name, filter => filter.Name)
             //check if string property doesn't end with filter
-            .DoesntEndWith(x => x.Id, filter => filter.RangeFilter)
+            .DoesntEndWith(x => x.Name, filter => filter.Name)
             //custom filter check, first argument is predicate that tells
             //Ooze if filter should be applied, second is filter factory
             //which takes filter as input and returns wanted filtering
@@ -135,7 +135,7 @@ query = resolver
 ```
 
 #### Cursor paging 👉
-There is also additional support for cursor paging via `.PageWithCursor` method on the resolver. If you want to use cursor paging you'll be suing `CursorPagingOptions<T>` in this case and you'll need to pass a property you want to use as a cursor source. Example of this can be found in the next example:
+There is also additional support for cursor paging via `.PageWithCursor` method on the resolver. If you want to use cursor paging you'll be using `CursorPagingOptions<T>` in this case and you'll need to pass a property you want to use as a cursor source. Example of this can be found in the next example:
 ```csharp
 query = resolver
         .WithQuery(query)
@@ -151,9 +151,9 @@ query = resolver
 ```
 
 ## Applying definitions 🧪
-In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters, TSorters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is an more elaborate example below:
+In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters, TSorters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is a more elaborate example below:
 ```csharp
-//lets say you have an route which gets filters/sorters from request body
+//lets say you have a route which gets filters/sorters from request body
 app.MapPost("/", (
     DatabaseContext db,
     IOozeTypedResolver<MyEntity, MyEntityFilters, MyEntitySorters> resolver,
