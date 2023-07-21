@@ -207,6 +207,7 @@ This package depends on EF Core SqlServer package and package mentioned beforeha
 ### `Ooze.Typed.EntityFrameworkCore.Psql` 
 This package depends on EF Core SqlServer package and package mentioned beforehand and exposes next extensions:
  - `InsensitiveLike()` - EF.Functions.ILike
+ - `SoundexEqual()` - EF.Functions.FuzzyStringMatchSoundex
 
 ### `Ooze.Typed.EntityFrameworkCore.MySql`
 TBD

@@ -15,5 +15,6 @@ public record PostFilters(
     string? NameDoesntWith = null,
     string? NameEndsWith = null,
     string? NameDoesntEndWith = null,
-    string? NameLikeFilter = null
+    string? NameLikeFilter = null,
+    string? NameSoundexEqual = null
 );

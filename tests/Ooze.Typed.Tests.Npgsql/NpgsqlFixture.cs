@@ -45,6 +45,7 @@ public class NpgsqlFixture : IAsyncLifetime
         await using var context = CreateContext();
         await context.Database.EnsureCreatedAsync();
         await context.Seed();
+        await context.Database.ExecuteSqlAsync($"CREATE EXTENSION fuzzystrmatch;");
     }
 
     public async Task DisposeAsync()
