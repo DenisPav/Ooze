@@ -4,9 +4,19 @@ using Ooze.Typed.Extensions;
 using Ooze.Typed.Web;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<DatabaseContext>(opts => opts.UseSqlite("Data Source=./database.db;").EnableSensitiveDataLogging());
-builder.Services.AddDbContext<SqlServerDatabaseContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")).EnableSensitiveDataLogging());
-builder.Services.AddDbContext<PostgresDatabaseContext>(opts => opts.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")).EnableSensitiveDataLogging());
+builder.Services.AddDbContext<DatabaseContext>(opts =>
+    opts.UseSqlite("Data Source=./database.db;").EnableSensitiveDataLogging());
+builder.Services.AddDbContext<SqlServerDatabaseContext>(opts =>
+    opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")).EnableSensitiveDataLogging());
+builder.Services.AddDbContext<PostgresDatabaseContext>(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")).EnableSensitiveDataLogging());
+builder.Services.AddDbContext<MariaDbDatabaseContext>(opts =>
+        opts.UseMySql(ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MariaDb")), options =>
+            options.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null)
+        ).EnableSensitiveDataLogging());
 builder.Services.AddHostedService<SeedService>();
 builder.Services.AddOozeTyped()
     .Add<BlogFiltersProvider>()
@@ -14,10 +24,7 @@ builder.Services.AddOozeTyped()
     .Add<CommentsSortersProvider>()
     .Add<CommentFiltersProvider>();
 builder.Services.AddControllers();
-builder.Services.Configure<ApiBehaviorOptions>(opts =>
-{
-    opts.SuppressModelStateInvalidFilter = true;
-});
+builder.Services.Configure<ApiBehaviorOptions>(opts => { opts.SuppressModelStateInvalidFilter = true; });
 
 var app = builder.Build();
 app.UseRouting();
