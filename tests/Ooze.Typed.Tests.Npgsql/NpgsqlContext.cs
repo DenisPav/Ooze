@@ -5,7 +5,7 @@ namespace Ooze.Typed.Tests.Npgsql;
 public class NpgsqlContext : DbContext
 {
     public const int TotalRecords = 100;
-    
+
     public NpgsqlContext(DbContextOptions options) : base(options)
     { }
 

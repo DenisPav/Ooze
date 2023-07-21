@@ -25,7 +25,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         var filteredItemsCount = await query.CountAsync();
         Assert.True(filteredItemsCount == 1);
     }
-    
+
     [Theory]
     [InlineData(10)]
     [InlineData(1)]
@@ -41,7 +41,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         var containsPostId = await query.AnyAsync(post => post.Id == postId);
         Assert.True(containsPostId == false);
     }
-    
+
     [Theory]
     [InlineData(1)]
     [InlineData(50)]
@@ -58,7 +58,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         var expectedCount = NpgsqlContext.TotalRecords - postId;
         Assert.True(filteredItemsCount == expectedCount);
     }
-    
+
     [Theory]
     [InlineData(1)]
     [InlineData(50)]
@@ -75,7 +75,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         var expectedCount = postId - 1;
         Assert.True(filteredItemsCount == expectedCount);
     }
-    
+
     [Fact]
     public async Task In_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -89,10 +89,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         var materializedIds = await query.Select(x => x.Id)
             .ToListAsync();
         var containsAll = materializedIds.SequenceEqual(postIds);
-        
+
         Assert.True(containsAll == true);
     }
-    
+
     [Fact]
     public async Task NotIn_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -109,14 +109,14 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         Assert.True(containsAny == false);
     }
-    
+
     [Theory]
     [InlineData(-200, 1000)]
     [InlineData(1, 100)]
     [InlineData(50, 50)]
     [InlineData(30, 101)]
     public async Task Range_Should_Update_Query_And_Return_Correct_Query(
-        long from, 
+        long from,
         long to)
     {
         await using var context = _fixture.CreateContext();
@@ -135,14 +135,14 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         Assert.True(allIdsValid == true);
     }
-    
+
     [Theory]
     [InlineData(-200, 1000)]
     [InlineData(1, 100)]
     [InlineData(50, 50)]
     [InlineData(30, 101)]
     public async Task OutOfRange_Should_Update_Query_And_Return_Correct_Query(
-        long from, 
+        long from,
         long to)
     {
         await using var context = _fixture.CreateContext();
@@ -161,7 +161,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         Assert.True(allIdsValid == true);
     }
-    
+
     [Theory]
     [InlineData("1_Sample")]
     [InlineData("12_Sample")]
@@ -179,7 +179,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Theory]
     [InlineData("dlkjsad")]
     [InlineData("3213")]
@@ -197,7 +197,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Theory]
     [InlineData("post_1")]
     [InlineData("post_12")]
@@ -215,7 +215,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Theory]
     [InlineData("dlkjsad")]
     [InlineData("3213")]
@@ -233,7 +233,7 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         Assert.True(allEntitiesValid == true);
     }
-    
+
     [Fact]
     public async Task InsensitiveLike_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -249,5 +249,22 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
 
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == true);
+    }
+
+    [Fact]
+    public async Task SoundexEqual_Should_Update_Query_And_Return_Correct_Query()
+    {
+        await using var context = _fixture.CreateContext();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        query = resolver.Filter(query, new PostFilters(NameSoundexEqual: "%Sample%"));
+
+        var sql = query.ToQueryString();
+        var sqlContainsCall = sql.Contains("soundex", StringComparison.InvariantCultureIgnoreCase);
+        Assert.True(sqlContainsCall);
+
+        var hasFilteredItems = await query.AnyAsync();
+        Assert.True(hasFilteredItems == false);
     }
 }

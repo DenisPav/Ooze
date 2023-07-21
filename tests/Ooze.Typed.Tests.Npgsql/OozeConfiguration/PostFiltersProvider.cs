@@ -20,5 +20,6 @@ public class PostFiltersProvider : IOozeFilterProvider<Post, PostFilters>
             .EndsWith(post => post.Name, filter => filter.NameEndsWith)
             .DoesntEndWith(post => post.Name, filter => filter.NameDoesntEndWith)
             .InsensitiveLike(post => post.Name, filter => filter.NameLikeFilter)
+            .SoundexEqual(post => post.Name, filter => filter.NameSoundexEqual)
             .Build();
 }

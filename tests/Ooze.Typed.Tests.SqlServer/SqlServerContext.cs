@@ -5,7 +5,7 @@ namespace Ooze.Typed.Tests.SqlServer;
 public class SqlServerContext : DbContext
 {
     public const int TotalRecords = 100;
-    
+
     public SqlServerContext(DbContextOptions options) : base(options)
     { }
 
