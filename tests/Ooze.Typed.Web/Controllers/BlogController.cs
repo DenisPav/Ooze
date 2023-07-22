@@ -11,6 +11,7 @@ public class BlogController : ControllerBase
     private readonly DatabaseContext _db;
     private readonly SqlServerDatabaseContext _sqlServerDb;
     private readonly PostgresDatabaseContext _postgresDb;
+    private readonly MariaDbDatabaseContext _mariaDb;
     private readonly IOozeTypedResolver _nonTypedResolver;
     private readonly IOozeTypedResolver<Blog, BlogFilters, BlogSorters> _resolver;
 
@@ -18,12 +19,14 @@ public class BlogController : ControllerBase
         DatabaseContext db,
         SqlServerDatabaseContext sqlServerDb,
         PostgresDatabaseContext postgresDb,
+        MariaDbDatabaseContext mariaDb,
         IOozeTypedResolver nonTypedResolver,
         IOozeTypedResolver<Blog, BlogFilters, BlogSorters> resolver)
     {
         _db = db;
         _sqlServerDb = sqlServerDb;
         _postgresDb = postgresDb;
+        _mariaDb = mariaDb;
         _nonTypedResolver = nonTypedResolver;
         _resolver = resolver;
     }
@@ -80,11 +83,24 @@ public class BlogController : ControllerBase
         var results = await query.ToListAsync();
         return Ok(results);
     }
-    
+
     [HttpPost("/postgres")]
     public async Task<IActionResult> PostPostgres(Input model)
     {
         IQueryable<Blog> query = _postgresDb.Set<Blog>();
+
+        query = _nonTypedResolver
+            .Filter(query, model.Filters);
+        query = _nonTypedResolver.Sort(query, model.Sorters);
+
+        var results = await query.ToListAsync();
+        return Ok(results);
+    }
+
+    [HttpPost("/mariadb")]
+    public async Task<IActionResult> PostMaria(Input model)
+    {
+        IQueryable<Blog> query = _mariaDb.Set<Blog>();
 
         query = _nonTypedResolver
             .Filter(query, model.Filters);
