@@ -7,7 +7,7 @@ using static System.Linq.Expressions.Expression;
 namespace Ooze.Typed.EntityFrameworkCore.SqlServer.Extensions;
 
 /// <summary>
-/// Sqlite extensions for FilterBuilder
+/// Sql Server extensions for FilterBuilder
 /// </summary>
 public static class FilterBuilderExtensions
 {
@@ -33,13 +33,15 @@ public static class FilterBuilderExtensions
     /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     public static IFilterBuilder<TEntity, TFilter> IsDate<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
-        Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, bool?> filterFunc)
+        Expression<Func<TEntity, string?>> dataExpression,
+        Func<TFilter, bool?> filterFunc,
+        Func<TFilter, bool>? shouldRun = null)
     {
         bool FilterShouldRun(TFilter filter) => filterFunc(filter).GetValueOrDefault() == true;
 
@@ -53,7 +55,7 @@ public static class FilterBuilderExtensions
                 IsDateMethod,
                 Type.EmptyTypes,
                 EfPropertyExpression,
-                memberAccessExpression!);
+                memberAccessExpression);
             Expression notExpression = filterValue == true
                 ? callExpression
                 : Not(callExpression);
@@ -61,7 +63,8 @@ public static class FilterBuilderExtensions
             return Lambda<Func<TEntity, bool>>(notExpression, parameterExpression);
         }
 
-        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        shouldRun ??= FilterShouldRun;
+        filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
 
@@ -71,13 +74,15 @@ public static class FilterBuilderExtensions
     /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     public static IFilterBuilder<TEntity, TFilter> IsNumeric<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
-        Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, bool?> filterFunc)
+        Expression<Func<TEntity, string?>> dataExpression,
+        Func<TFilter, bool?> filterFunc,
+        Func<TFilter, bool>? shouldRun = null)
     {
         bool FilterShouldRun(TFilter filter) => filterFunc(filter).GetValueOrDefault() == true;
 
@@ -91,7 +96,7 @@ public static class FilterBuilderExtensions
                 IsNumericMethod,
                 Type.EmptyTypes,
                 EfPropertyExpression,
-                memberAccessExpression!);
+                memberAccessExpression);
             Expression notExpression = filterValue == true
                 ? callExpression
                 : Not(callExpression);
@@ -99,7 +104,8 @@ public static class FilterBuilderExtensions
             return Lambda<Func<TEntity, bool>>(notExpression, parameterExpression);
         }
 
-        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        shouldRun ??= FilterShouldRun;
+        filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
 
@@ -109,6 +115,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <typeparam name="TProperty">Targeted property type</typeparam>
@@ -116,7 +123,8 @@ public static class FilterBuilderExtensions
     public static IFilterBuilder<TEntity, TFilter> Contains<TEntity, TFilter, TProperty>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, string?> filterFunc)
+        Func<TFilter, string?> filterFunc,
+        Func<TFilter, bool>? shouldRun = null)
     {
         bool FilterShouldRun(TFilter filter) => filterFunc(filter) != null;
 
@@ -131,13 +139,14 @@ public static class FilterBuilderExtensions
                 ContainsMethod,
                 Type.EmptyTypes,
                 EfPropertyExpression,
-                memberAccessExpression!,
+                memberAccessExpression,
                 constantExpression);
 
             return Lambda<Func<TEntity, bool>>(callExpression, parameterExpression);
         }
 
-        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        shouldRun ??= FilterShouldRun;
+        filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
 
@@ -149,6 +158,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -157,8 +167,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffDayMethod, dataExpression, filterFunc, operation, diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffDayMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffMonth filter over entity property and filter value
@@ -168,6 +185,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -176,8 +194,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffMonthMethod, dataExpression, filterFunc, operation, diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffMonthMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffWeek filter over entity property and filter value
@@ -187,6 +212,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -195,8 +221,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffWeekMethod, dataExpression, filterFunc, operation, diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffWeekMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffYear filter over entity property and filter value
@@ -206,6 +239,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -214,8 +248,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffYearMethod, dataExpression, filterFunc, operation, diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffYearMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffHour filter over entity property and filter value
@@ -225,6 +266,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -233,8 +275,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffHourMethod, dataExpression, filterFunc, operation, diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffHourMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffMinute filter over entity property and filter value
@@ -244,6 +293,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -252,8 +302,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffMinuteMethod, dataExpression, filterFunc, operation, diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffMinuteMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffSecond filter over entity property and filter value
@@ -263,6 +320,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -271,8 +329,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffSecondMethod, dataExpression, filterFunc, operation, diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffSecondMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffMillisecond filter over entity property and filter value
@@ -282,6 +347,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -290,9 +356,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffMillisecondMethod, dataExpression, filterFunc, operation,
-            diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffMillisecondMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffMicrosecond filter over entity property and filter value
@@ -302,6 +374,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -310,9 +383,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffMicrosecondMethod, dataExpression, filterFunc, operation,
-            diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffMicrosecondMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     /// <summary>
     /// Creates DateDiffNanosecond filter over entity property and filter value
@@ -322,6 +401,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
     /// <param name="diffConstant">Optional diff constant to use in comparison</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
@@ -330,9 +410,15 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffNanosecondMethod, dataExpression, filterFunc, operation,
-            diffConstant);
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
+        => filterBuilder.IsDateDiffFilter(
+            DateDiffNanosecondMethod,
+            dataExpression,
+            filterFunc,
+            operation,
+            diffConstant,
+            shouldRun);
 
     private static IFilterBuilder<TEntity, TFilter> IsDateDiffFilter<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
@@ -340,7 +426,8 @@ public static class FilterBuilderExtensions
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
-        int diffConstant = 0)
+        int diffConstant = 0,
+        Func<TFilter, bool>? shouldRun = null)
     {
         bool FilterShouldRun(TFilter filter) => filterFunc(filter) != null;
 
@@ -355,7 +442,7 @@ public static class FilterBuilderExtensions
                 methodName,
                 Type.EmptyTypes,
                 EfPropertyExpression,
-                memberAccessExpression!,
+                memberAccessExpression,
                 constantExpression);
 
             var operationExpressionFactory = GetOperationFactory(operation);
@@ -363,7 +450,8 @@ public static class FilterBuilderExtensions
             return Lambda<Func<TEntity, bool>>(operationExpression, parameterExpression);
         }
 
-        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        shouldRun ??= FilterShouldRun;
+        filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
 

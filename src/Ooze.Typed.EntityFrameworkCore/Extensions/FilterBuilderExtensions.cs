@@ -21,13 +21,15 @@ public static class FilterBuilderExtensions
     /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property for like filtering</param>
     /// <param name="filterFunc">Filter delegate targeting property with like expression</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     public static IFilterBuilder<TEntity, TFilter> Like<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
-        Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string> filterFunc)
+        Expression<Func<TEntity, string?>> dataExpression,
+        Func<TFilter, string?> filterFunc,
+        Func<TFilter, bool>? shouldRun = null)
     {
         bool FilterShouldRun(TFilter filter) => string.IsNullOrEmpty(filterFunc(filter)) == false;
         Expression<Func<TEntity, bool>> FilterExpressionFactory(TFilter filter)
@@ -47,7 +49,8 @@ public static class FilterBuilderExtensions
             return Lambda<Func<TEntity, bool>>(callExpression, parameterExpression);
         }
 
-        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        shouldRun ??= FilterShouldRun;
+        filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
 }
