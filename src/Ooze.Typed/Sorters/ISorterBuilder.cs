@@ -14,11 +14,13 @@ public interface ISorterBuilder<TEntity, TSorters>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="sorterFunc">Delegate targeting property of sorter class</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if sorter should be applied</param>
     /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple sorter definitions</returns>
     ISorterBuilder<TEntity, TSorters> SortBy<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TSorters, SortDirection?> sorterFunc);
+        Func<TSorters, SortDirection?> sorterFunc,
+        Func<TSorters, bool>? shouldRun = null);
 
     /// <summary>
     /// Return collection of created sorter definitions
