@@ -24,6 +24,7 @@ public static class FilterBuilderExtensions
     /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <typeparam name="TProperty">Targeted property type</typeparam>
@@ -31,7 +32,8 @@ public static class FilterBuilderExtensions
     public static IFilterBuilder<TEntity, TFilter> InsensitiveLike<TEntity, TFilter, TProperty>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, string?> filterFunc)
+        Func<TFilter, string?> filterFunc,
+        Func<TFilter, bool>? shouldRun = null)
     {
         bool FilterShouldRun(TFilter filter) => filterFunc(filter) != null;
 
@@ -46,13 +48,14 @@ public static class FilterBuilderExtensions
                 ILikeMethod,
                 Type.EmptyTypes,
                 EfPropertyExpression,
-                memberAccessExpression!,
+                memberAccessExpression,
                 constantExpression);
 
             return Lambda<Func<TEntity, bool>>(callExpression, parameterExpression);
         }
 
-        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        shouldRun ??= FilterShouldRun;
+        filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
 
@@ -62,13 +65,15 @@ public static class FilterBuilderExtensions
     /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     public static IFilterBuilder<TEntity, TFilter> SoundexEqual<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, string?>> dataExpression,
-        Func<TFilter, string?> filterFunc)
+        Func<TFilter, string?> filterFunc,
+        Func<TFilter, bool>? shouldRun = null)
     {
         bool FilterShouldRun(TFilter filter) => filterFunc(filter) != null;
 
@@ -83,12 +88,13 @@ public static class FilterBuilderExtensions
                 FuzzyStringMatchSoundexMethod,
                 Type.EmptyTypes,
                 EfPropertyExpression,
-                memberAccessExpression!);
+                memberAccessExpression);
             var equalExpression = Equal(callExpression, constantExpression);
             return Lambda<Func<TEntity, bool>>(equalExpression, parameterExpression);
         }
 
-        filterBuilder.Add(FilterShouldRun, FilterExpressionFactory);
+        shouldRun ??= FilterShouldRun;
+        filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
 }
