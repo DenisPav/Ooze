@@ -41,7 +41,7 @@ internal static class BasicExpressions
     }
 
     internal static Expression<Func<TEntity, bool>> In<TEntity, TProperty>(
-        Expression<Func<TEntity, TProperty>> dataExpression,
+        Expression<Func<TEntity, TProperty?>> dataExpression,
         IEnumerable<TProperty>? filterValue,
         bool isNegated = false)
     {
@@ -58,8 +58,8 @@ internal static class BasicExpressions
     }
 
     internal static Expression<Func<TEntity, bool>> Range<TEntity, TProperty>(
-        Expression<Func<TEntity, TProperty>> dataExpression,
-        RangeFilter<TProperty> rangeFilterValue,
+        Expression<Func<TEntity, TProperty?>> dataExpression,
+        RangeFilter<TProperty>? rangeFilterValue,
         bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
