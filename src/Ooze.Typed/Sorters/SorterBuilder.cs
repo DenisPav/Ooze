@@ -10,12 +10,14 @@ internal class SorterBuilder<TEntity, TSorters> : ISorterBuilder<TEntity, TSorte
 
     public ISorterBuilder<TEntity, TSorters> SortBy<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        Func<TSorters, SortDirection?> sorterFunc)
+        Func<TSorters, SortDirection?> sorterFunc,
+        Func<TSorters, bool>? shouldRun = null)
     {
+        shouldRun ??= sorters => sorterFunc(sorters) != null;
         _sortDefinitions.Add(new SortDefinition<TEntity, TSorters>
         {
             DataExpression = dataExpression,
-            ShouldRun = sorters => sorterFunc(sorters) != null,
+            ShouldRun = shouldRun,
             GetSortDirection = sorters =>
             {
                 var sortDirection = sorterFunc(sorters).GetValueOrDefault(SortDirection.Ascending);
