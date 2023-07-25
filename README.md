@@ -15,7 +15,7 @@ Except base `Ooze.Typed` package there are few more that add additional filter e
  - [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
  - [Ooze.Typed.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.SqlServer/)
  - [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql/)
- - `Ooze.Typed.EntityFrameworkCore.MySql` - TBD
+ - [Ooze.Typed.EntityFrameworkCore.MySql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.MySql/)
 
 These packages provide additional provider specific `EF` extensions to the filter builder pipeline.
 
@@ -204,10 +204,18 @@ This package depends on EF Core SqlServer package and package mentioned beforeha
  - `IsDateDiffMicrosecond()` - EF.Functions.DateDiffMicrosecond
  - `IsDateDiffNanosecond()` - EF.Functions.DateDiffNanosecond
 
-### `Ooze.Typed.EntityFrameworkCore.Psql` 
-This package depends on EF Core SqlServer package and package mentioned beforehand and exposes next extensions:
+### [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql)
+This package depends on EF Core Npgsql package and package mentioned beforehand and exposes next extensions:
  - `InsensitiveLike()` - EF.Functions.ILike
  - `SoundexEqual()` - EF.Functions.FuzzyStringMatchSoundex
 
-### `Ooze.Typed.EntityFrameworkCore.MySql`
-TBD
+### [Ooze.Typed.EntityFrameworkCore.MySql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.MySql)
+This package depends on EF Core MySql (Pomelo) package and package mentioned beforehand and exposes next extensions:
+- `IsDateDiffDay()` - EF.Functions.DateDiffDay
+- `IsDateDiffMonth()` - EF.Functions.DateDiffMonth
+- `IsDateDiffYear()` - EF.Functions.DateDiffYear
+- `IsDateDiffHour()` - EF.Functions.DateDiffHour
+- `IsDateDiffMinute()` - EF.Functions.DateDiffMinute
+- `IsDateDiffSecond()` - EF.Functions.DateDiffSecond
+- `IsDateDiffMicrosecond()` - EF.Functions.DateDiffMicrosecond
+ 

@@ -102,7 +102,9 @@ internal static class BasicExpressions
             MemberExpression memberExpression => memberExpression,
             _ => throw new Exception("Error while extracting member expression!")
         };
-
+        
+        if (Nullable.GetUnderlyingType(memberAccessExpression!.Type) != null)
+            memberAccessExpression = Property(memberAccessExpression, "Value");
         return memberAccessExpression!;
     }
 
