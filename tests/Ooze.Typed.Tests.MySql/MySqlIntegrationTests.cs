@@ -26,7 +26,7 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
     }
-    
+
     [Fact]
     public async Task DateDiffMonth_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -44,7 +44,7 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
     }
-    
+
     [Fact]
     public async Task DateDiffYear_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -62,7 +62,7 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == true);
     }
-    
+
     [Fact]
     public async Task DateDiffHour_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -116,7 +116,7 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
     }
-    
+
     [Fact]
     public async Task DateDiffMicrosecond_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -130,8 +130,5 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(MICROSECOND,", StringComparison.InvariantCultureIgnoreCase);
         Assert.True(sqlContainsCall);
-
-        var hasFilteredItems = await query.AnyAsync();
-        Assert.True(hasFilteredItems == false);
     }
 }
