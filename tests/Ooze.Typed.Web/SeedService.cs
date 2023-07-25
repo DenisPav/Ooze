@@ -19,11 +19,13 @@ public class SeedService : IHostedService
         var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
         var sqlServerDb = scope.ServiceProvider.GetRequiredService<SqlServerDatabaseContext>();
         var postgresDb = scope.ServiceProvider.GetRequiredService<PostgresDatabaseContext>();
+        var mariaDb = scope.ServiceProvider.GetRequiredService<MariaDbDatabaseContext>();
 
         await Task.WhenAll(
             SeedRecords(db, cancellationToken),
             SeedRecords(sqlServerDb, cancellationToken),
-            SeedRecords(postgresDb, cancellationToken));
+            SeedRecords(postgresDb, cancellationToken),
+            SeedRecords(mariaDb, cancellationToken));
     }
 
     private static async Task SeedRecords(
