@@ -176,6 +176,54 @@ public record class Input(MyEntityFilters Filters, MyEntitySorters Sorters, Pagi
 **NOTE:**
 Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web). Ooze only cares that you provide instances of your `filters`,  `sorters` which will be then applied to `IQueryable` instances.
 
+## Advanced 🧠
+Filter builders have a special parameter called `shouldRun` which is by default nullable. You can use this if you want to manually decide when the filter needs to be called. You will get instance of the filters to the delegate and then can apply your custom logic for the specific filter. 
+
+Example of this can be seen below:
+
+```csharp
+public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
+{
+    return Filters.CreateFor<Blog, BlogFilters>()
+        //common filter definition, shouldRun is not used here but is resolved internally
+        .Equal(blog => blog.Id, filter => filter.BlogId)
+        //custom shouldRun delegate, this filter will not run even if filters are provided
+        //due to this you can do some pretty spicy stuff by forcing filters to run or not run
+        .In(blog => blog.Id, filter => filter.BlogIds, filters => false)
+        .Build();
+}
+```
+Due to nature of how `OozeFilterProvider` implementation work you can even create a custom filter collection
+which will depend on a specific parameter being passed in the request.
+
+For example you could do something like next example (but you don't have to and I'm not sure why would you):
+
+```csharp
+public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public BlogFiltersProvider(IHttpContextAccessor httpContextAccessor) 
+        => _httpContextAccessor = httpContextAccessor;
+    
+    public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        var hasSecretParam = !httpContext?.Request.Query.ContainsKey("secret") ?? true;
+        
+        return Filters.CreateFor<Blog, BlogFilters>()
+            //this filter will now be used only when secret parameter is not preset in the URL
+            //of the request
+            .Equal(blog => blog.Id, filter => filter.BlogId, _ => hasSecretParam)
+            .In(blog => blog.Id, filter => filter.BlogIds)
+            .Build();
+    }
+}
+```
+
+Similar can be applied to `OozeSorterProvider` implementations which also contain `shouldRun` parameter on
+sorter builder extensions. Be careful when using `IHttpContextAccessor` in this way and be sure to read about
+how to correctly use it over on [this link](https://github.com/davidfowl/AspNetCoreDiagnosticScenarios/blob/master/AspNetCoreGuidance.md#do-not-store-ihttpcontextaccessorhttpcontext-in-a-field).
 
 ## Filter extensions 🎁
 As previously mentioned additional packages contains some usefull extensions when working with specific "flavor" of EF. For example you might be using `Sqlite` or `SqlServer` or `Postgres` etc. For these situations you can install these specific packages which contain extensions methods for the specific flavor. More about what is supported on each of the packages can be seen below.
