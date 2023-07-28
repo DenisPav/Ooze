@@ -2,4 +2,4 @@
 
 namespace Ooze.Typed.Tests.MySql;
 
-public record PostSorters(SortDirection? Id);
+public record PostSorters(SortDirection? Id = null);

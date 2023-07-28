@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
+using Ooze.Typed.Sorters;
 
 namespace Ooze.Typed.Tests.SqlServer;
 
@@ -446,5 +447,29 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
 
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
+    }
+    
+    [Fact]
+    public async Task Id_Sorter_Should_Update_Query_And_Return_Correctly_Ordered_Data()
+    {
+        await using var context = _fixture.CreateContext();
+
+        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        var defaultIds = await query.Select(x => x.Id)
+            .ToListAsync();
+        
+        query = resolver.Sort(query,
+            new[] { new PostSorters(Id: SortDirection.Descending) });
+        var sortedIds = await query.Select(x => x.Id)
+            .ToListAsync(); 
+        
+        Assert.True(defaultIds.SequenceEqual(sortedIds) == false);
+        Assert.True(defaultIds.Except(sortedIds).Any() == false);
+        Assert.True(defaultIds.Intersect(sortedIds).Count() == 100);
+        
+        var sql = query.ToQueryString();
+        var sqlContainsCall = sql.Contains("ORDER BY", StringComparison.InvariantCultureIgnoreCase);
+        Assert.True(sqlContainsCall);
     }
 }
