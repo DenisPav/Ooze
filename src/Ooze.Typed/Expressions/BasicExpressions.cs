@@ -63,7 +63,9 @@ internal static class BasicExpressions
         bool isNegated = false)
     {
         var memberAccessExpression = GetMemberExpression(dataExpression.Body);
+#pragma warning disable CS8602
         var fromConstantExpression = GetWrappedConstantExpression(rangeFilterValue.From);
+#pragma warning restore CS8602
         var toConstantExpression = GetWrappedConstantExpression(rangeFilterValue.To);
 
         var lessThenOrEqualFromExpression = LessThanOrEqual(fromConstantExpression, memberAccessExpression);
@@ -102,7 +104,7 @@ internal static class BasicExpressions
             MemberExpression memberExpression => memberExpression,
             _ => throw new Exception("Error while extracting member expression!")
         };
-        
+
         if (Nullable.GetUnderlyingType(memberAccessExpression!.Type) != null)
             memberAccessExpression = Property(memberAccessExpression, "Value");
         return memberAccessExpression!;
