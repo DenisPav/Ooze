@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Paging;
 using Ooze.Typed.Web.Entities;
+using Ooze.Typed.Web.Filters;
 
 namespace Ooze.Typed.Web.Controllers;
 
@@ -83,6 +84,18 @@ public class BlogController : ControllerBase
         var results = await query.ToListAsync();
         return Ok(results);
     }
+    
+    [HttpPost("/sql-server-automatic"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
+    public IQueryable<Blog> PostSqlServerAutomatic() => _sqlServerDb.Set<Blog>();
+    
+    [HttpPost("/sql-server-automatic-enumerable"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
+    public async Task<IQueryable<Blog>> PostSqlServerEnumerable()
+    {
+        var results = await _sqlServerDb.Set<Blog>()
+            .ToListAsync();
+
+        return results.AsQueryable();
+    }
 
     [HttpPost("/postgres")]
     public async Task<IActionResult> PostPostgres(Input model)
@@ -101,11 +114,11 @@ public class BlogController : ControllerBase
     public async Task<IActionResult> PostMaria(Input model)
     {
         IQueryable<Blog> query = _mariaDb.Set<Blog>();
-
+    
         query = _nonTypedResolver
             .Filter(query, model.Filters);
         query = _nonTypedResolver.Sort(query, model.Sorters);
-
+    
         var results = await query.ToListAsync();
         return Ok(results);
     }
