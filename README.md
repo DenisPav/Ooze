@@ -177,6 +177,10 @@ public record class Input(MyEntityFilters Filters, MyEntitySorters Sorters, Pagi
 Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web). Ooze only cares that you provide instances of your `filters`,  `sorters` which will be then applied to `IQueryable` instances.
 
 ## Advanced 🧠
+ 
+<details>
+  <summary>Controlling filter builders/providers</summary>
+
 Filter builders have a special parameter called `shouldRun` which is by default nullable. You can use this if you want to manually decide when the filter needs to be called. You will get instance of the filters to the delegate and then can apply your custom logic for the specific filter. 
 
 Example of this can be seen below:
@@ -224,6 +228,109 @@ public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
 Similar can be applied to `OozeSorterProvider` implementations which also contain `shouldRun` parameter on
 sorter builder extensions. Be careful when using `IHttpContextAccessor` in this way and be sure to read about
 how to correctly use it over on [this link](https://github.com/davidfowl/AspNetCoreDiagnosticScenarios/blob/master/AspNetCoreGuidance.md#do-not-store-ihttpcontextaccessorhttpcontext-in-a-field).
+</details>
+
+<details>
+  <summary>Automatic application in MVC via ResultFilter</summary>
+
+If needed you can even streamline the whole process if you create a simple `IAsyncResultFilter` so that you only need to return `IQueryable<T>` instance back from your controller actions. 
+
+Example can be seen below:
+
+```csharp
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Ooze.Typed.Paging;
+
+namespace Ooze.Typed.Web.Filters;
+
+public sealed class OozeFilter<TEntity, TFilters, TSorters> : IAsyncResultFilter
+    where TEntity : class
+{
+    private readonly IOozeTypedResolver<TEntity, TFilters, TSorters> _resolver;
+    private readonly ILogger<OozeFilter<TEntity, TFilters, TSorters>> _log;
+
+    public OozeFilter(
+        IOozeTypedResolver<TEntity, TFilters, TSorters> resolver,
+        ILogger<OozeFilter<TEntity, TFilters, TSorters>> log)
+    {
+        _resolver = resolver;
+        _log = log;
+    }
+
+    public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+    {
+        var objectResult = context.Result as ObjectResult;
+
+        if (objectResult?.Value is IQueryable<TEntity> query
+            && context.Controller is ControllerBase)
+        {
+            _log.LogDebug("Binding {modelName}", nameof(RequestInput));
+
+            //notice that this implementation reads request body, which will be okay for non HTTP GET requests
+            var model = await JsonSerializer.DeserializeAsync<RequestInput?>(context.HttpContext.Request.Body,
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+            if (model is not null)
+            {
+                objectResult.Value = _resolver.Apply(query, model.Sorters, model.Filters, model.Paging);
+            }
+            else
+            {
+                _log.LogWarning("Binding of {modelName} failed", nameof(RequestInput));
+            }
+        }
+
+        await next();
+    }
+
+    private class RequestInput
+    {
+        public TFilters? Filters { get; set; }
+        public IEnumerable<TSorters>? Sorters { get; set; }
+        public PagingOptions? Paging { get; set; }
+    }
+}
+```
+
+This can in turn be used to decorate controller actions in order to minimize the whole process.
+
+```csharp
+[HttpPost("/sql-server-automatic"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
+public IQueryable<Blog> PostSqlServerAutomatic() => _sqlServerDb.Set<Blog>();
+```
+
+For more details look at sample project in `tests/Ooze.Typed.Web`.
+</details>
+
+<details>
+  <summary>Applying filters and sorters on IEnumerable collections</summary>
+
+Due to nature of `IQueryable<T>` and `IEnumerable<T>` you can even use `OozeTypedResolver` on materialized or in memory collections for example `List<T>`. You'll just need to convert it (cast it) to `IQueryable<T>` via `.AsQueryable()` method. Notice that this can lead to exception since not all operations can be used this way. Some operations can't be used on `client side` and this can cause errors. 
+
+Example of all this can be seen below:
+```csharp
+//BlogFiltersProvider - implementation can be seen in detail in sample project
+.Like(blog => blog.Name, filter => filter.Name)
+
+//BlogController
+[HttpPost("/sql-server-automatic-enumerable"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
+public async Task<IQueryable<Blog>> PostSqlServerEnumerable()
+{
+    var results = await _sqlServerDb.Set<Blog>()
+        .ToListAsync();
+
+    return results.AsQueryable();
+}
+```
+As mentioned before if you use `.Like()` filter by providing `Name` filter you'll encounter an exception as noted before. 
+```
+ System.InvalidOperationException: The 'Like' method is not supported because the query has switched to client-evaluation. This usually happens when the arguments to the method cannot be translated to server. Rewrite the query to avoid client evaluation of arguments so that method can be translated to server.
+```
+
+Be sure to know what you'll be using this for so you don't get unwanted issues.
+</details>
 
 ## Filter extensions 🎁
 As previously mentioned additional packages contains some usefull extensions when working with specific "flavor" of EF. For example you might be using `Sqlite` or `SqlServer` or `Postgres` etc. For these situations you can install these specific packages which contain extensions methods for the specific flavor. More about what is supported on each of the packages can be seen below.

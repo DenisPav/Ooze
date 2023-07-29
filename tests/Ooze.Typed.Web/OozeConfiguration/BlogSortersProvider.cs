@@ -8,7 +8,7 @@ public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
     {
         return Sorters.CreateFor<Blog, BlogSorters>()
             .SortBy(blog => blog.Id, sort => sort.BlogIdSort)
-            .SortBy(blog => blog.Name, sort => sort.BlogNameSort)
+            .SortBy(blog => blog.Name, sort => sort.BlogNameSort, _ => false)
             .Build();
     }
 }
@@ -33,7 +33,6 @@ public class CommentFiltersProvider : IOozeFilterProvider<Comment, CommentFilter
             .Build();
     }
 }
-
 
 
 public class CommentSorters
