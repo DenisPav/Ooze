@@ -14,7 +14,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: |
+            6.0.x
+            7.0.x
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
@@ -23,25 +25,9 @@ jobs:
         run: dotnet test
       - name: Create packages
         run: |
-          cd ./src/Ooze.Typed
-          dotnet pack -c Release -o pkg
-          cd ../Ooze.Typed.EntityFrameworkCore
-          dotnet pack -c Release -o pkg
-          cd ../Ooze.Typed.EntityFrameworkCore.Sqlite
-          dotnet pack -c Release -o pkg
-          cd ../Ooze.Typed.EntityFrameworkCore.SqlServer
-          dotnet pack -c Release -o pkg
-          cd ../Ooze.Typed.EntityFrameworkCore.Npgsql
-          dotnet pack -c Release -o pkg
-          cd ../Ooze.Typed.EntityFrameworkCore.MySql
           dotnet pack -c Release -o pkg
       - name: Push package to Nuget registry
         run: |
-          dotnet nuget push ./src/Ooze.Typed/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
-          dotnet nuget push ./src/Ooze.Typed.EntityFrameworkCore/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
-          dotnet nuget push ./src/Ooze.Typed.EntityFrameworkCore.Sqlite/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
-          dotnet nuget push ./src/Ooze.Typed.EntityFrameworkCore.SqlServer/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
-          dotnet nuget push ./src/Ooze.Typed.EntityFrameworkCore.Npgsql/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
-          dotnet nuget push ./src/Ooze.Typed.EntityFrameworkCore.MySql/pkg/*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
+          dotnet nuget push ./*.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
