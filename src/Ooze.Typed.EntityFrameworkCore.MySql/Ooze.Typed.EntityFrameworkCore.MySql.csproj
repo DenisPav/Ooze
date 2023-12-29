@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Ooze.Typed.EntityFrameworkCore.MySql</PackageId>
-    <Version>1.0.71</Version>
+    <Version>1.0.72</Version>
     <RepositoryUrl>https://github.com/DenisPav/Ooze</RepositoryUrl>
     <Description>
       This package provides simple mechanism for applying filters, sorters, paging to your IQueryable queries. Contains additional extensions for MySql/MariaDB.
@@ -29,8 +29,8 @@
     <ProjectReference Include="..\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0-beta.2" />
-    </ItemGroup>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0-beta.2" />
+  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' ">
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
   </ItemGroup>
