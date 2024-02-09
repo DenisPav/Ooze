@@ -5,12 +5,9 @@ using Ooze.Typed.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Tests.Integration;
 
-public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+public class DatabaseFilterInThanIntegrationTests(DbFixture<DatabaseContext> fixture)
+    : IClassFixture<DbFixture<DatabaseContext>>
 {
-    readonly DbFixture<DatabaseContext> _fixture;
-
-    public DatabaseFilterInThanIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(1, 2, 3, 4)]
     [InlineData(5, 6, 7, 8)]
@@ -20,10 +17,10 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
     {
         var castedIds = postIds.Select(x => (long)x);
         var validIds = castedIds.Where(x => x <= DatabaseContext.TotalCountOfFakes);
-        using var scope = _fixture.CreateServiceProvider<PostInFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -44,10 +41,10 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
     [InlineData("100_Sample_post", "101_Sample_post", "102_Sample_post", "103")]
     public async Task Should_Correctly_Filter_Data_By_In_String_Filter(params string[] postNames)
     {
-        using var scope = _fixture.CreateServiceProvider<PostInFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -65,10 +62,10 @@ public class DatabaseFilterInThanIntegrationTests : IClassFixture<DbFixture<Data
     [ClassData(typeof(DateData))]
     public async Task Should_Correctly_Filter_Data_By_In_DateTime_Filter(params DateTime[] dates)
     {
-        using var scope = _fixture.CreateServiceProvider<PostInFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;

@@ -4,12 +4,9 @@ using Ooze.Typed.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Tests.Integration;
 
-public class DatabaseFilterGreaterThanIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+public class DatabaseFilterGreaterThanIntegrationTests(DbFixture<DatabaseContext> fixture)
+    : IClassFixture<DbFixture<DatabaseContext>>
 {
-    readonly DbFixture<DatabaseContext> _fixture;
-
-    public DatabaseFilterGreaterThanIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(1)]
     [InlineData(5)]
@@ -17,10 +14,10 @@ public class DatabaseFilterGreaterThanIntegrationTests : IClassFixture<DbFixture
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Greater_Than_Int_Filter(int postId)
     {
-        using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -41,10 +38,10 @@ public class DatabaseFilterGreaterThanIntegrationTests : IClassFixture<DbFixture
     [InlineData("100_Sample_post")]
     public async Task Should_Fail_To_Filter_Data_By_Greater_Than_String_Filter(string postName)
     {
-        using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -58,10 +55,10 @@ public class DatabaseFilterGreaterThanIntegrationTests : IClassFixture<DbFixture
     [InlineData(false)]
     public async Task Should_Fail_To_Filter_Data_By_Greater_Than_Bool_Filter(bool enabled)
     {
-        using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -79,10 +76,10 @@ public class DatabaseFilterGreaterThanIntegrationTests : IClassFixture<DbFixture
         int month,
         int day)
     {
-        using var scope = _fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
 
         var filterDate = new DateTime(year, month, day);

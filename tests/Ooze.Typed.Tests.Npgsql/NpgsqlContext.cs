@@ -2,12 +2,9 @@
 
 namespace Ooze.Typed.Tests.Npgsql;
 
-public class NpgsqlContext : DbContext
+public class NpgsqlContext(DbContextOptions options) : DbContext(options)
 {
     public const int TotalRecords = 100;
-
-    public NpgsqlContext(DbContextOptions options) : base(options)
-    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

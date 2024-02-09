@@ -5,17 +5,13 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Typed.Paging;
 
-internal class OozePagingHandler<TEntity> : IOozePagingHandler<TEntity>
+internal class OozePagingHandler<TEntity>(ILogger<OozePagingHandler<TEntity>> log) : IOozePagingHandler<TEntity>
 {
-    private readonly ILogger<OozePagingHandler<TEntity>> _log;
-
-    public OozePagingHandler(ILogger<OozePagingHandler<TEntity>> log) => _log = log;
-
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
         PagingOptions pagingOptions)
     {
-        _log.LogDebug("Applying paging options! Page: [{page}], Page size: [{size}]", pagingOptions.Page,
+        log.LogDebug("Applying paging options! Page: [{page}], Page size: [{size}]", pagingOptions.Page,
             pagingOptions.Size);
 
         return query.Skip(pagingOptions.Page * pagingOptions.Size)
@@ -27,7 +23,7 @@ internal class OozePagingHandler<TEntity> : IOozePagingHandler<TEntity>
         Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
         CursorPagingOptions<TAfter> pagingOptions)
     {
-        _log.LogDebug("Applying cursor paging options! After: [{after}], Page size: [{size}]", pagingOptions.After,
+        log.LogDebug("Applying cursor paging options! After: [{after}], Page size: [{size}]", pagingOptions.After,
             pagingOptions.Size);
 
         var memberAccessExpression = BasicExpressions.GetMemberExpression(cursorPropertyExpression.Body);

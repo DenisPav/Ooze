@@ -2,12 +2,9 @@
 
 namespace Ooze.Typed.Tests.MySql;
 
-public class MySqlContext : DbContext
+public class MySqlContext(DbContextOptions options) : DbContext(options)
 {
     public const int TotalRecords = 100;
-
-    public MySqlContext(DbContextOptions options) : base(options)
-    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -5,12 +5,9 @@ using Ooze.Typed.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Tests.Integration;
 
-public class DatabaseFilterRangeThanIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+public class DatabaseFilterRangeThanIntegrationTests(DbFixture<DatabaseContext> fixture)
+    : IClassFixture<DbFixture<DatabaseContext>>
 {
-    readonly DbFixture<DatabaseContext> _fixture;
-
-    public DatabaseFilterRangeThanIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(-10, 5)]
     [InlineData(5, 20)]
@@ -21,10 +18,10 @@ public class DatabaseFilterRangeThanIntegrationTests : IClassFixture<DbFixture<D
         int to)
     {
         var filter = new RangeFilter<long> { From = from, To = to };
-        using var scope = _fixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -43,10 +40,10 @@ public class DatabaseFilterRangeThanIntegrationTests : IClassFixture<DbFixture<D
     public async Task Should_Correctly_Filter_Data_By_Range_String_Filter(string from, string to)
     {
         var filter = new RangeFilter<string> { From = from, To = to };
-        using var scope = _fixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -66,10 +63,10 @@ public class DatabaseFilterRangeThanIntegrationTests : IClassFixture<DbFixture<D
             To = to
         };
 
-        using var scope = _fixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;

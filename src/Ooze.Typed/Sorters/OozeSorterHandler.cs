@@ -5,27 +5,19 @@ using Ooze.Typed.Expressions;
 
 namespace Ooze.Typed.Sorters;
 
-internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity, TSorters>
+internal class OozeSorterHandler<TEntity, TSorters>(
+    IEnumerable<IOozeSorterProvider<TEntity, TSorters>> sortProviders,
+    ILogger<OozeSorterHandler<TEntity, TSorters>> log)
+    : IOozeSorterHandler<TEntity, TSorters>
 {
-    private readonly IEnumerable<IOozeSorterProvider<TEntity, TSorters>> _sortProviders;
-    private readonly ILogger<OozeSorterHandler<TEntity, TSorters>> _log;
-
-    public OozeSorterHandler(
-        IEnumerable<IOozeSorterProvider<TEntity, TSorters>> sortProviders,
-        ILogger<OozeSorterHandler<TEntity, TSorters>> log)
-    {
-        _sortProviders = sortProviders;
-        _log = log;
-    }
-
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
         IEnumerable<TSorters> sorters)
     {
-        _log.LogDebug("Processing available sorters!");
+        log.LogDebug("Processing available sorters!");
 
         if (query == null) throw new ArgumentNullException(nameof(query));
-        var sortDefinitions = _sortProviders.SelectMany(provider => provider.GetSorters())
+        var sortDefinitions = sortProviders.SelectMany(provider => provider.GetSorters())
             .Cast<SortDefinition<TEntity, TSorters>>()
             .ToList();
 
@@ -37,7 +29,7 @@ internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity
 
             var sorterType = BasicExpressions.GetMemberExpression(sortDefinition.DataExpression.Body).Type;
             var direction = sortDefinition.GetSortDirection(sorter);
-            MethodInfo? method = null;
+            MethodInfo? method;
 
             if (query!.Expression.Type == typeof(IOrderedQueryable<TEntity>))
             {
@@ -52,7 +44,7 @@ internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity
                     : CommonMethods.OrderByDescending;
             }
 
-            _log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
+            log.LogDebug("Applying sorter: [{@sorter}]", sortDefinition.DataExpression);
             query = CreateSortedQueryable(query, method, sorterType, sortDefinition.DataExpression);
         }
 
@@ -66,6 +58,6 @@ internal class OozeSorterHandler<TEntity, TSorters> : IOozeSorterHandler<TEntity
         LambdaExpression dataExpression)
     {
         return (method.MakeGenericMethod(typeof(TEntity), sorterType)
-            .Invoke(null, new object[] { query, dataExpression }) as IQueryable<TEntity>)!;
+            .Invoke(null, [query, dataExpression]) as IQueryable<TEntity>)!;
     }
 }

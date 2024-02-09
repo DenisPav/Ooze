@@ -8,7 +8,7 @@ namespace Ooze.Typed.Tests.Integration.Setup;
 public class DbFixture<TContext>
     where TContext : DbContext
 {
-    private IServiceCollection CreateServiceColletion<TProvider1>()
+    private static IServiceCollection CreateServiceCollection<TProvider1>()
     {
         var services = new ServiceCollection()
             .AddLogging();
@@ -23,7 +23,7 @@ public class DbFixture<TContext>
         new ServiceProviderOptions
         {
             ValidateScopes = true
-        }).CreateServiceProvider(CreateServiceColletion<TProvider1>());
+        }).CreateServiceProvider(CreateServiceCollection<TProvider1>());
 
     public DatabaseContext CreateContext()
     {

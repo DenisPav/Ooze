@@ -5,12 +5,9 @@ using Ooze.Typed.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Tests.Integration;
 
-public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+public class DatabaseFilterOutOfRangeThanIntegrationTests(DbFixture<DatabaseContext> fixture)
+    : IClassFixture<DbFixture<DatabaseContext>>
 {
-    readonly DbFixture<DatabaseContext> _fixture;
-
-    public DatabaseFilterOutOfRangeThanIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(-10, 5)]
     [InlineData(5, 20)]
@@ -21,10 +18,10 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
         int to)
     {
         var filter = new RangeFilter<long> { From = from, To = to };
-        using var scope = _fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -43,10 +40,10 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
     public async Task Should_Correctly_Filter_Data_By_Out_Of_Range_String_Filter(string from, string to)
     {
         var filter = new RangeFilter<string> { From = from, To = to };
-        using var scope = _fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
@@ -66,10 +63,10 @@ public class DatabaseFilterOutOfRangeThanIntegrationTests : IClassFixture<DbFixt
             To = to
         };
 
-        using var scope = _fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostOutOfRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
         var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostRangeFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;

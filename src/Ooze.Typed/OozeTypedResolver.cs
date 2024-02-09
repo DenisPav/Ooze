@@ -8,30 +8,22 @@ using Ooze.Typed.Sorters;
 namespace Ooze.Typed;
 
 /// <inheritdoc />
-internal class OozeTypedResolver : IOozeTypedResolver
+internal class OozeTypedResolver(
+    IServiceProvider serviceProvider,
+    ILogger<OozeTypedResolver> log)
+    : IOozeTypedResolver
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<OozeTypedResolver> _log;
-
-    public OozeTypedResolver(
-        IServiceProvider serviceProvider,
-        ILogger<OozeTypedResolver> log)
-    {
-        _serviceProvider = serviceProvider;
-        _log = log;
-    }
-
     public IQueryable<TEntity> Filter<TEntity, TFilters>(
         IQueryable<TEntity> query,
         TFilters? filters)
     {
         if (filters is null)
         {
-            _log.LogDebug("Filters of type: [{typeName}] are null", typeof(TFilters).Name);
+            log.LogDebug("Filters of type: [{typeName}] are null", typeof(TFilters).Name);
             return query;
         }
 
-        var filterHandler = _serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
+        var filterHandler = serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
         query = filterHandler.Apply(query, filters);
 
         return query;
@@ -44,12 +36,12 @@ internal class OozeTypedResolver : IOozeTypedResolver
         sorters ??= Enumerable.Empty<TSorters>();
         if (sorters.Any() == false)
         {
-            _log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);
+            log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);
             return query;
         }
 
 
-        var sorterHandler = _serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity, TSorters>>();
+        var sorterHandler = serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity, TSorters>>();
         query = sorterHandler.Apply(query, sorters);
 
         return query;
@@ -61,12 +53,12 @@ internal class OozeTypedResolver : IOozeTypedResolver
     {
         if (pagingOptions == null)
         {
-            _log.LogDebug("Pagination options are not present");
+            log.LogDebug("Pagination options are not present");
             return query;
         }
 
 
-        var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        var sorterHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = sorterHandler.Apply(query, pagingOptions);
 
         return query;
@@ -79,11 +71,11 @@ internal class OozeTypedResolver : IOozeTypedResolver
     {
         if (pagingOptions == null)
         {
-            _log.LogDebug("Pagination options are not present");
+            log.LogDebug("Pagination options are not present");
             return query;
         }
 
-        var sorterHandler = _serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        var sorterHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = sorterHandler.ApplyCursor(query, cursorPropertyExpression, pagingOptions);
 
         return query;
@@ -91,26 +83,14 @@ internal class OozeTypedResolver : IOozeTypedResolver
 }
 
 /// <inheritdoc />
-internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolver<TEntity, TFilters, TSorters>
+internal class OozeTypedResolver<TEntity, TFilters, TSorters>(
+    IOozeSorterHandler<TEntity, TSorters> sorterHandler,
+    IOozeFilterHandler<TEntity, TFilters> filterHandler,
+    IOozePagingHandler<TEntity> pagingHandler,
+    ILogger<OozeTypedResolver<TEntity, TFilters, TSorters>> log)
+    : IOozeTypedResolver<TEntity, TFilters, TSorters>
 {
-    private readonly IOozeSorterHandler<TEntity, TSorters> _sorterHandler;
-    private readonly IOozeFilterHandler<TEntity, TFilters> _filterHandler;
-    private readonly IOozePagingHandler<TEntity> _pagingHandler;
-    private readonly ILogger<OozeTypedResolver<TEntity, TFilters, TSorters>> _log;
-
     private IQueryable<TEntity> _query = null!;
-
-    public OozeTypedResolver(
-        IOozeSorterHandler<TEntity, TSorters> sorterHandler,
-        IOozeFilterHandler<TEntity, TFilters> filterHandler,
-        IOozePagingHandler<TEntity> pagingHandler,
-        ILogger<OozeTypedResolver<TEntity, TFilters, TSorters>> log)
-    {
-        _sorterHandler = sorterHandler;
-        _filterHandler = filterHandler;
-        _pagingHandler = pagingHandler;
-        _log = log;
-    }
 
     public IOozeTypedResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
     {
@@ -123,12 +103,12 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
         sorters ??= Enumerable.Empty<TSorters>();
         if (sorters.Any() == false)
         {
-            _log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);
+            log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);
             return this;
         }
 
 
-        _query = _sorterHandler.Apply(_query, sorters);
+        _query = sorterHandler.Apply(_query, sorters);
         return this;
     }
 
@@ -136,12 +116,12 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
     {
         if (filters is null)
         {
-            _log.LogDebug("Filters of type: [{typeName}] are null", typeof(TFilters).Name);
+            log.LogDebug("Filters of type: [{typeName}] are null", typeof(TFilters).Name);
             return this;
         }
 
 
-        _query = _filterHandler.Apply(_query, filters);
+        _query = filterHandler.Apply(_query, filters);
         return this;
     }
 
@@ -149,11 +129,11 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
     {
         if (pagingOptions == null)
         {
-            _log.LogDebug("Pagination options are not present");
+            log.LogDebug("Pagination options are not present");
             return this;
         }
 
-        _query = _pagingHandler.Apply(_query, pagingOptions);
+        _query = pagingHandler.Apply(_query, pagingOptions);
         return this;
     }
 
@@ -163,11 +143,11 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters> : IOozeTypedResolv
     {
         if (pagingOptions == null)
         {
-            _log.LogDebug("Pagination options are not present");
+            log.LogDebug("Pagination options are not present");
             return this;
         }
 
-        _query = _pagingHandler.ApplyCursor(_query, cursorPropertyExpression, pagingOptions);
+        _query = pagingHandler.ApplyCursor(_query, cursorPropertyExpression, pagingOptions);
         return this;
     }
 

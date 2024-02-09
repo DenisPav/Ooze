@@ -13,6 +13,7 @@
     <PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <EnablePackageValidation>true</EnablePackageValidation>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ooze.Typed\Ooze.Typed.csproj" />

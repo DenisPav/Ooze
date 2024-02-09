@@ -2,16 +2,12 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class DatabaseContext : DbContext
+public class DatabaseContext(DbContextOptions options) : DbContext(options)
 {
     public const int TotalCountOfFakes = 100;
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<User> Users { get; set; }
-
-
-    public DatabaseContext(DbContextOptions options) : base(options)
-    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

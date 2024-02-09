@@ -22,10 +22,10 @@ public class ServiceCollectionTests
             (typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>))
         };
 
-        foreach (var (ContractType, ImplementationType) in requiredInterfaces)
+        foreach (var (contractType, implementationType) in requiredInterfaces)
         {
-            var count = services.Count(descriptor => descriptor.ServiceType == ContractType
-                    && descriptor.ImplementationType == ImplementationType
+            var count = services.Count(descriptor => descriptor.ServiceType == contractType
+                    && descriptor.ImplementationType == implementationType
                     && descriptor.Lifetime == ServiceLifetime.Scoped);
 
             Assert.True(count == 1);
@@ -46,10 +46,10 @@ public class ServiceCollectionTests
             (typeof(IOozeSorterProvider<Blog, BlogSorters>), typeof(BlogSortersProvider)),
         };
 
-        foreach (var (ContractType, ImplementationType) in requiredInterfaces)
+        foreach (var (contractType, implementationType) in requiredInterfaces)
         {
-            var count = services.Count(descriptor => descriptor.ServiceType == ContractType
-                    && descriptor.ImplementationType == ImplementationType
+            var count = services.Count(descriptor => descriptor.ServiceType == contractType
+                    && descriptor.ImplementationType == implementationType
                     && descriptor.Lifetime == ServiceLifetime.Singleton);
 
             Assert.True(count == 1);
@@ -69,10 +69,10 @@ public class ServiceCollectionTests
             (typeof(IOozeSorterProvider<Blog, BlogSorters>), typeof(BlogFiltersAndSortersProvider)),
         };
 
-        foreach (var (ContractType, ImplementationType) in requiredInterfaces)
+        foreach (var (contractType, implementationType) in requiredInterfaces)
         {
-            var count = services.Count(descriptor => descriptor.ServiceType == ContractType
-                                                     && descriptor.ImplementationType == ImplementationType
+            var count = services.Count(descriptor => descriptor.ServiceType == contractType
+                                                     && descriptor.ImplementationType == implementationType
                                                      && descriptor.Lifetime == ServiceLifetime.Singleton);
 
             Assert.True(count == 1);
