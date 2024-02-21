@@ -6,12 +6,12 @@
 /// </summary>
 /// <typeparam name="TEntity">Entity type</typeparam>
 /// <typeparam name="TSorters">Sorter implementation type</typeparam>
-public interface IOozeSorterProvider<TEntity, TSorters>
+public interface ISorterProvider<TEntity, TSorters>
 {
     /// <summary>
     /// Method used for creation of <see cref="ISortDefinition{TEntity,TSorters}"/> definitions. These definitions are
     /// used in sorting process.
     /// </summary>
     /// <returns>Collection of sort definitions</returns>
-    IEnumerable<ISortDefinition<TEntity, TSorters>> GetSorters();
+    IEnumerable<SortDefinition<TEntity, TSorters>> GetSorters();
 }

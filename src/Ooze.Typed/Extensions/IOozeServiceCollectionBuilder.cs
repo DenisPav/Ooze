@@ -14,4 +14,10 @@ public interface IOozeServiceCollectionBuilder
     /// <typeparam name="TProvider">Type of provider implementation</typeparam>
     /// <returns>Builder instance</returns>
     IOozeServiceCollectionBuilder Add<TProvider>(ServiceLifetime providerLifetime = ServiceLifetime.Singleton);
+
+    /// <summary>
+    /// Enable usage of async resolvers and filter/sorter registrations
+    /// </summary>
+    /// <returns>Builder instance</returns>
+    IOozeServiceCollectionBuilder EnableAsyncResolvers();
 }

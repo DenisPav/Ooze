@@ -23,7 +23,7 @@ internal class OozeTypedResolver(
             return query;
         }
 
-        var filterHandler = serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
+        var filterHandler = serviceProvider.GetRequiredService<IFilterHandler<TEntity, TFilters>>();
         query = filterHandler.Apply(query, filters);
 
         return query;
@@ -41,7 +41,7 @@ internal class OozeTypedResolver(
         }
 
 
-        var sorterHandler = serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity, TSorters>>();
+        var sorterHandler = serviceProvider.GetRequiredService<ISorterHandler<TEntity, TSorters>>();
         query = sorterHandler.Apply(query, sorters);
 
         return query;
@@ -84,8 +84,8 @@ internal class OozeTypedResolver(
 
 /// <inheritdoc />
 internal class OozeTypedResolver<TEntity, TFilters, TSorters>(
-    IOozeSorterHandler<TEntity, TSorters> sorterHandler,
-    IOozeFilterHandler<TEntity, TFilters> filterHandler,
+    ISorterHandler<TEntity, TSorters> sorterHandler,
+    IFilterHandler<TEntity, TFilters> filterHandler,
     IOozePagingHandler<TEntity> pagingHandler,
     ILogger<OozeTypedResolver<TEntity, TFilters, TSorters>> log)
     : IOozeTypedResolver<TEntity, TFilters, TSorters>

@@ -28,6 +28,6 @@ internal class SorterBuilder<TEntity, TSorters> : ISorterBuilder<TEntity, TSorte
         return this;
     }
 
-    public IEnumerable<ISortDefinition<TEntity, TSorters>> Build()
+    public IEnumerable<SortDefinition<TEntity, TSorters>> Build()
         => _sortDefinitions;
 }
