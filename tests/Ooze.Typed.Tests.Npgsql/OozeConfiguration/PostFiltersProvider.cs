@@ -3,11 +3,14 @@ using Ooze.Typed.Filters;
 
 namespace Ooze.Typed.Tests.Npgsql.OozeConfiguration;
 
-public class PostFiltersProvider : IOozeFilterProvider<Post, PostFilters>
+public class PostFiltersProvider : IFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostFilters>()
-            .Equal(post => post.Id, filter => filter.PostId)
+            .Equal(post => post.Id, filter => filter.PostId, _ =>
+            {
+                return true;
+            })
             .NotEqual(post => post.Id, filter => filter.NotEqualPostId)
             .GreaterThan(post => post.Id, filter => filter.GreaterThanPostId)
             .LessThan(post => post.Id, filter => filter.LessThanPostId)

@@ -3,9 +3,9 @@ using Ooze.Typed.Filters;
 
 namespace Ooze.Typed.Tests.MySql.OozeConfiguration;
 
-public class PostFiltersProvider : IOozeFilterProvider<Post, PostFilters>
+public class PostFiltersProvider : IFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostFilters>()
             .IsDateDiffDay(post => post.Date, filter => filter.DateDiffDayFilter, DateDiffOperation.Equal)
             .IsDateDiffMonth(post => post.Date, filter => filter.DateDiffMonthFilter, DateDiffOperation.Equal)

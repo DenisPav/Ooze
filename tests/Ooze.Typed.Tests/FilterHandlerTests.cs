@@ -76,20 +76,20 @@ public class FilterHandlerTests
 
     class SUT
     {
-        public IOozeFilterProvider<Blog, BlogFilters> Provider1 { get; }
-        public IOozeFilterProvider<Blog, BlogFilters> Provider2 { get; }
+        public IFilterProvider<Blog, BlogFilters> Provider1 { get; }
+        public IFilterProvider<Blog, BlogFilters> Provider2 { get; }
         public IQueryable<Blog> Query { get; }
-        public IOozeFilterHandler<Blog, BlogFilters> Handler { get; }
-        private ILogger<OozeFilterHandler<Blog, BlogFilters>> Log { get; }
+        public IFilterHandler<Blog, BlogFilters> Handler { get; }
+        private ILogger<FilterHandler<Blog, BlogFilters>> Log { get; }
 
         public SUT()
         {
-            Provider1 = Substitute.For<IOozeFilterProvider<Blog, BlogFilters>>();
-            Provider2 = Substitute.For<IOozeFilterProvider<Blog, BlogFilters>>();
-            Log = Substitute.For<ILogger<OozeFilterHandler<Blog, BlogFilters>>>();
+            Provider1 = Substitute.For<IFilterProvider<Blog, BlogFilters>>();
+            Provider2 = Substitute.For<IFilterProvider<Blog, BlogFilters>>();
+            Log = Substitute.For<ILogger<FilterHandler<Blog, BlogFilters>>>();
 
             Query = Enumerable.Empty<Blog>().AsQueryable();
-            Handler = new OozeFilterHandler<Blog, BlogFilters>(new[] { Provider1, Provider2 }, Log);
+            Handler = new FilterHandler<Blog, BlogFilters>(new[] { Provider1, Provider2 }, Log);
         }
     }
 }

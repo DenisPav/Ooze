@@ -20,7 +20,7 @@ public class DatabaseFilterNotInThanIntegrationTests(DbFixture<DatabaseContext> 
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -43,7 +43,7 @@ public class DatabaseFilterNotInThanIntegrationTests(DbFixture<DatabaseContext> 
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -63,7 +63,7 @@ public class DatabaseFilterNotInThanIntegrationTests(DbFixture<DatabaseContext> 
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)

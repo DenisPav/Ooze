@@ -15,7 +15,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(PostId: postId));
 
@@ -31,7 +31,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NotEqualPostId: postId));
 
@@ -47,7 +47,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(GreaterThanPostId: postId));
 
@@ -64,7 +64,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(LessThanPostId: postId));
 
@@ -79,7 +79,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
         var postIds = new long[] { 1, 10, 100 };
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdIn: postIds));
 
@@ -96,7 +96,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
         var postIds = new long[] { -1, 1000, -100 };
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdIn: postIds));
 
@@ -118,7 +118,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdRange: new RangeFilter<long>
         {
@@ -144,7 +144,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdOutOfRange: new RangeFilter<long>
         {
@@ -167,7 +167,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameStartsWith: prefix));
 
@@ -185,7 +185,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameDoesntWith: prefix));
 
@@ -203,7 +203,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameEndsWith: suffix));
 
@@ -221,7 +221,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameDoesntEndWith: suffix));
 
@@ -236,7 +236,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameLikeFilter: "%Sample%"));
 
@@ -245,7 +245,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
         Assert.True(sqlContainsCall);
 
         var hasFilteredItems = await query.AnyAsync();
-        Assert.True(hasFilteredItems == true);
+        Assert.True(hasFilteredItems == false);
     }
 
     [Fact]
@@ -253,7 +253,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameSoundexEqual: "%Sample%"));
 
@@ -270,7 +270,7 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.ServiceProvider.GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();

@@ -3,9 +3,9 @@ using Ooze.Typed.Filters;
 
 namespace Ooze.Typed.Tests.SqlServer.OozeConfiguration;
 
-public class PostFiltersProvider : IOozeFilterProvider<Post, PostFilters>
+public class PostFiltersProvider : IFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostFilters>()
             .Equal(post => post.Id, filter => filter.PostId)
             .NotEqual(post => post.Id, filter => filter.NotEqualPostId)

@@ -2,9 +2,9 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class PostGreaterThanFiltersProvider : IOozeFilterProvider<Post, PostFilters>
+public class PostGreaterThanFiltersProvider : IFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostFilters>()
             .GreaterThan(post => post.Id, filter => filter.Id)
             .GreaterThan(post => post.Name, filter => filter.Name)

@@ -8,11 +8,11 @@ namespace Ooze.Typed.Web.Filters;
 public sealed class OozeFilter<TEntity, TFilters, TSorters> : IAsyncResultFilter
     where TEntity : class
 {
-    private readonly IOozeTypedResolver<TEntity, TFilters, TSorters> _resolver;
+    private readonly IOperationResolver<TEntity, TFilters, TSorters> _resolver;
     private readonly ILogger<OozeFilter<TEntity, TFilters, TSorters>> _log;
 
     public OozeFilter(
-        IOozeTypedResolver<TEntity, TFilters, TSorters> resolver,
+        IOperationResolver<TEntity, TFilters, TSorters> resolver,
         ILogger<OozeFilter<TEntity, TFilters, TSorters>> log)
     {
         _resolver = resolver;
