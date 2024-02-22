@@ -2,6 +2,11 @@
 
 namespace Ooze.Typed.Filters.Async;
 
+/// <summary>
+/// Interface defining contract for async filter builder implementation
+/// </summary>
+/// <typeparam name="TEntity">Entity type</typeparam>
+/// <typeparam name="TFilter">Filter type</typeparam>
 public interface IAsyncFilterBuilder<TEntity, TFilter> : IFilters<TEntity, TFilter, IAsyncFilterBuilder<TEntity, TFilter>>
 {
     /// <summary>

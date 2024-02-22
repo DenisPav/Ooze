@@ -56,8 +56,8 @@ internal class OozeServiceCollectionBuilder(IServiceCollection services) : IOoze
 
     public IOozeServiceCollectionBuilder EnableAsyncResolvers()
     {
-        services.AddScoped<IOozeTypedAsyncResolver, OozeTypedAsyncResolver>();
-        services.AddScoped(typeof(IOozeTypedAsyncResolver<,,>), typeof(OozeTypedAsyncResolver<,,>));
+        services.AddScoped<IAsyncOperationResolver, AsyncOperationResolver>();
+        services.AddScoped(typeof(IAsyncOperationResolver<,,>), typeof(AsyncOperationResolver<,,>));
         services.AddScoped(typeof(IAsyncFilterHandler<,>), typeof(AsyncFilterHandler<,>));
         services.AddScoped(typeof(IAsyncSorterHandler<,>), typeof(AsyncSorterHandler<,>));
 
@@ -69,8 +69,8 @@ internal class OozeServiceCollectionBuilder(IServiceCollection services) : IOoze
 
     internal IOozeServiceCollectionBuilder AddCommonServices()
     {
-        services.AddScoped<IOozeTypedResolver, OozeTypedResolver>();
-        services.AddScoped(typeof(IOozeTypedResolver<,,>), typeof(OozeTypedResolver<,,>));
+        services.AddScoped<IOperationResolver, OperationResolver>();
+        services.AddScoped(typeof(IOperationResolver<,,>), typeof(OperationResolver<,,>));
         services.AddScoped(typeof(IFilterHandler<,>), typeof(FilterHandler<,>));
         services.AddScoped(typeof(ISorterHandler<,>), typeof(SorterHandler<,>));
         services.AddScoped(typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>));

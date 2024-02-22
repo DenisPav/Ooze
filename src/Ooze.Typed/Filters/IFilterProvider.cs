@@ -1,8 +1,8 @@
 ﻿namespace Ooze.Typed.Filters;
 
 /// <summary>
-/// Filter provider interface called internally by <see cref="IOozeTypedResolver"/>/
-/// <see cref="IOozeTypedResolver{TEntity,TFilters,TSorters}"/> to fetch defined filters for provided Entity type.
+/// Filter provider interface called internally by <see cref="IOperationResolver"/>/
+/// <see cref="IOperationResolver{TEntity,TFilters,TSorters}"/> to fetch defined filters for provided Entity type.
 /// </summary>
 /// <typeparam name="TEntity">Entity type</typeparam>
 /// <typeparam name="TFilter">Filter implementation type</typeparam>

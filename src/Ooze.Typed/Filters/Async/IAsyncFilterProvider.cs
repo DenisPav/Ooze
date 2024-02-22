@@ -1,8 +1,8 @@
 ﻿namespace Ooze.Typed.Filters.Async;
 
 /// <summary>
-/// Async filter provider interface called internally by <see cref="IOozeTypedAsyncResolver"/>/
-/// <see cref="IOozeTypedAsyncResolver{TEntity,TFilters,TSorters}"/> to fetch defined filters for provided Entity type.
+/// Async filter provider interface called internally by <see cref="IAsyncOperationResolver"/>/
+/// <see cref="IAsyncOperationResolver{TEntity,TFilters,TSorters}"/> to fetch defined filters for provided Entity type.
 /// </summary>
 /// <typeparam name="TEntity">Entity type</typeparam>
 /// <typeparam name="TFilter">Filter implementation type</typeparam>

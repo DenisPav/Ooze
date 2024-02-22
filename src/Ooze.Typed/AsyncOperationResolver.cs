@@ -10,10 +10,10 @@ using Ooze.Typed.Sorters.Async;
 namespace Ooze.Typed;
 
 /// <inheritdoc />
-internal class OozeTypedAsyncResolver(
+internal class AsyncOperationResolver(
     IServiceProvider serviceProvider,
-    ILogger<OozeTypedAsyncResolver> log)
-    : IOozeTypedAsyncResolver
+    ILogger<AsyncOperationResolver> log)
+    : IAsyncOperationResolver
 {
     public async ValueTask<IQueryable<TEntity>> FilterAsync<TEntity, TFilters>(
         IQueryable<TEntity> query,
@@ -83,16 +83,16 @@ internal class OozeTypedAsyncResolver(
 }
 
 /// <inheritdoc />
-internal class OozeTypedAsyncResolver<TEntity, TFilters, TSorters>(
+internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
     IAsyncSorterHandler<TEntity, TSorters> sorterHandler,
     IAsyncFilterHandler<TEntity, TFilters> filterHandler,
     IOozePagingHandler<TEntity> pagingHandler,
-    ILogger<OozeTypedAsyncResolver<TEntity, TFilters, TSorters>> log)
-    : IOozeTypedAsyncResolver<TEntity, TFilters, TSorters>
+    ILogger<AsyncOperationResolver<TEntity, TFilters, TSorters>> log)
+    : IAsyncOperationResolver<TEntity, TFilters, TSorters>
 {
     private OozeResolverData<TEntity, TFilters, TSorters> _resolverData = new();
 
-    public IOozeTypedAsyncResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
+    public IAsyncOperationResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
     {
         _resolverData = _resolverData with
         {
@@ -102,7 +102,7 @@ internal class OozeTypedAsyncResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IOozeTypedAsyncResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters>? sorters)
+    public IAsyncOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters>? sorters)
     {
         _resolverData = _resolverData with
         {
@@ -112,7 +112,7 @@ internal class OozeTypedAsyncResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IOozeTypedAsyncResolver<TEntity, TFilters, TSorters> Filter(TFilters? filters)
+    public IAsyncOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters? filters)
     {
         _resolverData = _resolverData with
         {
@@ -122,7 +122,7 @@ internal class OozeTypedAsyncResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IOozeTypedAsyncResolver<TEntity, TFilters, TSorters> Page(PagingOptions? pagingOptions)
+    public IAsyncOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions? pagingOptions)
     {
         _resolverData = _resolverData with
         {

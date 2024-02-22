@@ -2,7 +2,13 @@
 
 namespace Ooze.Typed.Filters;
 
-public interface IFilters<TEntity, TFilter, TReturn>
+/// <summary>
+/// Interface with shared filter contracts
+/// </summary>
+/// <typeparam name="TEntity">Entity type</typeparam>
+/// <typeparam name="TFilter">Filter type</typeparam>
+/// <typeparam name="TReturn">Return type</typeparam>
+public interface IFilters<TEntity, out TFilter, out TReturn>
 {
     /// <summary>
     /// Fluently creates "Equality" filter definition
