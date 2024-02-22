@@ -5,10 +5,10 @@ using Ooze.Typed.Expressions;
 
 namespace Ooze.Typed.Sorters;
 
-internal class OozeSorterHandler<TEntity, TSorters>(
-    IEnumerable<IOozeSorterProvider<TEntity, TSorters>> sortProviders,
-    ILogger<OozeSorterHandler<TEntity, TSorters>> log)
-    : IOozeSorterHandler<TEntity, TSorters>
+internal class SorterHandler<TEntity, TSorters>(
+    IEnumerable<ISorterProvider<TEntity, TSorters>> sortProviders,
+    ILogger<SorterHandler<TEntity, TSorters>> log)
+    : ISorterHandler<TEntity, TSorters>
 {
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
@@ -18,7 +18,6 @@ internal class OozeSorterHandler<TEntity, TSorters>(
 
         if (query == null) throw new ArgumentNullException(nameof(query));
         var sortDefinitions = sortProviders.SelectMany(provider => provider.GetSorters())
-            .Cast<SortDefinition<TEntity, TSorters>>()
             .ToList();
 
         foreach (var sorter in sorters)

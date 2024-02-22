@@ -1,6 +1,6 @@
 ﻿namespace Ooze.Typed.Filters;
 
-internal interface IOozeFilterHandler<TEntity, in TFilter>
+internal interface IFilterHandler<TEntity, in TFilter>
 {
     IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,

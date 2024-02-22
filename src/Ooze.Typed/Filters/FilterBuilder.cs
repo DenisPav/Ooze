@@ -224,5 +224,5 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
         return this;
     }
 
-    public IEnumerable<IFilterDefinition<TEntity, TFilter>> Build() => _filterDefinitions;
+    public IEnumerable<FilterDefinition<TEntity, TFilter>> Build() => _filterDefinitions;
 }
