@@ -14,6 +14,7 @@ public class DbFixture<TContext>
             .AddLogging();
 
         services.AddOozeTyped()
+            .EnableAsyncResolvers()
             .Add<TProvider1>();
 
         return services;
