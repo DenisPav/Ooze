@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using static System.Linq.Expressions.Expression;
@@ -11,10 +10,6 @@ namespace Ooze.Typed.EntityFrameworkCore.Extensions;
 /// </summary>
 public static class FilterBuilderExtensions
 {
-    private static readonly Type DbFunctionsExtensionsType = typeof(DbFunctionsExtensions);
-    private const string LikeMethod = nameof(DbFunctionsExtensions.Like);
-    private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
-
     /// <summary>
     /// Applies a like filter over specified entity property and passed filter like expression
     /// </summary>
@@ -38,11 +33,8 @@ public static class FilterBuilderExtensions
             var memberAccessExpression = BasicExpressions.GetMemberExpression(dataExpression.Body);
             var parameterExpression = BasicExpressions.ExtractParameterExpression(memberAccessExpression);
             var constantExpression = BasicExpressions.GetWrappedConstantExpression(filterValue);
-            var callExpression = Call(
-                DbFunctionsExtensionsType,
-                LikeMethod,
-                Type.EmptyTypes,
-                EfPropertyExpression,
+            var callExpression = Call(Shared.DbFunctionsExtensionsType, Shared.LikeMethod,
+                Type.EmptyTypes, Shared.EfPropertyExpression,
                 memberAccessExpression!,
                 constantExpression);
 

@@ -1,19 +1,19 @@
 ﻿using System.Linq.Expressions;
 using Ooze.Typed.Expressions;
-using Ooze.Typed.Filters;
+using Ooze.Typed.Filters.Async;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Typed.EntityFrameworkCore.MySql.Extensions;
 
 /// <summary>
-/// MySql/MariaDb extensions for FilterBuilder
+/// MySql/MariaDb extensions for AsyncFilterBuilder
 /// </summary>
-public static class FilterBuilderExtensions
+public static class AsyncFilterBuilderExtensions
 {
     /// <summary>
     /// Creates DateDiffDay filter over entity property and filter value
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
@@ -21,8 +21,8 @@ public static class FilterBuilderExtensions
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> IsDateDiffDay<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffDay<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
@@ -32,7 +32,7 @@ public static class FilterBuilderExtensions
     /// <summary>
     /// Creates DateDiffMonth filter over entity property and filter value
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
@@ -41,8 +41,8 @@ public static class FilterBuilderExtensions
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> IsDateDiffMonth<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffMonth<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
@@ -59,7 +59,7 @@ public static class FilterBuilderExtensions
     /// <summary>
     /// Creates DateDiffYear filter over entity property and filter value
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
@@ -68,8 +68,8 @@ public static class FilterBuilderExtensions
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> IsDateDiffYear<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffYear<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
@@ -86,7 +86,7 @@ public static class FilterBuilderExtensions
     /// <summary>
     /// Creates DateDiffHour filter over entity property and filter value
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
@@ -95,8 +95,8 @@ public static class FilterBuilderExtensions
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> IsDateDiffHour<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffHour<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
@@ -113,7 +113,7 @@ public static class FilterBuilderExtensions
     /// <summary>
     /// Creates DateDiffMinute filter over entity property and filter value
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
@@ -122,8 +122,8 @@ public static class FilterBuilderExtensions
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> IsDateDiffMinute<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffMinute<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
@@ -140,7 +140,7 @@ public static class FilterBuilderExtensions
     /// <summary>
     /// Creates DateDiffSecond filter over entity property and filter value
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
@@ -149,8 +149,8 @@ public static class FilterBuilderExtensions
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> IsDateDiffSecond<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffSecond<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
@@ -167,7 +167,7 @@ public static class FilterBuilderExtensions
     /// <summary>
     /// Creates DateDiffMicrosecond filter over entity property and filter value
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property</param>
     /// <param name="filterFunc">Filtering delegate targeting property with details if filter should apply</param>
     /// <param name="operation">Operation defines which operations is applied over property and filter value</param>
@@ -176,8 +176,8 @@ public static class FilterBuilderExtensions
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> IsDateDiffMicrosecond<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffMicrosecond<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
@@ -191,8 +191,8 @@ public static class FilterBuilderExtensions
             diffConstant,
             shouldRun);
     
-    private static IFilterBuilder<TEntity, TFilter> IsDateDiffFilter<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    private static IAsyncFilterBuilder<TEntity, TFilter> IsDateDiffFilter<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         string methodName,
         Expression<Func<TEntity, DateTime?>> dataExpression,
         Func<TFilter, DateTime?> filterFunc,

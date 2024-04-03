@@ -10,5 +10,14 @@ public class AsyncPostEqualFiltersProvider : IAsyncFilterProvider<Post, PostFilt
             .Equal(post => post.Name, filter => filter.Name)
             .Equal(post => post.Enabled, filter => filter.Enabled)
             .Equal(post => post.Date, filter => filter.Date)
+            .AddAsync(async filters =>
+            {
+                await Task.CompletedTask;
+                return filters.Date != null;
+            }, async filters =>
+            {
+                await Task.CompletedTask;
+                return post => post.Date == filters.Date;
+            })
             .Build());
 }

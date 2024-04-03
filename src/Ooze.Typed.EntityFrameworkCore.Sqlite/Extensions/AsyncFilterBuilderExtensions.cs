@@ -1,27 +1,27 @@
 ﻿using System.Linq.Expressions;
 using Ooze.Typed.Expressions;
-using Ooze.Typed.Filters;
+using Ooze.Typed.Filters.Async;
 using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Typed.EntityFrameworkCore.Sqlite.Extensions;
 
 /// <summary>
-/// Sqlite extensions for FilterBuilder
+/// Sqlite extensions for AsyncFilterBuilder
 /// </summary>
-public static class FilterBuilderExtensions
+public static class AsyncFilterBuilderExtensions
 {
     /// <summary>
     /// Applies a Glob filter over specified entity property and passed filter glob expression
     /// </summary>
-    /// <param name="filterBuilder">Instance of <see cref="IFilterBuilder{TEntity,TFilter}"/></param>
+    /// <param name="filterBuilder">Instance of <see cref="IAsyncFilterBuilder{TEntity,TFilter}"/></param>
     /// <param name="dataExpression">Expression targeting entity property for glob filtering</param>
     /// <param name="filterFunc">Filter delegate targeting property with glob expression</param>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
-    public static IFilterBuilder<TEntity, TFilter> Glob<TEntity, TFilter>(
-        this IFilterBuilder<TEntity, TFilter> filterBuilder,
+    public static IAsyncFilterBuilder<TEntity, TFilter> Glob<TEntity, TFilter>(
+        this IAsyncFilterBuilder<TEntity, TFilter> filterBuilder,
         Expression<Func<TEntity, string?>> dataExpression,
         Func<TFilter, string?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
