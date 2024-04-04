@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+// ReSharper disable InconsistentNaming
 
 namespace Ooze.Typed.EntityFrameworkCore.SqlServer.Extensions;
 

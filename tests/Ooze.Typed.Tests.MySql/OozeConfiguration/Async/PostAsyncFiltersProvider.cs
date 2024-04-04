@@ -1,12 +1,12 @@
 ﻿using Ooze.Typed.EntityFrameworkCore.MySql.Extensions;
-using Ooze.Typed.Filters;
+using Ooze.Typed.Filters.Async;
 
-namespace Ooze.Typed.Tests.MySql.OozeConfiguration;
+namespace Ooze.Typed.Tests.MySql.OozeConfiguration.Async;
 
-public class PostFiltersProvider : IFilterProvider<Post, PostFilters>
+public class PostAsyncFiltersProvider : IAsyncFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
-        => Filters.Filters.CreateFor<Post, PostFilters>()
+    public ValueTask<IEnumerable<AsyncFilterDefinition<Post, PostFilters>>> GetFiltersAsync()
+        => ValueTask.FromResult(AsyncFilters.CreateFor<Post, PostFilters>()
             .IsDateDiffDay(post => post.Date, filter => filter.DateDiffDayFilter, DateDiffOperation.Equal)
             .IsDateDiffMonth(post => post.Date, filter => filter.DateDiffMonthFilter, DateDiffOperation.Equal)
             .IsDateDiffYear(post => post.Date, filter => filter.DateDiffYearFilter, DateDiffOperation.Equal)
@@ -15,5 +15,5 @@ public class PostFiltersProvider : IFilterProvider<Post, PostFilters>
             .IsDateDiffSecond(post => post.Date, filter => filter.DateDiffSecondFilter, DateDiffOperation.Equal)
             .IsDateDiffMicrosecond(post => post.Date, filter => filter.DateDiffMicrosecondFilter,
                 DateDiffOperation.Equal)
-            .Build();
+            .Build());
 }

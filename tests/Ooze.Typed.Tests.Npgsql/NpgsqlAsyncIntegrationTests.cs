@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Sorters;
-using Ooze.Typed.Tests.Npgsql.OozeConfiguration;
+using Ooze.Typed.Tests.Npgsql.OozeConfiguration.Async;
 
 namespace Ooze.Typed.Tests.Npgsql;
 
-public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<NpgsqlFixture>
+public class NpgsqlAsyncIntegrationTests(NpgsqlFixture fixture) : IClassFixture<NpgsqlFixture>
 {
     [Theory]
     [InlineData(10)]
@@ -16,10 +16,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(PostId: postId));
+        query = await resolver.FilterAsync(query, new PostFilters(PostId: postId));
 
         var filteredItemsCount = await query.CountAsync();
         Assert.True(filteredItemsCount == 1);
@@ -33,10 +33,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(NotEqualPostId: postId));
+        query = await resolver.FilterAsync(query, new PostFilters(NotEqualPostId: postId));
 
         var containsPostId = await query.AnyAsync(post => post.Id == postId);
         Assert.True(containsPostId == false);
@@ -50,10 +50,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(GreaterThanPostId: postId));
+        query = await resolver.FilterAsync(query, new PostFilters(GreaterThanPostId: postId));
 
         var filteredItemsCount = await query.CountAsync();
         var expectedCount = NpgsqlContext.TotalRecords - postId;
@@ -68,10 +68,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(LessThanPostId: postId));
+        query = await resolver.FilterAsync(query, new PostFilters(LessThanPostId: postId));
 
         var filteredItemsCount = await query.CountAsync();
         var expectedCount = postId - 1;
@@ -84,10 +84,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
         var postIds = new long[] { 1, 10, 100 };
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(IdIn: postIds));
+        query = await resolver.FilterAsync(query, new PostFilters(IdIn: postIds));
 
         var materializedIds = await query.Select(x => x.Id)
             .ToListAsync();
@@ -102,10 +102,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
         var postIds = new long[] { -1, 1000, -100 };
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(IdIn: postIds));
+        query = await resolver.FilterAsync(query, new PostFilters(IdIn: postIds));
 
         var materializedIds = await query.Select(x => x.Id)
             .ToListAsync();
@@ -125,10 +125,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(IdRange: new RangeFilter<long>
+        query = await resolver.FilterAsync(query, new PostFilters(IdRange: new RangeFilter<long>
         {
             From = from,
             To = to
@@ -152,10 +152,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(IdOutOfRange: new RangeFilter<long>
+        query = await resolver.FilterAsync(query, new PostFilters(IdOutOfRange: new RangeFilter<long>
         {
             From = from,
             To = to
@@ -176,10 +176,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(NameStartsWith: prefix));
+        query = await resolver.FilterAsync(query, new PostFilters(NameStartsWith: prefix));
 
         var materialized = await query.ToListAsync();
         var allEntitiesValid = materialized.All(x => x.Name.StartsWith(prefix));
@@ -195,10 +195,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(NameDoesntWith: prefix));
+        query = await resolver.FilterAsync(query, new PostFilters(NameDoesntWith: prefix));
 
         var materialized = await query.ToListAsync();
         var allEntitiesValid = materialized.All(x => x.Name.StartsWith(prefix) == false);
@@ -214,10 +214,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(NameEndsWith: suffix));
+        query = await resolver.FilterAsync(query, new PostFilters(NameEndsWith: suffix));
 
         var materialized = await query.ToListAsync();
         var allEntitiesValid = materialized.All(x => x.Name.EndsWith(suffix));
@@ -233,10 +233,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(NameDoesntEndWith: suffix));
+        query = await resolver.FilterAsync(query, new PostFilters(NameDoesntEndWith: suffix));
 
         var materialized = await query.ToListAsync();
         var allEntitiesValid = materialized.All(x => x.Name.EndsWith(suffix) == false);
@@ -249,10 +249,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(NameLikeFilter: "%Sample%"));
+        query = await resolver.FilterAsync(query, new PostFilters(NameLikeFilter: "%Sample%"));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("ILIKE", StringComparison.InvariantCultureIgnoreCase);
@@ -267,10 +267,10 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
-        query = resolver.Filter(query, new PostFilters(NameSoundexEqual: "%Sample%"));
+        query = await resolver.FilterAsync(query, new PostFilters(NameSoundexEqual: "%Sample%"));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("soundex", StringComparison.InvariantCultureIgnoreCase);
@@ -285,20 +285,20 @@ public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<Npgsq
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostSortersProvider>()
-            .GetRequiredService<IOperationResolver>();
+        var resolver = fixture.CreateServiceProvider<PostAsyncSortersProvider>(true)
+            .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();
 
-        query = resolver.Sort(query,
+        query = await resolver.SortAsync(query,
             new[] { new PostSorters(Id: SortDirection.Descending) });
         var sortedIds = await query.Select(x => x.Id)
             .ToListAsync();
 
-        Assert.True(defaultIds.SequenceEqual(sortedIds) == false);
-        Assert.True(defaultIds.Except(sortedIds).Any() == false);
-        Assert.True(defaultIds.Intersect(sortedIds).Count() == 100);
+        Assert.False(defaultIds.SequenceEqual(sortedIds));
+        Assert.False(defaultIds.Except(sortedIds).Any());
+        Assert.Equal(100, defaultIds.Intersect(sortedIds).Count());
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("ORDER BY", StringComparison.InvariantCultureIgnoreCase);

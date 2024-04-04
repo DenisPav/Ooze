@@ -1,12 +1,12 @@
 ﻿using Ooze.Typed.EntityFrameworkCore.Npgsql.Extensions;
-using Ooze.Typed.Filters;
+using Ooze.Typed.Filters.Async;
 
-namespace Ooze.Typed.Tests.Npgsql.OozeConfiguration;
+namespace Ooze.Typed.Tests.Npgsql.OozeConfiguration.Async;
 
-public class PostFiltersProvider : IFilterProvider<Post, PostFilters>
+public class PostAsyncFiltersProvider : IAsyncFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
-        => Filters.Filters.CreateFor<Post, PostFilters>()
+    public ValueTask<IEnumerable<AsyncFilterDefinition<Post, PostFilters>>> GetFiltersAsync()
+        => ValueTask.FromResult(AsyncFilters.CreateFor<Post, PostFilters>()
             .Equal(post => post.Id, filter => filter.PostId)
             .NotEqual(post => post.Id, filter => filter.NotEqualPostId)
             .GreaterThan(post => post.Id, filter => filter.GreaterThanPostId)
@@ -21,5 +21,5 @@ public class PostFiltersProvider : IFilterProvider<Post, PostFilters>
             .DoesntEndWith(post => post.Name, filter => filter.NameDoesntEndWith)
             .InsensitiveLike(post => post.Name, filter => filter.NameLikeFilter)
             .SoundexEqual(post => post.Name, filter => filter.NameSoundexEqual)
-            .Build();
+            .Build());
 }
