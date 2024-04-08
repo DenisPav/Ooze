@@ -16,17 +16,21 @@ internal class AsyncFilterHandler<TEntity, TFilters>(
         var filterDefinitions = new List<AsyncFilterDefinition<TEntity, TFilters>>();
         foreach (var provider in filterProviders)
         {
-            var definitions = await provider.GetFiltersAsync();
+            var definitions = await provider.GetFiltersAsync()
+                .ConfigureAwait(false);
             filterDefinitions.AddRange(definitions);
         }
         
         foreach (var filterDefinition in filterDefinitions)
         {
-            var shouldRun = await filterDefinition.ShouldRun(filters);
+            var shouldRun = await filterDefinition.ShouldRun(filters)
+                .ConfigureAwait(false);
             if (shouldRun == false)
                 continue;
 
-            var filterExpr = await filterDefinition.FilterExpressionFactory.Invoke(filters);
+            var filterExpr = await filterDefinition.FilterExpressionFactory
+                .Invoke(filters)
+                .ConfigureAwait(false);
             if (filterExpr is null)
                 continue;
 

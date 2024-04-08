@@ -26,7 +26,8 @@ internal class AsyncOperationResolver(
         }
 
         var filterHandler = serviceProvider.GetRequiredService<IAsyncFilterHandler<TEntity, TFilters>>();
-        query = await filterHandler.ApplyAsync(query, filters);
+        query = await filterHandler.ApplyAsync(query, filters)
+            .ConfigureAwait(false);
 
         return query;
     }
@@ -43,7 +44,8 @@ internal class AsyncOperationResolver(
         }
 
         var sorterHandler = serviceProvider.GetRequiredService<IAsyncSorterHandler<TEntity, TSorters>>();
-        query = await sorterHandler.ApplyAsync(query, sorters);
+        query = await sorterHandler.ApplyAsync(query, sorters)
+            .ConfigureAwait(false);
 
         return query;
     }
@@ -58,8 +60,8 @@ internal class AsyncOperationResolver(
             return ValueTask.FromResult(query);
         }
         
-        var sorterHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
-        query = sorterHandler.Apply(query, pagingOptions);
+        var pagingHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        query = pagingHandler.Apply(query, pagingOptions);
 
         return ValueTask.FromResult(query);
     }
@@ -144,6 +146,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
             _resolverData = _resolverData with
             {
                 Query = await sorterHandler.ApplyAsync(_resolverData.Query, sorters)
+                    .ConfigureAwait(false)
             };
         }
 
@@ -154,6 +157,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
             _resolverData = _resolverData with
             {
                 Query = await filterHandler.ApplyAsync(_resolverData.Query, filters)
+                    .ConfigureAwait(false)
             };
         }
 

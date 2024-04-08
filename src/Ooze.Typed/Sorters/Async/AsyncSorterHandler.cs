@@ -20,7 +20,8 @@ internal class AsyncSorterHandler<TEntity, TSorters>(
         var sortDefinitions = new List<AsyncSortDefinition<TEntity, TSorters>>();
         foreach (var provider in sortProviders)
         {
-            var definitions = await provider.GetSortersAsync();
+            var definitions = await provider.GetSortersAsync()
+                .ConfigureAwait(false);
             sortDefinitions.AddRange(definitions);
         }
 
@@ -30,7 +31,8 @@ internal class AsyncSorterHandler<TEntity, TSorters>(
             {
                 foreach (var sorterDefinition in sortDefinitions)
                 {
-                    var shouldRun = await sorterDefinition.ShouldRun(sorter);
+                    var shouldRun = await sorterDefinition.ShouldRun(sorter)
+                        .ConfigureAwait(false);
                     if (shouldRun == true)
                         return sorterDefinition;
                 }
@@ -38,12 +40,13 @@ internal class AsyncSorterHandler<TEntity, TSorters>(
                 return default;
             }
 
-            var sortDefinition = await GetSorterDefinition();
+            var sortDefinition = await GetSorterDefinition().ConfigureAwait(false);
             if (sortDefinition is null)
                 continue;
 
             var sorterType = BasicExpressions.GetMemberExpression(sortDefinition.DataExpression.Body).Type;
-            var direction = await sortDefinition.GetSortDirection(sorter);
+            var direction = await sortDefinition.GetSortDirection(sorter)
+                .ConfigureAwait(false);
             MethodInfo? method;
 
             if (query.Expression.Type == typeof(IOrderedQueryable<TEntity>))

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Extensions;
-using Ooze.Typed.Tests.MySql.OozeConfiguration;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Testcontainers.MariaDb;
 
