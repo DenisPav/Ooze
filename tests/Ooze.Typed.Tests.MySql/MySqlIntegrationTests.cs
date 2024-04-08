@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Sorters;
+using Ooze.Typed.Tests.MySql.OozeConfiguration;
 
 namespace Ooze.Typed.Tests.MySql;
 
@@ -11,7 +12,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffDayFilter: new DateTime(2022, 5, 20)));
@@ -29,7 +30,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMonthFilter: new DateTime(2022, 5, 20)));
@@ -47,7 +48,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffYearFilter: new DateTime(2022, 5, 20)));
@@ -65,7 +66,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffHourFilter: new DateTime(2022, 5, 20)));
@@ -83,7 +84,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMinuteFilter: new DateTime(2022, 5, 20)));
@@ -101,7 +102,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffSecondFilter: new DateTime(2022, 5, 20)));
@@ -119,7 +120,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMicrosecondFilter: new DateTime(2022, 2, 2, 20, 20, 22)));
@@ -134,7 +135,7 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostSortersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();

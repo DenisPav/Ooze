@@ -2,9 +2,9 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class PostLessThanFiltersProvider : IOozeFilterProvider<Post, PostFilters>
+public class PostLessThanFiltersProvider : IFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostFilters>()
             .LessThan(post => post.Id, filter => filter.Id)
             .LessThan(post => post.Name, filter => filter.Name)

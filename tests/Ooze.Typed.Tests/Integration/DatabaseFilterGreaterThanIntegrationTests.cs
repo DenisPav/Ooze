@@ -18,7 +18,7 @@ public class DatabaseFilterGreaterThanIntegrationTests(DbFixture<DatabaseContext
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -42,7 +42,7 @@ public class DatabaseFilterGreaterThanIntegrationTests(DbFixture<DatabaseContext
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         Assert.Throws<InvalidOperationException>(() => oozeResolver.WithQuery(query)
@@ -59,7 +59,7 @@ public class DatabaseFilterGreaterThanIntegrationTests(DbFixture<DatabaseContext
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         Assert.Throws<InvalidOperationException>(() => oozeResolver.WithQuery(query)
@@ -80,7 +80,7 @@ public class DatabaseFilterGreaterThanIntegrationTests(DbFixture<DatabaseContext
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         var filterDate = new DateTime(year, month, day);
         IQueryable<Post> query = context.Posts;

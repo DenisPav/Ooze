@@ -1,5 +1,5 @@
 # Ooze.Typed 🌳💧🔧 
-![Nuget](https://img.shields.io/nuget/v/Ooze.Typed)
+[![Nuget](https://img.shields.io/nuget/v/Ooze.Typed)](https://www.nuget.org/packages/Ooze.Typed/)
 ![framework](https://img.shields.io/badge/framework-.net%206.0-green)
 ![framework](https://img.shields.io/badge/framework-.net%207.0-green)
 ![framework](https://img.shields.io/badge/framework-.net%208.0-green)
@@ -43,11 +43,11 @@ public class Startup
 This call will register internal services needed by `Ooze` and will in turn return a related "builder" via which you can then register your `provider` implementations.
 
 ## Adding Filters 🗡️🧀
-After registering Ooze you need to create your filter definition. This can be done by implementing `IOozeFilterProvider<TEntity, TFilter>` interface. After creating implementation you can use static `Filters` class to start of the builder which will in turn create your filter definitions. Example can be seen below:
+After registering Ooze you need to create your filter definition. This can be done by implementing `IFilterProvider<TEntity, TFilter>` interface. After creating implementation you can use static `Filters` class to start of the builder which will in turn create your filter definitions. Example can be seen below:
 ```csharp
-public class MyClassFiltersProvider : IOozeFilterProvider<MyClass, MyClassFilters>
+public class MyClassFiltersProvider : IFilterProvider<MyClass, MyClassFilters>
 {
-    public IEnumerable<IFilterDefinition<MyClass, MyClassFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<MyClass, MyClassFilters>> GetFilters()
     {
         return Filters.CreateFor<MyClass, MyClassFilters>()
             //add equality filter onto MyClass instance over Id property and use Id property from incoming filter instance in that operation
@@ -59,7 +59,7 @@ public class MyClassFiltersProvider : IOozeFilterProvider<MyClass, MyClassFilter
 ```
 There are some default filter operations that come when you install `Ooze`. They can be found on example below:
 ```csharp
-public IEnumerable<IFilterDefinition<MyClass, MyClassFilters>> GetFilters()
+public IEnumerable<FilterDefinition<MyClass, MyClassFilters>> GetFilters()
 {
         return Filters.CreateFor<MyClass, MyClassFilters>()
             //check if property is equal to filter
@@ -105,11 +105,11 @@ By default all the provider implementations that you register via `.Add<TProvide
 
 ## Adding sorters 🔼🔽
 Similarly how you can define filter definitions, you can create sorter definitions which can be then used
-by `Ooze` to sort your queries. This is done by implementing `IOozeSorterProvider<TEntity, TSorters>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
+by `Ooze` to sort your queries. This is done by implementing `ISorterProvider<TEntity, TSorters>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
 ```csharp
-public class MyClassSortersProvider : IOozeSorterProvider<MyClass, MyClassSorters>
+public class MyClassSortersProvider : ISorterProvider<MyClass, MyClassSorters>
 {
-    public IEnumerable<ISortDefinition<MyClass, MyClassSorters>> GetSorters()
+    public IEnumerable<SortDefinition<MyClass, MyClassSorters>> GetSorters()
     {
         return Sorters.CreateFor<MyClass, MyClassSorters>()
             //add sorting on Id property in provided direction from sorter instance
@@ -153,12 +153,12 @@ query = resolver
 ```
 
 ## Applying definitions 🧪
-In order to apply filter/sorter definitions you need to get instance of `IOozeTypedResolver`/`IOozeTypedResolver<TEntity, TFilters, TSorters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is a more elaborate example below:
+In order to apply filter/sorter definitions you need to get instance of `IOperationResolver`/`IOperationResolver<TEntity, TFilters, TSorters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is a more elaborate example below:
 ```csharp
 //lets say you have a route which gets filters/sorters from request body
 app.MapPost("/", (
     DatabaseContext db,
-    IOozeTypedResolver<MyEntity, MyEntityFilters, MyEntitySorters> resolver,
+    IOperationResolver<MyEntity, MyEntityFilters, MyEntitySorters> resolver,
     Input model) =>
 {
     IQueryable<MyEntity> query = db.Set<MyEntity>();
@@ -178,6 +178,61 @@ public record class Input(MyEntityFilters Filters, MyEntitySorters Sorters, Pagi
 **NOTE:**
 Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web). Ooze only cares that you provide instances of your `filters`,  `sorters` which will be then applied to `IQueryable` instances.
 
+## Async support 🔃
+If needed you can opt in for the `async` version of the pipeline for the resolvers for different operations. In order to opt into async support you'll need to call `EnableAsyncResolvers()` call on the `IOozeServiceCollectionBuilder` which is exposed when calling `.AddOoze()` extension. Then you can just register providers as before via `.Add<TProvider>()` method.
+
+In order for `FilterProvider` or `SorterProvider` to be of `async` nature you need to use `IAsyncFilterProvider` or `IAsyncSorterProvider` interfaces. Accompanying `AsyncFilters` and `AsyncSorters` static classes are present to help you out with the building process as they are in non async version.
+
+In the end you'll need to use `IAsyncOperationResolver` istead of `IOperationResolver` and that should be it. Example of this can be seen below:
+```csharp
+//provider definition
+public class MyEntityAsyncFiltersProvider : IAsyncFilterProvider<MyEntity, MyEntityFilters>
+{
+    public ValueTask<IEnumerable<AsyncFilterDefinition<MyEntity, MyEntityFilters>>> GetFiltersAsync()
+        => ValueTask.FromResult(AsyncFilters.CreateFor<MyEntity, MyEntityFilters>()
+            .Equal(entity => entity.Id, filter => filter.PostId)
+            .NotEqual(entity => entity.Id, filter => filter.NotEqualPostId)
+            .AddAsync(async filters =>
+            {
+                await Task.CompletedTask;
+                return filters.Date != null;
+            }, async filters =>
+            {
+                await Task.CompletedTask;
+                return entity => entity.Date == filters.Date;
+            })
+            .Build());
+}
+
+
+//in Program.cs or where your service collection registration is:
+builder.Services.AddOozeTyped()
+    .EnableAsyncResolvers()
+    .Add<MyEntityAsyncFiltersProvider>();
+
+//in your endpoints/controller actions/middlewares call the appropriate resolver methods:
+[HttpPost("/sql-server")]
+public async Task<IActionResult> PostSqlServer(
+    [FromServices] IAsyncOperationResolver<MyEntity, MyFilters, MySorters> asyncResolver, 
+    Input model)
+    {
+        IQueryable<MyEntity> query = _sqlServerDb.Set<MyEntity>();
+
+        query = await asyncResolver.WithQuery(query)
+            .Filter(model.Filters)
+            .Sort(model.Sorters)
+            .ApplyAsync();
+
+        var results = await query.ToListAsync();
+        return Ok(results);
+    }
+
+record class Input(MyFilters Filters, IEnumerable<MySorters> Sorters, PagingOptions Paging);
+```
+
+**NOTE:**
+`AsyncFilters/Sorters` builders will currently internally wrap the operations into `Tasks` even if they initially do not look like ones.
+
 ## Advanced 🧠
  
 <details>
@@ -188,7 +243,7 @@ Filter builders have a special parameter called `shouldRun` which is by default 
 Example of this can be seen below:
 
 ```csharp
-public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
+public IEnumerable<FilterDefinition<Blog, BlogFilters>> GetFilters()
 {
     return Filters.CreateFor<Blog, BlogFilters>()
         //common filter definition, shouldRun is not used here but is resolved internally
@@ -199,20 +254,20 @@ public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
         .Build();
 }
 ```
-Due to nature of how `OozeFilterProvider` implementation work you can even create a custom filter collection
+Due to nature of how `FilterProvider` implementation works you can even create a custom filter collection
 which will depend on a specific parameter being passed in the request.
 
 For example you could do something like next example (but you don't have to and I'm not sure why would you):
 
 ```csharp
-public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
+public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public BlogFiltersProvider(IHttpContextAccessor httpContextAccessor) 
         => _httpContextAccessor = httpContextAccessor;
     
-    public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Blog, BlogFilters>> GetFilters()
     {
         var httpContext = _httpContextAccessor.HttpContext;
         var hasSecretParam = !httpContext?.Request.Query.ContainsKey("secret") ?? true;
@@ -227,7 +282,7 @@ public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
 }
 ```
 
-Similar can be applied to `OozeSorterProvider` implementations which also contain `shouldRun` parameter on
+Similar can be applied to `SorterProvider` implementations which also contain `shouldRun` parameter on
 sorter builder extensions. Be careful when using `IHttpContextAccessor` in this way and be sure to read about
 how to correctly use it over on [this link](https://github.com/davidfowl/AspNetCoreDiagnosticScenarios/blob/master/AspNetCoreGuidance.md#do-not-store-ihttpcontextaccessorhttpcontext-in-a-field).
 </details>
@@ -250,11 +305,11 @@ namespace Ooze.Typed.Web.Filters;
 public sealed class OozeFilter<TEntity, TFilters, TSorters> : IAsyncResultFilter
     where TEntity : class
 {
-    private readonly IOozeTypedResolver<TEntity, TFilters, TSorters> _resolver;
+    private readonly IOperationResolver<TEntity, TFilters, TSorters> _resolver;
     private readonly ILogger<OozeFilter<TEntity, TFilters, TSorters>> _log;
 
     public OozeFilter(
-        IOozeTypedResolver<TEntity, TFilters, TSorters> resolver,
+        IOperationResolver<TEntity, TFilters, TSorters> resolver,
         ILogger<OozeFilter<TEntity, TFilters, TSorters>> log)
     {
         _resolver = resolver;
@@ -309,7 +364,7 @@ For more details look at sample project in `tests/Ooze.Typed.Web`.
 <details>
   <summary>Applying filters and sorters on IEnumerable collections</summary>
 
-Due to nature of `IQueryable<T>` and `IEnumerable<T>` you can even use `OozeTypedResolver` on materialized or in memory collections for example `List<T>`. You'll just need to convert it (cast it) to `IQueryable<T>` via `.AsQueryable()` method. Notice that this can lead to exception since not all operations can be used this way. Some operations can't be used on `client side` and this can cause errors. 
+Due to nature of `IQueryable<T>` and `IEnumerable<T>` you can even use `OozeOperationResolver` on materialized or in memory collections for example `List<T>`. You'll just need to convert it (cast it) to `IQueryable<T>` via `.AsQueryable()` method. Notice that this can lead to exception since not all operations can be used this way. Some operations can't be used on `client side` and this can cause errors. 
 
 Example of all this can be seen below:
 ```csharp

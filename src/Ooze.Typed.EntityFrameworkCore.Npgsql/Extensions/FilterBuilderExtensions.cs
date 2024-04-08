@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using static System.Linq.Expressions.Expression;
@@ -11,13 +10,6 @@ namespace Ooze.Typed.EntityFrameworkCore.Npgsql.Extensions;
 /// </summary>
 public static class FilterBuilderExtensions
 {
-    private static readonly Type DbFunctionsExtensionsType = typeof(NpgsqlDbFunctionsExtensions);
-    private static readonly Type FuzzyStringMatchDbFunctionsExtensionsType = typeof(NpgsqlFuzzyStringMatchDbFunctionsExtensions);
-    // ReSharper disable once InconsistentNaming
-    private const string ILikeMethod = nameof(NpgsqlDbFunctionsExtensions.ILike);
-    private const string FuzzyStringMatchSoundexMethod = nameof(NpgsqlFuzzyStringMatchDbFunctionsExtensions.FuzzyStringMatchSoundex);
-    private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
-
     /// <summary>
     /// Creates a ILike filter over specified property and filter
     /// </summary>
@@ -44,10 +36,10 @@ public static class FilterBuilderExtensions
             var parameterExpression = BasicExpressions.ExtractParameterExpression(memberAccessExpression);
             var constantExpression = BasicExpressions.GetWrappedConstantExpression(filterValue);
             var callExpression = Call(
-                DbFunctionsExtensionsType,
-                ILikeMethod,
+                Shared.DbFunctionsExtensionsType,
+                Shared.ILikeMethod,
                 Type.EmptyTypes,
-                EfPropertyExpression,
+                Shared.EfPropertyExpression,
                 memberAccessExpression,
                 constantExpression);
 
@@ -84,10 +76,10 @@ public static class FilterBuilderExtensions
             var parameterExpression = BasicExpressions.ExtractParameterExpression(memberAccessExpression);
             var constantExpression = BasicExpressions.GetWrappedConstantExpression(filterValue);
             var callExpression = Call(
-                FuzzyStringMatchDbFunctionsExtensionsType,
-                FuzzyStringMatchSoundexMethod,
+                Shared.FuzzyStringMatchDbFunctionsExtensionsType,
+                Shared.FuzzyStringMatchSoundexMethod,
                 Type.EmptyTypes,
-                EfPropertyExpression,
+                Shared.EfPropertyExpression,
                 memberAccessExpression);
             var equalExpression = Equal(callExpression, constantExpression);
             return Lambda<Func<TEntity, bool>>(equalExpression, parameterExpression);

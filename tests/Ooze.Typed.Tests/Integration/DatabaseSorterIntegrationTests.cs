@@ -15,7 +15,7 @@ public class DatabaseSorterEqualIntegrationTests(DbFixture<DatabaseContext> fixt
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         var sorters = new[]
         {
@@ -39,7 +39,7 @@ public class DatabaseSorterEqualIntegrationTests(DbFixture<DatabaseContext> fixt
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         var sorters = new[]
         {
@@ -63,7 +63,7 @@ public class DatabaseSorterEqualIntegrationTests(DbFixture<DatabaseContext> fixt
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         var sorters = new[]
         {
@@ -88,7 +88,7 @@ public class DatabaseSorterEqualIntegrationTests(DbFixture<DatabaseContext> fixt
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         var sorters = Enumerable.Empty<PostSorters>();
         IQueryable<Post> query = context.Posts;

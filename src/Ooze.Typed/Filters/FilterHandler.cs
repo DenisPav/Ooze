@@ -2,10 +2,10 @@
 
 namespace Ooze.Typed.Filters;
 
-internal class OozeFilterHandler<TEntity, TFilters>(
-    IEnumerable<IOozeFilterProvider<TEntity, TFilters>> filterProviders,
-    ILogger<OozeFilterHandler<TEntity, TFilters>> log)
-    : IOozeFilterHandler<TEntity, TFilters>
+internal class FilterHandler<TEntity, TFilters>(
+    IEnumerable<IFilterProvider<TEntity, TFilters>> filterProviders,
+    ILogger<FilterHandler<TEntity, TFilters>> log)
+    : IFilterHandler<TEntity, TFilters>
 {
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
@@ -14,17 +14,16 @@ internal class OozeFilterHandler<TEntity, TFilters>(
         log.LogDebug("Processing available filters!");
 
         var validFilters = filterProviders.SelectMany(provider => provider.GetFilters())
-            .Cast<FilterDefinition<TEntity, TFilters>>()
             .Where(filter => filter.ShouldRun(filters));
 
         foreach (var filterDefinition in validFilters)
         {
             var filterExpr = filterDefinition.FilterExpressionFactory?.Invoke(filters);
-            if (filterExpr is not null)
-            {
-                log.LogDebug("Applying filter: [{@filter}]", filterExpr);
-                query = query.Where(filterExpr);
-            }
+            if (filterExpr is null)
+                continue;
+
+            log.LogDebug("Applying filter: [{@filter}]", filterExpr);
+            query = query.Where(filterExpr);
         }
 
         return query;

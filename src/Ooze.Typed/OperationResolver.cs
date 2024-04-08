@@ -8,10 +8,10 @@ using Ooze.Typed.Sorters;
 namespace Ooze.Typed;
 
 /// <inheritdoc />
-internal class OozeTypedResolver(
+internal class OperationResolver(
     IServiceProvider serviceProvider,
-    ILogger<OozeTypedResolver> log)
-    : IOozeTypedResolver
+    ILogger<OperationResolver> log)
+    : IOperationResolver
 {
     public IQueryable<TEntity> Filter<TEntity, TFilters>(
         IQueryable<TEntity> query,
@@ -23,7 +23,7 @@ internal class OozeTypedResolver(
             return query;
         }
 
-        var filterHandler = serviceProvider.GetRequiredService<IOozeFilterHandler<TEntity, TFilters>>();
+        var filterHandler = serviceProvider.GetRequiredService<IFilterHandler<TEntity, TFilters>>();
         query = filterHandler.Apply(query, filters);
 
         return query;
@@ -41,7 +41,7 @@ internal class OozeTypedResolver(
         }
 
 
-        var sorterHandler = serviceProvider.GetRequiredService<IOozeSorterHandler<TEntity, TSorters>>();
+        var sorterHandler = serviceProvider.GetRequiredService<ISorterHandler<TEntity, TSorters>>();
         query = sorterHandler.Apply(query, sorters);
 
         return query;
@@ -83,22 +83,22 @@ internal class OozeTypedResolver(
 }
 
 /// <inheritdoc />
-internal class OozeTypedResolver<TEntity, TFilters, TSorters>(
-    IOozeSorterHandler<TEntity, TSorters> sorterHandler,
-    IOozeFilterHandler<TEntity, TFilters> filterHandler,
+internal class OperationResolver<TEntity, TFilters, TSorters>(
+    ISorterHandler<TEntity, TSorters> sorterHandler,
+    IFilterHandler<TEntity, TFilters> filterHandler,
     IOozePagingHandler<TEntity> pagingHandler,
-    ILogger<OozeTypedResolver<TEntity, TFilters, TSorters>> log)
-    : IOozeTypedResolver<TEntity, TFilters, TSorters>
+    ILogger<OperationResolver<TEntity, TFilters, TSorters>> log)
+    : IOperationResolver<TEntity, TFilters, TSorters>
 {
     private IQueryable<TEntity> _query = null!;
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
+    public IOperationResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
     {
         _query = query;
         return this;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters>? sorters)
+    public IOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters>? sorters)
     {
         sorters ??= Enumerable.Empty<TSorters>();
         if (sorters.Any() == false)
@@ -112,7 +112,7 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> Filter(TFilters? filters)
+    public IOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters? filters)
     {
         if (filters is null)
         {
@@ -125,7 +125,7 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> Page(PagingOptions? pagingOptions)
+    public IOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions? pagingOptions)
     {
         if (pagingOptions == null)
         {
@@ -137,7 +137,7 @@ internal class OozeTypedResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IOozeTypedResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
+    public IOperationResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
         Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
         CursorPagingOptions<TAfter>? pagingOptions)
     {

@@ -48,20 +48,20 @@ public class SorterHandlerTests
 
     class SUT
     {
-        public IOozeSorterProvider<Blog, BlogSorters> Provider1 { get; }
-        public IOozeSorterProvider<Blog, BlogSorters> Provider2 { get; }
+        public ISorterProvider<Blog, BlogSorters> Provider1 { get; }
+        public ISorterProvider<Blog, BlogSorters> Provider2 { get; }
         public IQueryable<Blog> Query { get; }
-        public IOozeSorterHandler<Blog, BlogSorters> Handler { get; }
-        private ILogger<OozeSorterHandler<Blog, BlogSorters>> Log { get; }
+        public ISorterHandler<Blog, BlogSorters> Handler { get; }
+        private ILogger<SorterHandler<Blog, BlogSorters>> Log { get; }
 
         public SUT()
         {
-            Provider1 = Substitute.For<IOozeSorterProvider<Blog, BlogSorters>>();
-            Provider2 = Substitute.For<IOozeSorterProvider<Blog, BlogSorters>>();
-            Log = Substitute.For<ILogger<OozeSorterHandler<Blog, BlogSorters>>>();
+            Provider1 = Substitute.For<ISorterProvider<Blog, BlogSorters>>();
+            Provider2 = Substitute.For<ISorterProvider<Blog, BlogSorters>>();
+            Log = Substitute.For<ILogger<SorterHandler<Blog, BlogSorters>>>();
 
             Query = Enumerable.Empty<Blog>().AsQueryable();
-            Handler = new OozeSorterHandler<Blog, BlogSorters>(new[] { Provider1, Provider2 }, Log);
+            Handler = new SorterHandler<Blog, BlogSorters>(new[] { Provider1, Provider2 }, Log);
         }
     }
 }
