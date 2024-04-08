@@ -178,6 +178,61 @@ public record class Input(MyEntityFilters Filters, MyEntitySorters Sorters, Pagi
 **NOTE:**
 Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web). Ooze only cares that you provide instances of your `filters`,  `sorters` which will be then applied to `IQueryable` instances.
 
+## Async support 🔃
+If needed you can opt in for the `async` version of the pipeline for the resolvers for different operations. In order to opt into async support you'll need to call `EnableAsyncResolvers()` call on the `IOozeServiceCollectionBuilder` which is exposed when calling `.AddOoze()` extension. Then you can just register providers as before via `.Add<TProvider>()` method.
+
+In order for `FilterProvider` or `SorterProvider` to be of `async` nature you need to use `IAsyncFilterProvider` or `IAsyncSorterProvider` interfaces. Accompanying `AsyncFilters` and `AsyncSorters` static classes are present to help you out with the building process as they are in non async version.
+
+In the end you'll need to use `IAsyncOperationResolver` istead of `IOperationResolver` and that should be it. Example of this can be seen below:
+```csharp
+//provider definition
+public class MyEntityAsyncFiltersProvider : IAsyncFilterProvider<MyEntity, MyEntityFilters>
+{
+    public ValueTask<IEnumerable<AsyncFilterDefinition<MyEntity, MyEntityFilters>>> GetFiltersAsync()
+        => ValueTask.FromResult(AsyncFilters.CreateFor<MyEntity, MyEntityFilters>()
+            .Equal(entity => entity.Id, filter => filter.PostId)
+            .NotEqual(entity => entity.Id, filter => filter.NotEqualPostId)
+            .AddAsync(async filters =>
+            {
+                await Task.CompletedTask;
+                return filters.Date != null;
+            }, async filters =>
+            {
+                await Task.CompletedTask;
+                return entity => entity.Date == filters.Date;
+            })
+            .Build());
+}
+
+
+//in Program.cs or where your service collection registration is:
+builder.Services.AddOozeTyped()
+    .EnableAsyncResolvers()
+    .Add<MyEntityAsyncFiltersProvider>();
+
+//in your endpoints/controller actions/middlewares call the appropriate resolver methods:
+[HttpPost("/sql-server")]
+public async Task<IActionResult> PostSqlServer(
+    [FromServices] IAsyncOperationResolver<MyEntity, MyFilters, MySorters> asyncResolver, 
+    Input model)
+    {
+        IQueryable<MyEntity> query = _sqlServerDb.Set<MyEntity>();
+
+        query = await asyncResolver.WithQuery(query)
+            .Filter(model.Filters)
+            .Sort(model.Sorters)
+            .ApplyAsync();
+
+        var results = await query.ToListAsync();
+        return Ok(results);
+    }
+
+record class Input(MyFilters Filters, IEnumerable<MySorters> Sorters, PagingOptions Paging);
+```
+
+**NOTE:**
+`AsyncFilters/Sorters` builders will currently internally wrap the operations into `Tasks` even if they initially do not look like ones.
+
 ## Advanced 🧠
  
 <details>
