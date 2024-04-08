@@ -4,12 +4,9 @@ using Ooze.Typed.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Tests.Integration;
 
-public class DatabaseFilterEqualIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+public class DatabaseFilterEqualIntegrationTests(DbFixture<DatabaseContext> fixture)
+    : IClassFixture<DbFixture<DatabaseContext>>
 {
-    private readonly DbFixture<DatabaseContext> _fixture;
-
-    public DatabaseFilterEqualIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(1)]
     [InlineData(5)]
@@ -17,11 +14,11 @@ public class DatabaseFilterEqualIntegrationTests : IClassFixture<DbFixture<Datab
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Equal_Int_Filter(int postId)
     {
-        using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        await using var context = fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -40,11 +37,11 @@ public class DatabaseFilterEqualIntegrationTests : IClassFixture<DbFixture<Datab
     [InlineData("100_Sample_post")]
     public async Task Should_Correctly_Filter_Data_By_Equal_String_Filter(string postName)
     {
-        using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        await using var context = fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -61,11 +58,11 @@ public class DatabaseFilterEqualIntegrationTests : IClassFixture<DbFixture<Datab
     [InlineData(false)]
     public async Task Should_Correctly_Filter_Data_By_Equal_Bool_Filter(bool enabled)
     {
-        using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        await using var context = fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -86,11 +83,11 @@ public class DatabaseFilterEqualIntegrationTests : IClassFixture<DbFixture<Datab
         int month,
         int day)
     {
-        using var scope = _fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostFilters, PostSorters>>();
+        await using var context = fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostFilters, PostSorters>>();
 
         var filterDate = new DateTime(year, month, day);
         IQueryable<Post> query = context.Posts;

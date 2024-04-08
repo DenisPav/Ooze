@@ -2,9 +2,9 @@
 using Ooze.Typed.Sorters;
 using Ooze.Typed.Web.Entities;
 
-public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
+public class BlogSortersProvider : ISorterProvider<Blog, BlogSorters>
 {
-    public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
+    public IEnumerable<SortDefinition<Blog, BlogSorters>> GetSorters()
     {
         return Sorters.CreateFor<Blog, BlogSorters>()
             .SortBy(blog => blog.Id, sort => sort.BlogIdSort)
@@ -21,9 +21,9 @@ public class CommentFilters
     public RangeFilter<int> CommentIdsRange { get; set; } = default!;
 }
 
-public class CommentFiltersProvider : IOozeFilterProvider<Comment, CommentFilters>
+public class CommentFiltersProvider : IFilterProvider<Comment, CommentFilters>
 {
-    public IEnumerable<IFilterDefinition<Comment, CommentFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Comment, CommentFilters>> GetFilters()
     {
         return Filters.CreateFor<Comment, CommentFilters>()
             .StartsWith(comment => comment.Text, filter => filter.Name)
@@ -41,9 +41,9 @@ public class CommentSorters
     public SortDirection? NameSort { get; set; }
 }
 
-public class CommentsSortersProvider : IOozeSorterProvider<Comment, CommentSorters>
+public class CommentsSortersProvider : ISorterProvider<Comment, CommentSorters>
 {
-    public IEnumerable<ISortDefinition<Comment, CommentSorters>> GetSorters()
+    public IEnumerable<SortDefinition<Comment, CommentSorters>> GetSorters()
     {
         return Sorters.CreateFor<Comment, CommentSorters>()
             .SortBy(comment => comment.Post.Id, sort => sort.IdSort)

@@ -5,6 +5,4 @@
 /// </summary>
 /// <typeparam name="TEntity">Entity type</typeparam>
 /// <typeparam name="TFilter">Filter type</typeparam>
-public interface IFilterDefinition<TEntity, TFilter>
-{
-}
+public interface IFilterDefinition<TEntity, TFilter>;

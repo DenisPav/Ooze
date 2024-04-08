@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using static System.Linq.Expressions.Expression;
@@ -11,10 +10,6 @@ namespace Ooze.Typed.EntityFrameworkCore.Sqlite.Extensions;
 /// </summary>
 public static class FilterBuilderExtensions
 {
-    private static readonly Type DbFunctionsExtensionsType = typeof(SqliteDbFunctionsExtensions);
-    private const string GlobMethod = nameof(SqliteDbFunctionsExtensions.Glob);
-    private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
-
     /// <summary>
     /// Applies a Glob filter over specified entity property and passed filter glob expression
     /// </summary>
@@ -39,11 +34,8 @@ public static class FilterBuilderExtensions
             var memberAccessExpression = BasicExpressions.GetMemberExpression(dataExpression.Body);
             var parameterExpression = BasicExpressions.ExtractParameterExpression(memberAccessExpression);
             var constantExpression = BasicExpressions.GetWrappedConstantExpression(filterValue);
-            var callExpression = Call(
-                DbFunctionsExtensionsType,
-                GlobMethod,
-                Type.EmptyTypes,
-                EfPropertyExpression,
+            var callExpression = Call(Shared.DbFunctionsExtensionsType, Shared.GlobMethod,
+                Type.EmptyTypes, Shared.EfPropertyExpression,
                 memberAccessExpression!,
                 constantExpression);
 

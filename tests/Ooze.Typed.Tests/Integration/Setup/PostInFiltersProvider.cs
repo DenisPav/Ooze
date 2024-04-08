@@ -2,9 +2,9 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class PostInFiltersProvider : IOozeFilterProvider<Post, PostInFilters>
+public class PostInFiltersProvider : IFilterProvider<Post, PostInFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostInFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostInFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostInFilters>()
             .In(post => post.Id, filter => filter.Ids)
             .In(post => post.Name, filter => filter.Names)

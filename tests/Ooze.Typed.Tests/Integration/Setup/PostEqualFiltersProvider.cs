@@ -2,9 +2,9 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class PostEqualFiltersProvider : IOozeFilterProvider<Post, PostFilters>
+public class PostEqualFiltersProvider : IFilterProvider<Post, PostFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostFilters>()
             .Equal(post => post.Id, filter => filter.Id)
             .Equal(post => post.Name, filter => filter.Name)

@@ -9,11 +9,11 @@ namespace Ooze.Typed.Web.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly DatabaseContext _db;
-    private readonly IOozeTypedResolver<Comment, CommentFilters, CommentSorters> _resolver;
+    private readonly IOperationResolver<Comment, CommentFilters, CommentSorters> _resolver;
 
     public CommentController(
         DatabaseContext db,
-        IOozeTypedResolver<Comment, CommentFilters, CommentSorters> resolver)
+        IOperationResolver<Comment, CommentFilters, CommentSorters> resolver)
     {
         _db = db;
         _resolver = resolver;

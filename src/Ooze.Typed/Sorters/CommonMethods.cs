@@ -18,5 +18,5 @@ internal static class CommonMethods
         .Single();
 
     private static Func<MethodInfo, bool> GetPredicate(string methodName)
-        => method => method.GetParameters().Count() == 2 && method.Name == methodName;
+        => method => method.GetParameters().Length == 2 && method.Name == methodName;
 }

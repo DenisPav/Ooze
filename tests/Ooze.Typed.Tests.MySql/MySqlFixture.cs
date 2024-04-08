@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Extensions;
-using Ooze.Typed.Tests.MySql.OozeConfiguration;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Testcontainers.MariaDb;
 
@@ -14,21 +13,22 @@ public class MySqlFixture : IAsyncLifetime
         .WithCleanUp(true)
         .Build();
 
-    private static IServiceCollection CreateServiceCollection()
+    private static IServiceCollection CreateServiceCollection<TProvider>(bool enableAsyncSupport = false)
     {
         var services = new ServiceCollection().AddLogging();
-        services.AddOozeTyped()
-            .Add<PostFiltersProvider>()
-            .Add<PostSortersProvider>();
+        var oozeBuilder = services.AddOozeTyped();
+        if (enableAsyncSupport == true)
+            oozeBuilder.EnableAsyncResolvers();
+        oozeBuilder.Add<TProvider>();
 
         return services;
     }
 
-    public readonly IServiceProvider ServiceProvider = new DefaultServiceProviderFactory(
+    public IServiceProvider CreateServiceProvider<TProvider>(bool enableAsyncSupport = false) => new DefaultServiceProviderFactory(
         new ServiceProviderOptions
         {
             ValidateScopes = false
-        }).CreateServiceProvider(CreateServiceCollection());
+        }).CreateServiceProvider(CreateServiceCollection<TProvider>(enableAsyncSupport));
 
     public MySqlContext CreateContext()
     {

@@ -2,9 +2,9 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class PostRangeFiltersProvider : IOozeFilterProvider<Post, PostRangeFilters>
+public class PostRangeFiltersProvider : IFilterProvider<Post, PostRangeFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostRangeFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostRangeFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostRangeFilters>()
             .Range(post => post.Id, filter => filter.Ids)
             .Range(post => post.Name, filter => filter.Names)

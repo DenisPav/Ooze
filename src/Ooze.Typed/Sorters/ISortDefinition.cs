@@ -5,5 +5,4 @@
 /// </summary>
 /// <typeparam name="TEntity">Entity type</typeparam>
 /// <typeparam name="TSorters">Sorter type</typeparam>
-public interface ISortDefinition<TEntity, TSorters>
-{ }
+public interface ISortDefinition<TEntity, TSorters>;

@@ -26,5 +26,5 @@ public interface ISorterBuilder<TEntity, TSorters>
     /// Return collection of created sorter definitions
     /// </summary>
     /// <returns>Collection of sorter definitions</returns>
-    IEnumerable<ISortDefinition<TEntity, TSorters>> Build();
+    IEnumerable<SortDefinition<TEntity, TSorters>> Build();
 }

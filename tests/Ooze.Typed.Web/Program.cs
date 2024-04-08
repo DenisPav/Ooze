@@ -18,6 +18,7 @@ builder.Services.AddDbContext<MariaDbDatabaseContext>(opts =>
 opts.UseMySql(builder.Configuration.GetConnectionString("MariaDb"), serverVersion).EnableSensitiveDataLogging());
 builder.Services.AddHostedService<SeedService>();
 builder.Services.AddOozeTyped()
+    .EnableAsyncResolvers()
     .Add<BlogFiltersProvider>()
     .Add<BlogSortersProvider>()
     .Add<CommentsSortersProvider>()

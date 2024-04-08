@@ -1,21 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Sorters;
+using Ooze.Typed.Tests.MySql.OozeConfiguration;
 
 namespace Ooze.Typed.Tests.MySql;
 
-public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
+public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFixture>
 {
-    private readonly MySqlFixture _fixture;
-
-    public MySqlIntegrationTests(MySqlFixture fixture) => _fixture = fixture;
-
     [Fact]
     public async Task DateDiffDay_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffDayFilter: new DateTime(2022, 5, 20)));
@@ -31,9 +28,9 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
     [Fact]
     public async Task DateDiffMonth_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMonthFilter: new DateTime(2022, 5, 20)));
@@ -49,9 +46,9 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
     [Fact]
     public async Task DateDiffYear_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffYearFilter: new DateTime(2022, 5, 20)));
@@ -67,9 +64,9 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
     [Fact]
     public async Task DateDiffHour_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffHourFilter: new DateTime(2022, 5, 20)));
@@ -85,9 +82,9 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
     [Fact]
     public async Task DateDiffMinute_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMinuteFilter: new DateTime(2022, 5, 20)));
@@ -103,9 +100,9 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
     [Fact]
     public async Task DateDiffSecond_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffSecondFilter: new DateTime(2022, 5, 20)));
@@ -121,9 +118,9 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
     [Fact]
     public async Task DateDiffMicrosecond_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMicrosecondFilter: new DateTime(2022, 2, 2, 20, 20, 22)));
@@ -136,9 +133,9 @@ public class MySqlIntegrationTests : IClassFixture<MySqlFixture>
     [Fact]
     public async Task Id_Sorter_Should_Update_Query_And_Return_Correctly_Ordered_Data()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostSortersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();

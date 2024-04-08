@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using static System.Linq.Expressions.Expression;
@@ -11,16 +10,6 @@ namespace Ooze.Typed.EntityFrameworkCore.MySql.Extensions;
 /// </summary>
 public static class FilterBuilderExtensions
 {
-    private static readonly Type DbFunctionsExtensionsType = typeof(MySqlDbFunctionsExtensions);
-    private const string DateDiffDayMethod = nameof(MySqlDbFunctionsExtensions.DateDiffDay);
-    private const string DateDiffMonthMethod = nameof(MySqlDbFunctionsExtensions.DateDiffMonth);
-    private const string DateDiffYearMethod = nameof(MySqlDbFunctionsExtensions.DateDiffYear);
-    private const string DateDiffHourMethod = nameof(MySqlDbFunctionsExtensions.DateDiffHour);
-    private const string DateDiffMinuteMethod = nameof(MySqlDbFunctionsExtensions.DateDiffMinute);
-    private const string DateDiffSecondMethod = nameof(MySqlDbFunctionsExtensions.DateDiffSecond);
-    private const string DateDiffMicrosecondMethod = nameof(MySqlDbFunctionsExtensions.DateDiffMicrosecond);
-    private static readonly MemberExpression EfPropertyExpression = Property(null, typeof(EF), nameof(EF.Functions));
-
     /// <summary>
     /// Creates DateDiffDay filter over entity property and filter value
     /// </summary>
@@ -38,7 +27,7 @@ public static class FilterBuilderExtensions
         Func<TFilter, DateTime?> filterFunc,
         DateDiffOperation operation,
         int diffConstant = 0)
-        => filterBuilder.IsDateDiffFilter(DateDiffDayMethod, dataExpression, filterFunc, operation, diffConstant);
+        => filterBuilder.IsDateDiffFilter(Shared.DateDiffDayMethod, dataExpression, filterFunc, operation, diffConstant);
     
     /// <summary>
     /// Creates DateDiffMonth filter over entity property and filter value
@@ -60,7 +49,7 @@ public static class FilterBuilderExtensions
         int diffConstant = 0,
         Func<TFilter, bool>? shouldRun = null)
         => filterBuilder.IsDateDiffFilter(
-            DateDiffMonthMethod,
+            Shared.DateDiffMonthMethod,
             dataExpression,
             filterFunc,
             operation,
@@ -87,7 +76,7 @@ public static class FilterBuilderExtensions
         int diffConstant = 0,
         Func<TFilter, bool>? shouldRun = null)
         => filterBuilder.IsDateDiffFilter(
-            DateDiffYearMethod,
+            Shared.DateDiffYearMethod,
             dataExpression,
             filterFunc,
             operation,
@@ -114,7 +103,7 @@ public static class FilterBuilderExtensions
         int diffConstant = 0,
         Func<TFilter, bool>? shouldRun = null)
         => filterBuilder.IsDateDiffFilter(
-            DateDiffHourMethod,
+            Shared.DateDiffHourMethod,
             dataExpression,
             filterFunc,
             operation,
@@ -141,7 +130,7 @@ public static class FilterBuilderExtensions
         int diffConstant = 0,
         Func<TFilter, bool>? shouldRun = null)
         => filterBuilder.IsDateDiffFilter(
-            DateDiffMinuteMethod,
+            Shared.DateDiffMinuteMethod,
             dataExpression,
             filterFunc,
             operation,
@@ -168,7 +157,7 @@ public static class FilterBuilderExtensions
         int diffConstant = 0,
         Func<TFilter, bool>? shouldRun = null)
         => filterBuilder.IsDateDiffFilter(
-            DateDiffSecondMethod,
+            Shared.DateDiffSecondMethod,
             dataExpression,
             filterFunc,
             operation,
@@ -195,7 +184,7 @@ public static class FilterBuilderExtensions
         int diffConstant = 0,
         Func<TFilter, bool>? shouldRun = null)
         => filterBuilder.IsDateDiffFilter(
-            DateDiffMicrosecondMethod,
+            Shared.DateDiffMicrosecondMethod,
             dataExpression,
             filterFunc,
             operation,
@@ -220,10 +209,10 @@ public static class FilterBuilderExtensions
             var parameterExpression = BasicExpressions.ExtractParameterExpression(memberAccessExpression);
             var constantExpression = BasicExpressions.GetWrappedConstantExpression(filterValue);
             var callExpression = Call(
-                DbFunctionsExtensionsType,
+                Shared.DbFunctionsExtensionsType,
                 methodName,
                 Type.EmptyTypes,
-                EfPropertyExpression,
+                Shared.EfPropertyExpression,
                 memberAccessExpression!,
                 constantExpression);
 

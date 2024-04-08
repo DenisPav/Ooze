@@ -2,12 +2,9 @@
 
 namespace Ooze.Typed.Tests.SqlServer;
 
-public class SqlServerContext : DbContext
+public class SqlServerContext(DbContextOptions options) : DbContext(options)
 {
     public const int TotalRecords = 100;
-
-    public SqlServerContext(DbContextOptions options) : base(options)
-    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

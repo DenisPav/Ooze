@@ -4,12 +4,9 @@ using Ooze.Typed.Tests.Integration.Setup;
 
 namespace Ooze.Typed.Tests.Integration;
 
-public class DatabaseFilterNotInThanIntegrationTests : IClassFixture<DbFixture<DatabaseContext>>
+public class DatabaseFilterNotInThanIntegrationTests(DbFixture<DatabaseContext> fixture)
+    : IClassFixture<DbFixture<DatabaseContext>>
 {
-    readonly DbFixture<DatabaseContext> _fixture;
-
-    public DatabaseFilterNotInThanIntegrationTests(DbFixture<DatabaseContext> fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(1, 2, 3, 4)]
     [InlineData(5, 6, 7, 8)]
@@ -19,11 +16,11 @@ public class DatabaseFilterNotInThanIntegrationTests : IClassFixture<DbFixture<D
     {
         var castedIds = postIds.Select(x => (long)x);
         var validIds = castedIds.Where(x => x <= DatabaseContext.TotalCountOfFakes);
-        using var scope = _fixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
+        await using var context = fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -42,11 +39,11 @@ public class DatabaseFilterNotInThanIntegrationTests : IClassFixture<DbFixture<D
     [InlineData("100_Sample_post", "101_Sample_post", "102_Sample_post", "103")]
     public async Task Should_Correctly_Filter_Data_By_Not_In_String_Filter(params string[] postNames)
     {
-        using var scope = _fixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
+        await using var context = fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)
@@ -62,11 +59,11 @@ public class DatabaseFilterNotInThanIntegrationTests : IClassFixture<DbFixture<D
     [ClassData(typeof(DateData))]
     public async Task Should_Correctly_Filter_Data_By_Not_In_DateTime_Filter(params DateTime[] dates)
     {
-        using var scope = _fixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
-        await using var context = _fixture.CreateContext();
-        var oozeResolver = provider.GetRequiredService<IOozeTypedResolver<Post, PostInFilters, PostSorters>>();
+        await using var context = fixture.CreateContext();
+        var oozeResolver = provider.GetRequiredService<IOperationResolver<Post, PostInFilters, PostSorters>>();
 
         IQueryable<Post> query = context.Posts;
         query = oozeResolver.WithQuery(query)

@@ -2,24 +2,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Sorters;
+using Ooze.Typed.Tests.SqlServer.OozeConfiguration;
 
 namespace Ooze.Typed.Tests.SqlServer;
 
-public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
+public class SqlServerIntegrationTests(SqlServerFixture fixture) : IClassFixture<SqlServerFixture>
 {
-    private readonly SqlServerFixture _fixture;
-
-    public SqlServerIntegrationTests(SqlServerFixture fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(10)]
     [InlineData(1)]
     [InlineData(5)]
     public async Task Equal_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(PostId: postId));
 
@@ -33,9 +30,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [InlineData(5)]
     public async Task NotEqual_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NotEqualPostId: postId));
 
@@ -49,9 +46,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [InlineData(100)]
     public async Task GreaterThan_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(GreaterThanPostId: postId));
 
@@ -66,9 +63,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [InlineData(100)]
     public async Task LessThan_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(LessThanPostId: postId));
 
@@ -81,9 +78,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task In_Should_Update_Query_And_Return_Correct_Query()
     {
         var postIds = new long[] { 1, 10, 100 };
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdIn: postIds));
 
@@ -98,9 +95,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     public async Task NotIn_Should_Update_Query_And_Return_Correct_Query()
     {
         var postIds = new long[] { -1, 1000, -100 };
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdIn: postIds));
 
@@ -120,9 +117,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         long from,
         long to)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdRange: new RangeFilter<long>
         {
@@ -146,9 +143,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         long from,
         long to)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdOutOfRange: new RangeFilter<long>
         {
@@ -169,9 +166,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [InlineData("50_Sample")]
     public async Task StartsWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameStartsWith: prefix));
 
@@ -187,9 +184,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [InlineData("$!#")]
     public async Task DoesntStartWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameDoesntWith: prefix));
 
@@ -205,9 +202,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [InlineData("post_50")]
     public async Task EndsWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameEndsWith: suffix));
 
@@ -223,9 +220,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [InlineData("$!#")]
     public async Task DoesntEndWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameDoesntEndWith: suffix));
 
@@ -238,9 +235,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task IsDate_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IsNameDate: true));
 
@@ -255,9 +252,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task IsNumeric_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IsIdNumeric: true));
 
@@ -272,9 +269,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffDay_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffDay: new DateTime(2022, 5, 20)));
@@ -290,9 +287,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffMonth_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMonth: new DateTime(2022, 5, 20)));
@@ -308,9 +305,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffYear_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffYear: new DateTime(2022, 5, 20)));
@@ -326,9 +323,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffWeek_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffWeek: new DateTime(2022, 5, 20)));
@@ -344,9 +341,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffHour_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffHour: new DateTime(2022, 5, 20)));
@@ -362,9 +359,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffMinute_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffMinute: new DateTime(2022, 5, 20)));
@@ -380,9 +377,9 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffSecond_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
             new PostFilters(DateDiffSecond: new DateTime(2022, 5, 20)));
@@ -398,12 +395,13 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffMillisecond_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(DateDiffMillisecond: new DateTime(2022, 2, 2, 20, 20, 22), DateDiffDayEqual: new DateTime(2022, 2, 2)));
+            new PostFilters(DateDiffMillisecond: new DateTime(2022, 2, 2, 20, 20, 22),
+                DateDiffDayEqual: new DateTime(2022, 2, 2)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(millisecond,", StringComparison.InvariantCultureIgnoreCase);
@@ -416,12 +414,13 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffMicrosecond_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(DateDiffMicrosecond: new DateTime(2022, 2, 2, 20, 20, 22), DateDiffDayEqual: new DateTime(2022, 2, 2, 20, 20, 22)));
+            new PostFilters(DateDiffMicrosecond: new DateTime(2022, 2, 2, 20, 20, 22),
+                DateDiffDayEqual: new DateTime(2022, 2, 2, 20, 20, 22)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(microsecond,", StringComparison.InvariantCultureIgnoreCase);
@@ -434,12 +433,13 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
     [Fact]
     public async Task DateDiffNanosecond_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
-            new PostFilters(DateDiffDayEqual: new DateTime(2022, 2, 2, 20, 20, 22), DateDiffNanosecond: new DateTime(2022, 2, 2, 20, 20, 22)));
+            new PostFilters(DateDiffDayEqual: new DateTime(2022, 2, 2, 20, 20, 22),
+                DateDiffNanosecond: new DateTime(2022, 2, 2, 20, 20, 22)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("DATEDIFF(nanosecond,", StringComparison.InvariantCultureIgnoreCase);
@@ -448,26 +448,26 @@ public class SqlServerIntegrationTests : IClassFixture<SqlServerFixture>
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
     }
-    
+
     [Fact]
     public async Task Id_Sorter_Should_Update_Query_And_Return_Correctly_Ordered_Data()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostSortersProvider>().GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();
-        
+
         query = resolver.Sort(query,
             new[] { new PostSorters(Id: SortDirection.Descending) });
         var sortedIds = await query.Select(x => x.Id)
-            .ToListAsync(); 
-        
-        Assert.True(defaultIds.SequenceEqual(sortedIds) == false);
-        Assert.True(defaultIds.Except(sortedIds).Any() == false);
-        Assert.True(defaultIds.Intersect(sortedIds).Count() == 100);
-        
+            .ToListAsync();
+
+        Assert.False(defaultIds.SequenceEqual(sortedIds));
+        Assert.False(defaultIds.Except(sortedIds).Any());
+        Assert.Equal(100, defaultIds.Intersect(sortedIds).Count());
+
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("ORDER BY", StringComparison.InvariantCultureIgnoreCase);
         Assert.True(sqlContainsCall);

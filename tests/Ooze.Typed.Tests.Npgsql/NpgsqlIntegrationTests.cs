@@ -2,24 +2,22 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Sorters;
+using Ooze.Typed.Tests.Npgsql.OozeConfiguration;
 
 namespace Ooze.Typed.Tests.Npgsql;
 
-public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
+public class NpgsqlIntegrationTests(NpgsqlFixture fixture) : IClassFixture<NpgsqlFixture>
 {
-    private readonly NpgsqlFixture _fixture;
-
-    public NpgsqlIntegrationTests(NpgsqlFixture fixture) => _fixture = fixture;
-
     [Theory]
     [InlineData(10)]
     [InlineData(1)]
     [InlineData(5)]
     public async Task Equal_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(PostId: postId));
 
@@ -33,9 +31,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [InlineData(5)]
     public async Task NotEqual_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NotEqualPostId: postId));
 
@@ -49,9 +48,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [InlineData(100)]
     public async Task GreaterThan_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(GreaterThanPostId: postId));
 
@@ -66,9 +66,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [InlineData(100)]
     public async Task LessThan_Should_Update_Query_And_Return_Correct_Query(int postId)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(LessThanPostId: postId));
 
@@ -81,9 +82,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     public async Task In_Should_Update_Query_And_Return_Correct_Query()
     {
         var postIds = new long[] { 1, 10, 100 };
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdIn: postIds));
 
@@ -98,9 +100,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     public async Task NotIn_Should_Update_Query_And_Return_Correct_Query()
     {
         var postIds = new long[] { -1, 1000, -100 };
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdIn: postIds));
 
@@ -120,9 +123,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         long from,
         long to)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdRange: new RangeFilter<long>
         {
@@ -146,9 +150,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         long from,
         long to)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(IdOutOfRange: new RangeFilter<long>
         {
@@ -169,9 +174,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [InlineData("50_Sample")]
     public async Task StartsWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameStartsWith: prefix));
 
@@ -187,9 +193,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [InlineData("$!#")]
     public async Task DoesntStartWith_Should_Update_Query_And_Return_Correct_Query(string prefix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameDoesntWith: prefix));
 
@@ -205,9 +212,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [InlineData("post_50")]
     public async Task EndsWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameEndsWith: suffix));
 
@@ -223,9 +231,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [InlineData("$!#")]
     public async Task DoesntEndWith_Should_Update_Query_And_Return_Correct_Query(string suffix)
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameDoesntEndWith: suffix));
 
@@ -238,9 +247,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [Fact]
     public async Task InsensitiveLike_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameLikeFilter: "%Sample%"));
 
@@ -255,9 +265,10 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
     [Fact]
     public async Task SoundexEqual_Should_Update_Query_And_Return_Correct_Query()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostFiltersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostFilters(NameSoundexEqual: "%Sample%"));
 
@@ -268,26 +279,27 @@ public class NpgsqlIntegrationTests : IClassFixture<NpgsqlFixture>
         var hasFilteredItems = await query.AnyAsync();
         Assert.True(hasFilteredItems == false);
     }
-    
+
     [Fact]
     public async Task Id_Sorter_Should_Update_Query_And_Return_Correctly_Ordered_Data()
     {
-        await using var context = _fixture.CreateContext();
+        await using var context = fixture.CreateContext();
 
-        var resolver = _fixture.ServiceProvider.GetRequiredService<IOozeTypedResolver>();
+        var resolver = fixture.CreateServiceProvider<PostSortersProvider>()
+            .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();
-        
+
         query = resolver.Sort(query,
             new[] { new PostSorters(Id: SortDirection.Descending) });
         var sortedIds = await query.Select(x => x.Id)
-            .ToListAsync(); 
-        
+            .ToListAsync();
+
         Assert.True(defaultIds.SequenceEqual(sortedIds) == false);
         Assert.True(defaultIds.Except(sortedIds).Any() == false);
         Assert.True(defaultIds.Intersect(sortedIds).Count() == 100);
-        
+
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("ORDER BY", StringComparison.InvariantCultureIgnoreCase);
         Assert.True(sqlContainsCall);

@@ -120,7 +120,7 @@ internal static class BasicExpressions
         var constantType = typeof(TProperty);
         var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
         var createWrapper = CommonMethods.CreateWrapperObject.MakeGenericMethod(correctType);
-        var wrapper = createWrapper?.Invoke(null, new object[] { constant! });
+        var wrapper = createWrapper?.Invoke(null, [constant!]);
 
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }

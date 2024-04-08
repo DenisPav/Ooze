@@ -2,9 +2,9 @@
 
 namespace Ooze.Typed.Tests.Integration.Setup;
 
-public class PostOutOfRangeFiltersProvider : IOozeFilterProvider<Post, PostRangeFilters>
+public class PostOutOfRangeFiltersProvider : IFilterProvider<Post, PostRangeFilters>
 {
-    public IEnumerable<IFilterDefinition<Post, PostRangeFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Post, PostRangeFilters>> GetFilters()
         => Filters.Filters.CreateFor<Post, PostRangeFilters>()
             .OutOfRange(post => post.Id, filter => filter.Ids)
             .OutOfRange(post => post.Name, filter => filter.Names)

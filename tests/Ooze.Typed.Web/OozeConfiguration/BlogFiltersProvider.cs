@@ -1,8 +1,9 @@
 ﻿using Ooze.Typed.EntityFrameworkCore.Extensions;
 using Ooze.Typed.Filters;
+using Ooze.Typed.Filters.Async;
 using Ooze.Typed.Web.Entities;
 
-public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
+public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>, IAsyncFilterProvider<Blog, BlogFilters>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -11,7 +12,7 @@ public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
         _httpContextAccessor = httpContextAccessor;
     }
     
-    public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
+    public IEnumerable<FilterDefinition<Blog, BlogFilters>> GetFilters()
     {
         var httpContext = _httpContextAccessor.HttpContext;
         var hasSecretParam = !httpContext?.Request.Query.ContainsKey("secret") ?? true;
@@ -22,5 +23,24 @@ public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
             .In(blog => blog.Id, filter => filter.BlogIds, filters => false)
             .Like(blog => blog.Name, filter => filter.Name)
             .Build();
+    }
+
+    public ValueTask<IEnumerable<AsyncFilterDefinition<Blog, BlogFilters>>> GetFiltersAsync()
+    {
+        var filters = AsyncFilters.CreateFor<Blog, BlogFilters>()
+            .Add(filter => string.IsNullOrEmpty(filter.Name) == false, filter => blog => blog.Name == filter.Name)
+            .AddAsync(async filter =>
+            {
+                await Task.Delay(1);
+                return string.IsNullOrEmpty(filter.Name) == false;
+            },
+            async filter =>
+            {
+                await Task.Delay(1);
+                return blog => blog.Name == filter.Name;
+            })
+            .Build();
+        
+        return ValueTask.FromResult(filters);
     }
 }

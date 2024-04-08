@@ -15,17 +15,17 @@ public class ServiceCollectionTests
         services.AddOozeTyped();
         var requiredInterfaces = new (Type ContractType, Type ImplementationType)[]
         {
-            (typeof(IOozeTypedResolver), typeof(OozeTypedResolver)),
-            (typeof(IOozeTypedResolver<,,>), typeof(OozeTypedResolver<,,>)),
-            (typeof(IOozeFilterHandler<,>), typeof(OozeFilterHandler<,>)),
-            (typeof(IOozeSorterHandler<,>), typeof(OozeSorterHandler<,>)),
+            (typeof(IOperationResolver), typeof(OperationResolver)),
+            (typeof(IOperationResolver<,,>), typeof(OperationResolver<,,>)),
+            (typeof(IFilterHandler<,>), typeof(FilterHandler<,>)),
+            (typeof(ISorterHandler<,>), typeof(SorterHandler<,>)),
             (typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>))
         };
 
-        foreach (var (ContractType, ImplementationType) in requiredInterfaces)
+        foreach (var (contractType, implementationType) in requiredInterfaces)
         {
-            var count = services.Count(descriptor => descriptor.ServiceType == ContractType
-                    && descriptor.ImplementationType == ImplementationType
+            var count = services.Count(descriptor => descriptor.ServiceType == contractType
+                    && descriptor.ImplementationType == implementationType
                     && descriptor.Lifetime == ServiceLifetime.Scoped);
 
             Assert.True(count == 1);
@@ -42,14 +42,14 @@ public class ServiceCollectionTests
 
         var requiredInterfaces = new (Type ContractType, Type ImplementationType)[]
         {
-            (typeof(IOozeFilterProvider<Blog, BlogFilters>), typeof(BlogFiltersProvider)),
-            (typeof(IOozeSorterProvider<Blog, BlogSorters>), typeof(BlogSortersProvider)),
+            (typeof(IFilterProvider<Blog, BlogFilters>), typeof(BlogFiltersProvider)),
+            (typeof(ISorterProvider<Blog, BlogSorters>), typeof(BlogSortersProvider)),
         };
 
-        foreach (var (ContractType, ImplementationType) in requiredInterfaces)
+        foreach (var (contractType, implementationType) in requiredInterfaces)
         {
-            var count = services.Count(descriptor => descriptor.ServiceType == ContractType
-                    && descriptor.ImplementationType == ImplementationType
+            var count = services.Count(descriptor => descriptor.ServiceType == contractType
+                    && descriptor.ImplementationType == implementationType
                     && descriptor.Lifetime == ServiceLifetime.Singleton);
 
             Assert.True(count == 1);
@@ -65,14 +65,14 @@ public class ServiceCollectionTests
 
         var requiredInterfaces = new (Type ContractType, Type ImplementationType)[]
         {
-            (typeof(IOozeFilterProvider<Blog, BlogFilters>), typeof(BlogFiltersAndSortersProvider)),
-            (typeof(IOozeSorterProvider<Blog, BlogSorters>), typeof(BlogFiltersAndSortersProvider)),
+            (typeof(IFilterProvider<Blog, BlogFilters>), typeof(BlogFiltersAndSortersProvider)),
+            (typeof(ISorterProvider<Blog, BlogSorters>), typeof(BlogFiltersAndSortersProvider)),
         };
 
-        foreach (var (ContractType, ImplementationType) in requiredInterfaces)
+        foreach (var (contractType, implementationType) in requiredInterfaces)
         {
-            var count = services.Count(descriptor => descriptor.ServiceType == ContractType
-                                                     && descriptor.ImplementationType == ImplementationType
+            var count = services.Count(descriptor => descriptor.ServiceType == contractType
+                                                     && descriptor.ImplementationType == implementationType
                                                      && descriptor.Lifetime == ServiceLifetime.Singleton);
 
             Assert.True(count == 1);
@@ -89,22 +89,22 @@ public class ServiceCollectionTests
     }
 }
 
-public class BlogFiltersProvider : IOozeFilterProvider<Blog, BlogFilters>
+public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>
 {
-    public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
-        => Enumerable.Empty<IFilterDefinition<Blog, BlogFilters>>();
+    public IEnumerable<FilterDefinition<Blog, BlogFilters>> GetFilters()
+        => Enumerable.Empty<FilterDefinition<Blog, BlogFilters>>();
 }
 
-public class BlogSortersProvider : IOozeSorterProvider<Blog, BlogSorters>
+public class BlogSortersProvider : ISorterProvider<Blog, BlogSorters>
 {
-    public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
-        => Enumerable.Empty<ISortDefinition<Blog, BlogSorters>>();
+    public IEnumerable<SortDefinition<Blog, BlogSorters>> GetSorters()
+        => Enumerable.Empty<SortDefinition<Blog, BlogSorters>>();
 }
 
-public class BlogFiltersAndSortersProvider : IOozeFilterProvider<Blog, BlogFilters>, IOozeSorterProvider<Blog, BlogSorters>
+public class BlogFiltersAndSortersProvider : IFilterProvider<Blog, BlogFilters>, ISorterProvider<Blog, BlogSorters>
 {
-    public IEnumerable<IFilterDefinition<Blog, BlogFilters>> GetFilters()
-        => Enumerable.Empty<IFilterDefinition<Blog, BlogFilters>>();
-    public IEnumerable<ISortDefinition<Blog, BlogSorters>> GetSorters()
-        => Enumerable.Empty<ISortDefinition<Blog, BlogSorters>>();
+    public IEnumerable<FilterDefinition<Blog, BlogFilters>> GetFilters()
+        => Enumerable.Empty<FilterDefinition<Blog, BlogFilters>>();
+    public IEnumerable<SortDefinition<Blog, BlogSorters>> GetSorters()
+        => Enumerable.Empty<SortDefinition<Blog, BlogSorters>>();
 }
