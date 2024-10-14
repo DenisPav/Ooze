@@ -8,7 +8,7 @@ namespace Ooze.Typed.Tests.Npgsql;
 
 public class NpgsqlFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _sqlServerContainer = new PostgreSqlBuilder()
+    private readonly PostgreSqlContainer _postgreContainer = new PostgreSqlBuilder()
         .WithImage("postgres:15.1")
         .WithPortBinding(5432, true)
         .WithCleanUp(true)
@@ -33,7 +33,7 @@ public class NpgsqlFixture : IAsyncLifetime
 
     public NpgsqlContext CreateContext()
     {
-        var correctConnectionString = _sqlServerContainer.GetConnectionString();
+        var correctConnectionString = _postgreContainer.GetConnectionString();
         var sqlServerOptions = new DbContextOptionsBuilder()
             .UseNpgsql(correctConnectionString);
         return new NpgsqlContext(sqlServerOptions.Options);
@@ -41,7 +41,7 @@ public class NpgsqlFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _sqlServerContainer.StartAsync()
+        await _postgreContainer.StartAsync()
             .ConfigureAwait(false);
         await using var context = CreateContext();
         await context.Database.EnsureCreatedAsync();
@@ -51,7 +51,7 @@ public class NpgsqlFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await _sqlServerContainer
+        await _postgreContainer
             .DisposeAsync()
             .ConfigureAwait(false);
     }
