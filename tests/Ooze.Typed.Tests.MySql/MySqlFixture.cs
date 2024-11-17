@@ -8,7 +8,7 @@ namespace Ooze.Typed.Tests.MySql;
 
 public class MySqlFixture : IAsyncLifetime
 {
-    private readonly MariaDbContainer _sqlServerContainer = new MariaDbBuilder()
+    private readonly MariaDbContainer _mariaDbContainer = new MariaDbBuilder()
         .WithImage("mariadb:10.9")
         .WithCleanUp(true)
         .Build();
@@ -32,7 +32,7 @@ public class MySqlFixture : IAsyncLifetime
 
     public MySqlContext CreateContext()
     {
-        var correctConnectionString = _sqlServerContainer.GetConnectionString();
+        var correctConnectionString = _mariaDbContainer.GetConnectionString();
         var serverVersion = ServerVersion.Create(new Version("10.9"), ServerType.MariaDb);
         var sqlServerOptions = new DbContextOptionsBuilder()
             .UseMySql(correctConnectionString, serverVersion);
@@ -41,7 +41,7 @@ public class MySqlFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _sqlServerContainer.StartAsync()
+        await _mariaDbContainer.StartAsync()
             .ConfigureAwait(false);
         await using var context = CreateContext();
         await context.Database.EnsureCreatedAsync();
@@ -50,7 +50,7 @@ public class MySqlFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await _sqlServerContainer
+        await _mariaDbContainer
             .DisposeAsync()
             .ConfigureAwait(false);
     }

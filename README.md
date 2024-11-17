@@ -1,8 +1,7 @@
 # Ooze.Typed 🌳💧🔧 
 [![Nuget](https://img.shields.io/nuget/v/Ooze.Typed)](https://www.nuget.org/packages/Ooze.Typed/)
-![framework](https://img.shields.io/badge/framework-.net%206.0-green)
-![framework](https://img.shields.io/badge/framework-.net%207.0-green)
 ![framework](https://img.shields.io/badge/framework-.net%208.0-green)
+![framework](https://img.shields.io/badge/framework-.net%209.0-green)
 ![GitHub Repo stars](https://img.shields.io/github/stars/DenisPav/Ooze)
 ![Nuget](https://img.shields.io/nuget/dt/Ooze.Typed)
 
@@ -16,8 +15,8 @@ Except base `Ooze.Typed` package there are few more that add additional filter e
  - [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
  - [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
  - [Ooze.Typed.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.SqlServer/)
- - [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql/)
- - [Ooze.Typed.EntityFrameworkCore.MySql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.MySql/)
+ - [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql/) (.net 9 not yet supported)
+ - [Ooze.Typed.EntityFrameworkCore.MySql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.MySql/) (.net 9 not yet supported)
 
 These packages provide additional provider specific `EF` extensions to the filter builder pipeline.
 
