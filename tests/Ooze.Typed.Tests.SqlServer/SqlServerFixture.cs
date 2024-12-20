@@ -9,7 +9,7 @@ namespace Ooze.Typed.Tests.SqlServer;
 public class SqlServerFixture : IAsyncLifetime
 {
     private readonly MsSqlContainer _sqlServerContainer = new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/mssql/server:2022-CU4-ubuntu-20.04")
+        .WithImage("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
         .WithPortBinding(1433, true)
         .WithCleanUp(true)
         .Build();
