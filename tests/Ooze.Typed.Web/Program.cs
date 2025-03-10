@@ -8,6 +8,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SqliteDatabaseContext>(opts =>
+    //TODO: move to connection strings section in appsettings to be consistent with other connection strings
     opts.UseSqlite("Data Source=./database.db;").EnableSensitiveDataLogging());
 builder.Services.AddDbContext<SqlServerDatabaseContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")).EnableSensitiveDataLogging());
