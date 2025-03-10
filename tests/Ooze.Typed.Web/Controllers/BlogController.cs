@@ -9,7 +9,7 @@ namespace Ooze.Typed.Web.Controllers;
 [ApiController, Route("~/")]
 public class BlogController : ControllerBase
 {
-    private readonly DatabaseContext _db;
+    private readonly SqliteDatabaseContext _db;
     private readonly SqlServerDatabaseContext _sqlServerDb;
     private readonly PostgresDatabaseContext _postgresDb;
     private readonly MariaDbDatabaseContext _mariaDb;
@@ -17,7 +17,7 @@ public class BlogController : ControllerBase
     private readonly IOperationResolver<Blog, BlogFilters, BlogSorters> _resolver;
 
     public BlogController(
-        DatabaseContext db,
+        SqliteDatabaseContext db,
         SqlServerDatabaseContext sqlServerDb,
         PostgresDatabaseContext postgresDb,
         MariaDbDatabaseContext mariaDb,
@@ -130,4 +130,4 @@ public class BlogController : ControllerBase
     }
 }
 
-public record class Input(BlogFilters Filters, IEnumerable<BlogSorters> Sorters, PagingOptions Paging);
+public record Input(BlogFilters Filters, IEnumerable<BlogSorters> Sorters, PagingOptions Paging);

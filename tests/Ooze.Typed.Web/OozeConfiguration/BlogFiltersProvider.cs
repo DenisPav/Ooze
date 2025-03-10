@@ -1,13 +1,15 @@
 ﻿using Ooze.Typed.EntityFrameworkCore.Extensions;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Filters.Async;
+using Ooze.Typed.Query;
 using Ooze.Typed.Web.Entities;
 
 public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>, IAsyncFilterProvider<Blog, BlogFilters>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public BlogFiltersProvider(IHttpContextAccessor httpContextAccessor)
+    public BlogFiltersProvider(
+        IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
@@ -39,6 +41,7 @@ public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>, IAsyncFil
                 await Task.Delay(1);
                 return blog => blog.Name == filter.Name;
             })
+            // .Add(filter => string.IsNullOrEmpty(filter.Query) == false, filter => _blogQueryHandler.Apply(null, filter.Query))
             .Build();
         
         return ValueTask.FromResult(filters);

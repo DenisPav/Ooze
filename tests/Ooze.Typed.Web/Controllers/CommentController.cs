@@ -8,11 +8,11 @@ namespace Ooze.Typed.Web.Controllers;
 [ApiController, Route("comments")]
 public class CommentController : ControllerBase
 {
-    private readonly DatabaseContext _db;
+    private readonly SqliteDatabaseContext _db;
     private readonly IOperationResolver<Comment, CommentFilters, CommentSorters> _resolver;
 
     public CommentController(
-        DatabaseContext db,
+        SqliteDatabaseContext db,
         IOperationResolver<Comment, CommentFilters, CommentSorters> resolver)
     {
         _db = db;

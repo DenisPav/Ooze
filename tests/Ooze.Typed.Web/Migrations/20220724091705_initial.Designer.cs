@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Ooze.Typed.Web.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
+    [DbContext(typeof(SqliteDatabaseContext))]
     [Migration("20220724091705_initial")]
     partial class initial
     {

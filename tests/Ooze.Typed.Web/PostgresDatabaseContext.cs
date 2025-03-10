@@ -9,6 +9,6 @@ public class PostgresDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly, type => type.Namespace == "Ooze.Typed.Web.Entities.PostgresConfigurations");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SqliteDatabaseContext).Assembly, type => type.Namespace == "Ooze.Typed.Web.Entities.PostgresConfigurations");
     }
 }

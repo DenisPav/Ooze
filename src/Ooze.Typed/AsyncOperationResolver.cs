@@ -1,10 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Ooze.Typed.Filters;
 using Ooze.Typed.Filters.Async;
 using Ooze.Typed.Paging;
-using Ooze.Typed.Sorters;
 using Ooze.Typed.Sorters.Async;
 
 namespace Ooze.Typed;
@@ -36,7 +34,7 @@ internal class AsyncOperationResolver(
         IQueryable<TEntity> query,
         IEnumerable<TSorters>? sorters)
     {
-        sorters ??= Enumerable.Empty<TSorters>();
+        sorters ??= [];
         if (sorters.Any() == false)
         {
             log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);
@@ -160,7 +158,6 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
                     .ConfigureAwait(false)
             };
         }
-
 
         if (_resolverData.Paging is { } paging)
         {

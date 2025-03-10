@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.Sqlite\Ooze.Typed.EntityFrameworkCore.Sqlite.csproj" />
     <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.SqlServer\Ooze.Typed.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Ooze.Typed.Query\Ooze.Typed.Query.csproj" />
     <ProjectReference Include="..\..\src\Ooze.Typed\Ooze.Typed.csproj" />
   </ItemGroup>
 

@@ -16,7 +16,7 @@ public class SeedService : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         using var scope = _scopeFactory.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var db = scope.ServiceProvider.GetRequiredService<SqliteDatabaseContext>();
         var sqlServerDb = scope.ServiceProvider.GetRequiredService<SqlServerDatabaseContext>();
         var postgresDb = scope.ServiceProvider.GetRequiredService<PostgresDatabaseContext>();
         var mariaDb = scope.ServiceProvider.GetRequiredService<MariaDbDatabaseContext>();

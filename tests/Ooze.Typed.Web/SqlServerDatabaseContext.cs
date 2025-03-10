@@ -10,6 +10,6 @@ public class SqlServerDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly, type => type.Namespace == "Ooze.Typed.Web.Entities.SqlServerConfigurations");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SqliteDatabaseContext).Assembly, type => type.Namespace == "Ooze.Typed.Web.Entities.SqlServerConfigurations");
     }
 }

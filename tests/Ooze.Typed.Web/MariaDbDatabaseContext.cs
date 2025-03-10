@@ -9,6 +9,6 @@ public class MariaDbDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly, type => type.Namespace == "Ooze.Typed.Web.Entities.MariaDbConfigurations");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SqliteDatabaseContext).Assembly, type => type.Namespace == "Ooze.Typed.Web.Entities.MariaDbConfigurations");
     }
 }
