@@ -10,7 +10,7 @@ internal class QueryFilterBuilder<TEntity> : IQueryFilterBuilder<TEntity>
 
     public IQueryFilterBuilder<TEntity> Add<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
-        string name = null)
+        string? name = null)
     {
         if (dataExpression.Body is not MemberExpression memberExpression)
         {
@@ -31,7 +31,7 @@ internal class QueryFilterBuilder<TEntity> : IQueryFilterBuilder<TEntity>
     private static string GetExpressionName(MemberExpression expression)
         => expression.Member.Name;
 
-    public IEnumerable<IQueryFilterDefinition<TEntity>> Build()
+    public IEnumerable<QueryFilterDefinition<TEntity>> Build()
     {
         return _filterDefinitions;
     }

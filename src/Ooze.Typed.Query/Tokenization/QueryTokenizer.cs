@@ -87,7 +87,7 @@ internal static class QueryTokenizer
             select Unit.Value);
     }
 
-    public static IEnumerable<Token<QueryToken>> Tokenize<TEntity>(
+    public static ICollection<Token<QueryToken>> Tokenize<TEntity>(
         IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
         string queryDefinition)
     {
@@ -111,7 +111,7 @@ internal static class QueryTokenizer
         var result = internalTokenizer.TryTokenize(queryDefinition);
 
         if (result.HasValue)
-            return result.Value;
+            return result.Value.ToArray();
 
         throw new QueryTokenizerException("Failed to parse query definition");
     }

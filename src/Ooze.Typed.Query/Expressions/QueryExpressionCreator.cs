@@ -13,9 +13,9 @@ internal static class QueryExpressionCreator
     private const string Where = nameof(Where);
 
     public static ExpressionResult Create<TEntity>(
-        IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
+        ICollection<QueryFilterDefinition<TEntity>> filterDefinitions,
         Expression queryExpression,
-        IEnumerable<Token<QueryToken>> queryDefinitionTokens)
+        ICollection<Token<QueryToken>> queryDefinitionTokens)
     {
         var parameterExpression = Expression.Parameter(
             typeof(TEntity),
@@ -33,7 +33,7 @@ internal static class QueryExpressionCreator
 
             var finalExpression = Expression.Lambda<Func<TEntity, bool>>(createdExpr, parameterExpression);
             var quoteExpr = Expression.Quote(finalExpression);
-            var callExpr = Expression.Call(typeof(Queryable), Where, new[] { typeof(TEntity) }, queryExpression,
+            var callExpr = Expression.Call(typeof(Queryable), Where, [typeof(TEntity)], queryExpression,
                 quoteExpr);
 
             return new ExpressionResult(callExpr, null);
@@ -44,8 +44,8 @@ internal static class QueryExpressionCreator
         }
     }
 
-    private static Expression CreateExpression<TEntity>(
-        IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
+    private static Expression? CreateExpression<TEntity>(
+        ICollection<QueryFilterDefinition<TEntity>> filterDefinitions,
         ParameterExpression parameterExpression,
         Stack<Token<QueryToken>> tokenStack,
         Stack<Token<QueryToken>> bracketStack)
@@ -88,7 +88,7 @@ internal static class QueryExpressionCreator
         return CreateLogicalExpression(logicalOperationExpressions, propertyExpressions);
     }
 
-    private static Expression CreateLogicalExpression(
+    private static Expression? CreateLogicalExpression(
         IList<Func<Expression, Expression, Expression>> logicalOperationExpressions,
         IEnumerable<Expression> propertyExpressions)
     {
@@ -139,7 +139,6 @@ internal static class QueryExpressionCreator
 
         var value = token.ToStringValue();
         var clearValue = value.Replace(QueryTokenizer.ValueTick, string.Empty);
-        // var convertedValue = Convert.ChangeType(clearValue, property.PropertyType);
         var convertedValue = TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(clearValue);
         var valueExpression = Expression.Constant(convertedValue);
 
@@ -148,4 +147,4 @@ internal static class QueryExpressionCreator
     }
 }
 
-internal record ExpressionResult(Expression Expression, Exception Error);
+internal record ExpressionResult(Expression? Expression, Exception? Error);

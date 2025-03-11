@@ -6,9 +6,9 @@ namespace Ooze.Typed.Query.Expressions;
 
 internal static class Operations
 {
-    private static readonly MethodInfo StartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
-    private static readonly MethodInfo EndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
-    private static readonly MethodInfo Contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+    private static readonly MethodInfo StartsWith = typeof(string).GetMethod("StartsWith", [typeof(string)]);
+    private static readonly MethodInfo EndsWith = typeof(string).GetMethod("EndsWith", [typeof(string)]);
+    private static readonly MethodInfo Contains = typeof(string).GetMethod("Contains", [typeof(string)]);
 
     public static readonly IReadOnlyDictionary<string, Func<Expression, Expression, Expression>>
         OperatorExpressionFactories = new Dictionary<string, Func<Expression, Expression, Expression>>()

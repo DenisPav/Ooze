@@ -3,18 +3,18 @@ using Ooze.Typed.Query.Filters;
 
 namespace Ooze.Typed.Query.Extensions;
 
-internal class OozeQueryBuilder : IOozeQueryBuilder
+internal class QueryServicesBuilder : IQueryBuilder
 {
-    private static readonly Type QueryFilterProviderType = typeof(IOozeQueryFilterProvider<>);
+    private static readonly Type QueryFilterProviderType = typeof(IQueryFilterProvider<>);
     private readonly IServiceCollection _services;
 
-    public OozeQueryBuilder(IServiceCollection services)
+    public QueryServicesBuilder(IServiceCollection services)
     {
         _services = services;
-        _services.AddScoped(typeof(IOozeQueryHandler<>), typeof(OozeQueryHandler<>));
+        _services.AddScoped(typeof(IQueryHandler<>), typeof(QueryHandler<>));
     }
     
-    public IOozeQueryBuilder AddFilterProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    public IQueryBuilder AddFilterProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
         var queryFilterType = typeof(TProvider);
         var implementedInterfaces = queryFilterType.GetInterfaces()

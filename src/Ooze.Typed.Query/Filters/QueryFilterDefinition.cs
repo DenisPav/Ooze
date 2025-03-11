@@ -2,8 +2,8 @@
 
 namespace Ooze.Typed.Query.Filters;
 
-internal class QueryFilterDefinition<TEntity> : IQueryFilterDefinition<TEntity>
+public class QueryFilterDefinition<TEntity>
 {
-    public string Name { get; init; }
+    public string? Name { get; init; }
     public PropertyInfo TargetProperty { get; init; }
 }
