@@ -4,5 +4,5 @@ namespace Ooze.Typed.Query.Extensions;
 
 public interface IQueryBuilder
 {
-    IQueryBuilder AddFilterProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped);
+    IQueryBuilder AddQueryProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped);
 }

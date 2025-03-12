@@ -15,7 +15,7 @@ internal class QueryHandler<TEntity>(
         string queryDefinition)
     {
         log.LogDebug("Starting expression translation for query: [{query}]", queryDefinition);
-        var filterDefinitions = filterProviders.SelectMany(provider => provider.GetFilters())
+        var filterDefinitions = filterProviders.SelectMany(provider => provider.GetMappings())
             .ToArray();
 
         var result = QueryTokenizer.Tokenize(filterDefinitions, queryDefinition);

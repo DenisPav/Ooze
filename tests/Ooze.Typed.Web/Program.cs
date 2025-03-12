@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Extensions;
+using Ooze.Typed.Query.Extensions;
 using Ooze.Typed.Web;
 using Ooze.Typed.Web.Filters;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
@@ -23,6 +24,9 @@ builder.Services.AddOozeTyped()
     .Add<BlogSortersProvider>()
     .Add<CommentsSortersProvider>()
     .Add<CommentFiltersProvider>();
+builder.Services.AddOozeQuery()
+    .AddQueryProvider<BlogFiltersProvider>();
+
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<ApiBehaviorOptions>(opts => { opts.SuppressModelStateInvalidFilter = true; });

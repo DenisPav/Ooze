@@ -3,18 +3,11 @@ using Ooze.Typed.Query.Filters;
 
 namespace Ooze.Typed.Query.Extensions;
 
-internal class QueryServicesBuilder : IQueryBuilder
+internal class QueryServicesBuilder(IServiceCollection services) : IQueryBuilder
 {
     private static readonly Type QueryFilterProviderType = typeof(IQueryFilterProvider<>);
-    private readonly IServiceCollection _services;
 
-    public QueryServicesBuilder(IServiceCollection services)
-    {
-        _services = services;
-        _services.AddScoped(typeof(IQueryHandler<>), typeof(QueryHandler<>));
-    }
-    
-    public IQueryBuilder AddFilterProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    public IQueryBuilder AddQueryProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
         var queryFilterType = typeof(TProvider);
         var implementedInterfaces = queryFilterType.GetInterfaces()
@@ -25,9 +18,18 @@ internal class QueryServicesBuilder : IQueryBuilder
         
         if (queryFilterProvider is not null)
         {
-            _services.Add(new ServiceDescriptor(queryFilterProvider, queryFilterType, lifetime));
+            services.Add(new ServiceDescriptor(queryFilterProvider, queryFilterType, lifetime));
         }
         
+        return this;
+    }
+
+    internal IQueryBuilder AddCommonServices()
+    {
+        services.AddScoped(typeof(IQueryOperationResolver), typeof(QueryOperationResolver));
+        services.AddScoped(typeof(IQueryOperationResolver<,,>), typeof(QueryOperationResolver<,,>));
+        services.AddScoped(typeof(IQueryHandler<>), typeof(QueryHandler<>));
+
         return this;
     }
 }

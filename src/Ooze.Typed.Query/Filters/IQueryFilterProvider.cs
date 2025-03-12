@@ -2,5 +2,5 @@
 
 public interface IQueryFilterProvider<TEntity>
 {
-    IEnumerable<QueryFilterDefinition<TEntity>> GetFilters();
+    IEnumerable<QueryFilterDefinition<TEntity>> GetMappings();
 }

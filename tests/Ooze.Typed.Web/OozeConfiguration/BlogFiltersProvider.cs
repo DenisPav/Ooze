@@ -2,9 +2,13 @@
 using Ooze.Typed.Filters;
 using Ooze.Typed.Filters.Async;
 using Ooze.Typed.Query;
+using Ooze.Typed.Query.Filters;
 using Ooze.Typed.Web.Entities;
 
-public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>, IAsyncFilterProvider<Blog, BlogFilters>
+public class BlogFiltersProvider : 
+    IFilterProvider<Blog, BlogFilters>, 
+    IAsyncFilterProvider<Blog, BlogFilters>,
+    IQueryFilterProvider<Blog>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -45,5 +49,12 @@ public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>, IAsyncFil
             .Build();
         
         return ValueTask.FromResult(filters);
+    }
+
+    public IEnumerable<QueryFilterDefinition<Blog>> GetMappings()
+    {
+        return QueryFilters.CreateFor<Blog>()
+            .Add(x => x.Name, "neeejm")
+            .Build();
     }
 }
