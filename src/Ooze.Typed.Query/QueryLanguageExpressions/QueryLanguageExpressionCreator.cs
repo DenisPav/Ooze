@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Linq.Expressions;
+using Ooze.Typed.Expressions;
 using Ooze.Typed.Query.Exceptions;
 using Ooze.Typed.Query.Filters;
 using Ooze.Typed.Query.Tokenization;
 using Superpower.Model;
 
-namespace Ooze.Typed.Query.Expressions;
+namespace Ooze.Typed.Query.QueryLanguageExpressions;
 
 internal static class QueryLanguageExpressionCreator
 {
@@ -140,7 +141,7 @@ internal static class QueryLanguageExpressionCreator
         var value = token.ToStringValue();
         var clearValue = value.Replace(QueryLanguageTokenizer.ValueTick, string.Empty);
         var convertedValue = TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(clearValue);
-        var valueExpression = Expression.Constant(convertedValue);
+        var valueExpression = BasicExpressions.GetWrappedConstantExpression(convertedValue);
 
         var finalOperationExpression = operationExpressionFactory(currentMemberAccess, valueExpression);
         propertyExpressions.Add(finalOperationExpression);

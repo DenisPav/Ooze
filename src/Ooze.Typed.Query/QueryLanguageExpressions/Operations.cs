@@ -2,7 +2,7 @@
 using System.Reflection;
 using Ooze.Typed.Query.Tokenization;
 
-namespace Ooze.Typed.Query.Expressions;
+namespace Ooze.Typed.Query.QueryLanguageExpressions;
 
 internal static class Operations
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Ooze.Typed.Query.Expressions;
 using Ooze.Typed.Query.Filters;
+using Ooze.Typed.Query.QueryLanguageExpressions;
 using Ooze.Typed.Query.Tokenization;
 
 namespace Ooze.Typed.Query;
