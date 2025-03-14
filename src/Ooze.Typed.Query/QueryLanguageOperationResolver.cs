@@ -30,7 +30,7 @@ internal class QueryLanguageOperationResolver(
         Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
         CursorPagingOptions<TAfter>? pagingOptions)
         => rootOperationResolver.PageWithCursor(query, cursorPropertyExpression, pagingOptions);
-
+    
     public IQueryable<TEntity> FilterWithQueryLanguage<TEntity>(
         IQueryable<TEntity> queryable,
         string? query)
@@ -54,41 +54,24 @@ internal class QueryLanguageOperationResolver<TEntity, TFilters, TSorters>(
     ILogger<QueryLanguageOperationResolver<TEntity, TFilters, TSorters>> log)
     : IQueryLanguageOperationResolver<TEntity, TFilters, TSorters>
 {
-    public IOperationResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
-        => rootOperationResolver.WithQuery(query);
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
+    {
+        rootOperationResolver.WithQuery(query);
+        return this;
+    }
 
-    public IOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters> sorters)
-        => rootOperationResolver.Sort(sorters);
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters> sorters)
+    {
+        rootOperationResolver.Sort(sorters);
+        return this;
+    }
 
-    public IOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters filters)
-        => rootOperationResolver.Filter(filters);
-
-    public IOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions)
-        => rootOperationResolver.Page(pagingOptions);
-
-    public IOperationResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
-        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
-        CursorPagingOptions<TAfter>? pagingOptions)
-        => rootOperationResolver.PageWithCursor(cursorPropertyExpression, pagingOptions);
-
-    public IQueryable<TEntity> Apply()
-        => rootOperationResolver.Apply();
-
-    public IQueryable<TEntity> Apply(
-        IQueryable<TEntity> query,
-        IEnumerable<TSorters> sorters,
-        TFilters filters,
-        PagingOptions pagingOptions)
-        => rootOperationResolver.Apply(query, sorters, filters, pagingOptions);
-
-    public IQueryable<TEntity> Apply<TAfter, TProperty>(
-        IQueryable<TEntity> query,
-        IEnumerable<TSorters> sorters,
-        TFilters filters,
-        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
-        CursorPagingOptions<TAfter>? pagingOptions)
-        => rootOperationResolver.Apply(query, sorters, filters, cursorPropertyExpression, pagingOptions);
-
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters filters)
+    {
+        rootOperationResolver.Filter(filters);
+        return this;
+    }
+    
     public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string query)
     {
         var queryable = Apply();
@@ -101,5 +84,55 @@ internal class QueryLanguageOperationResolver<TEntity, TFilters, TSorters>(
         queryable = queryHandler.Apply(queryable, query);
         WithQuery(queryable);
         return this;
+    }
+
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions)
+    {
+         rootOperationResolver.Page(pagingOptions);
+         return this;
+    }
+
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions)
+    {
+        rootOperationResolver.PageWithCursor(cursorPropertyExpression, pagingOptions);
+        return this;
+    }
+
+    public IQueryable<TEntity> Apply()
+        => rootOperationResolver.Apply();
+
+    public IQueryable<TEntity> Apply(
+        IQueryable<TEntity> query,
+        IEnumerable<TSorters> sorters,
+        TFilters filters,
+        string queryLanguageQuery,
+        PagingOptions pagingOptions)
+    {
+        rootOperationResolver.WithQuery(query)
+            .Sort(sorters)
+            .Filter(filters);
+        FilterWithQueryLanguage(queryLanguageQuery);
+        
+        return rootOperationResolver.Page(pagingOptions)
+            .Apply();
+    }
+
+    public IQueryable<TEntity> Apply<TAfter, TProperty>(
+        IQueryable<TEntity> query,
+        IEnumerable<TSorters> sorters,
+        TFilters filters,
+        string queryLanguageQuery,
+        Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
+        CursorPagingOptions<TAfter>? pagingOptions)
+    {
+        rootOperationResolver.WithQuery(query)
+            .Sort(sorters)
+            .Filter(filters);
+        FilterWithQueryLanguage(queryLanguageQuery);
+            
+        return rootOperationResolver.PageWithCursor(cursorPropertyExpression, pagingOptions)
+            .Apply();
     }
 }
