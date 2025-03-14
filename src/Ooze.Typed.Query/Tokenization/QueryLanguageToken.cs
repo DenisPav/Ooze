@@ -1,6 +1,6 @@
 ﻿namespace Ooze.Typed.Query.Tokenization;
 
-internal enum QueryToken
+internal enum QueryLanguageToken
 {
     BracketLeft,
     BracketRight,

@@ -5,10 +5,10 @@ using Ooze.Typed.Query.Tokenization;
 
 namespace Ooze.Typed.Query;
 
-internal class QueryHandler<TEntity>(
-    IEnumerable<IQueryFilterProvider<TEntity>> filterProviders,
-    ILogger<QueryHandler<TEntity>> log)
-    : IQueryHandler<TEntity>
+internal class QueryLanguageHandler<TEntity>(
+    IEnumerable<IQueryLanguageFilterProvider<TEntity>> filterProviders,
+    ILogger<QueryLanguageHandler<TEntity>> log)
+    : IQueryLanguageHandler<TEntity>
 {
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
@@ -18,9 +18,9 @@ internal class QueryHandler<TEntity>(
         var filterDefinitions = filterProviders.SelectMany(provider => provider.GetMappings())
             .ToArray();
 
-        var result = QueryTokenizer.Tokenize(filterDefinitions, queryDefinition);
+        var result = QueryLanguageTokenizer.Tokenize(filterDefinitions, queryDefinition);
         log.LogDebug("Query tokenization finished.");
-        var expressionResult = QueryExpressionCreator.Create(filterDefinitions, query.Expression, result);
+        var expressionResult = QueryLanguageExpressionCreator.Create(filterDefinitions, query.Expression, result);
         if (expressionResult.Error != null)
             throw expressionResult.Error;
 

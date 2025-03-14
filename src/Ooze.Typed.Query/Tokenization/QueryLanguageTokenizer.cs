@@ -7,7 +7,7 @@ using Superpower.Tokenizers;
 
 namespace Ooze.Typed.Query.Tokenization;
 
-internal static class QueryTokenizer
+internal static class QueryLanguageTokenizer
 {
     #region BracketParsers
 
@@ -58,7 +58,7 @@ internal static class QueryTokenizer
 
     #endregion
 
-    static QueryTokenizer()
+    static QueryLanguageTokenizer()
     {
         var operations = new[]
         {
@@ -87,8 +87,8 @@ internal static class QueryTokenizer
             select Unit.Value);
     }
 
-    public static ICollection<Token<QueryToken>> Tokenize<TEntity>(
-        IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
+    public static ICollection<Token<QueryLanguageToken>> Tokenize<TEntity>(
+        IEnumerable<QueryLanguageFilterDefinition<TEntity>> filterDefinitions,
         string queryDefinition)
     {
         var propertyFieldNameParser = filterDefinitions.Aggregate((TextParser<TextSpan>)null, (agg, current) =>
@@ -99,14 +99,14 @@ internal static class QueryTokenizer
                 : agg.Or(currentNameParser);
         });
 
-        var internalTokenizer = new TokenizerBuilder<QueryToken>()
+        var internalTokenizer = new TokenizerBuilder<QueryLanguageToken>()
             .Ignore(Span.WhiteSpace)
-            .Match(LeftBracketParser, QueryToken.BracketLeft)
-            .Match(RightBracketParser, QueryToken.BracketRight)
-            .Match(propertyFieldNameParser, QueryToken.Property)
-            .Match(OperatorParser, QueryToken.Operation)
-            .Match(LogicalOperatorParser, QueryToken.LogicalOperation)
-            .Match(ValueParser, QueryToken.Value)
+            .Match(LeftBracketParser, QueryLanguageToken.BracketLeft)
+            .Match(RightBracketParser, QueryLanguageToken.BracketRight)
+            .Match(propertyFieldNameParser, QueryLanguageToken.Property)
+            .Match(OperatorParser, QueryLanguageToken.Operation)
+            .Match(LogicalOperatorParser, QueryLanguageToken.LogicalOperation)
+            .Match(ValueParser, QueryLanguageToken.Value)
             .Build();
         var result = internalTokenizer.TryTokenize(queryDefinition);
 

@@ -7,23 +7,23 @@ using Superpower.Model;
 
 namespace Ooze.Typed.Query.Expressions;
 
-internal static class QueryExpressionCreator
+internal static class QueryLanguageExpressionCreator
 {
     private const string ParameterName = "x";
     private const string Where = nameof(Where);
 
     public static ExpressionResult Create<TEntity>(
-        ICollection<QueryFilterDefinition<TEntity>> filterDefinitions,
+        ICollection<QueryLanguageFilterDefinition<TEntity>> filterDefinitions,
         Expression queryExpression,
-        ICollection<Token<QueryToken>> queryDefinitionTokens)
+        ICollection<Token<QueryLanguageToken>> queryDefinitionTokens)
     {
         var parameterExpression = Expression.Parameter(
             typeof(TEntity),
             ParameterName
         );
 
-        var tokenStack = new Stack<Token<QueryToken>>(queryDefinitionTokens.Reverse());
-        var bracketStack = new Stack<Token<QueryToken>>();
+        var tokenStack = new Stack<Token<QueryLanguageToken>>(queryDefinitionTokens.Reverse());
+        var bracketStack = new Stack<Token<QueryLanguageToken>>();
 
         try
         {
@@ -45,10 +45,10 @@ internal static class QueryExpressionCreator
     }
 
     private static Expression? CreateExpression<TEntity>(
-        ICollection<QueryFilterDefinition<TEntity>> filterDefinitions,
+        ICollection<QueryLanguageFilterDefinition<TEntity>> filterDefinitions,
         ParameterExpression parameterExpression,
-        Stack<Token<QueryToken>> tokenStack,
-        Stack<Token<QueryToken>> bracketStack)
+        Stack<Token<QueryLanguageToken>> tokenStack,
+        Stack<Token<QueryLanguageToken>> bracketStack)
     {
         var propertyExpressions = new List<Expression>();
         var logicalOperationExpressions = new List<Func<Expression, Expression, Expression>>();
@@ -58,29 +58,29 @@ internal static class QueryExpressionCreator
             var token = tokenStack.Peek();
             switch (token.Kind)
             {
-                case QueryToken.Property:
+                case QueryLanguageToken.Property:
                     CreateMemberExpression(filterDefinitions, parameterExpression, tokenStack,
                         propertyExpressions);
                     break;
-                case QueryToken.LogicalOperation:
+                case QueryLanguageToken.LogicalOperation:
                     tokenStack.Pop();
                     logicalOperationExpressions.Add(Expression.AndAlso);
                     break;
-                case QueryToken.BracketLeft:
+                case QueryLanguageToken.BracketLeft:
                     tokenStack.Pop();
                     bracketStack.Push(token);
                     var subExpr = CreateExpression(filterDefinitions, parameterExpression, tokenStack, bracketStack);
                     propertyExpressions.Add(subExpr);
                     break;
-                case QueryToken.BracketRight:
+                case QueryLanguageToken.BracketRight:
                     tokenStack.Pop();
                     if (bracketStack.Any() == false)
                         throw new ExpressionCreatorException("no matching start bracket");
 
                     bracketStack.Pop();
                     return CreateLogicalExpression(logicalOperationExpressions, propertyExpressions);
-                case QueryToken.Operation:
-                case QueryToken.Value:
+                case QueryLanguageToken.Operation:
+                case QueryLanguageToken.Value:
                     throw new ExpressionCreatorException("wrong order of tokens found in query");
             }
         }
@@ -122,9 +122,9 @@ internal static class QueryExpressionCreator
     /// <param name="propertyExpressions">List of member current member expressions</param>
     /// <typeparam name="TEntity">Type of Queryable instance</typeparam>
     private static void CreateMemberExpression<TEntity>(
-        IEnumerable<QueryFilterDefinition<TEntity>> filterDefinitions,
+        IEnumerable<QueryLanguageFilterDefinition<TEntity>> filterDefinitions,
         ParameterExpression parameterExpression,
-        Stack<Token<QueryToken>> tokens,
+        Stack<Token<QueryLanguageToken>> tokens,
         ICollection<Expression> propertyExpressions)
     {
         var token = tokens.Pop();
@@ -138,7 +138,7 @@ internal static class QueryExpressionCreator
         token = tokens.Pop();
 
         var value = token.ToStringValue();
-        var clearValue = value.Replace(QueryTokenizer.ValueTick, string.Empty);
+        var clearValue = value.Replace(QueryLanguageTokenizer.ValueTick, string.Empty);
         var convertedValue = TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(clearValue);
         var valueExpression = Expression.Constant(convertedValue);
 

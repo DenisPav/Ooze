@@ -2,7 +2,7 @@
 
 namespace Ooze.Typed.Query.Filters;
 
-public class QueryFilterDefinition<TEntity>
+public class QueryLanguageFilterDefinition<TEntity>
 {
     public string? Name { get; init; }
     public PropertyInfo TargetProperty { get; init; }

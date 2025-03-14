@@ -3,11 +3,11 @@ using Ooze.Typed.Query.Filters;
 
 namespace Ooze.Typed.Query.Extensions;
 
-internal class QueryServicesBuilder(IServiceCollection services) : IQueryBuilder
+internal class QueryLanguageServicesBuilder(IServiceCollection services) : IQueryLanguageBuilder
 {
-    private static readonly Type QueryFilterProviderType = typeof(IQueryFilterProvider<>);
+    private static readonly Type QueryFilterProviderType = typeof(IQueryLanguageFilterProvider<>);
 
-    public IQueryBuilder AddQueryProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    public IQueryLanguageBuilder AddQueryProvider<TProvider>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
         var queryFilterType = typeof(TProvider);
         var implementedInterfaces = queryFilterType.GetInterfaces()
@@ -24,11 +24,11 @@ internal class QueryServicesBuilder(IServiceCollection services) : IQueryBuilder
         return this;
     }
 
-    internal IQueryBuilder AddCommonServices()
+    internal IQueryLanguageBuilder AddCommonServices()
     {
-        services.AddScoped(typeof(IQueryOperationResolver), typeof(QueryOperationResolver));
-        services.AddScoped(typeof(IQueryOperationResolver<,,>), typeof(QueryOperationResolver<,,>));
-        services.AddScoped(typeof(IQueryHandler<>), typeof(QueryHandler<>));
+        services.AddScoped(typeof(IQueryLanguageOperationResolver), typeof(QueryLanguageOperationResolver));
+        services.AddScoped(typeof(IQueryLanguageOperationResolver<,,>), typeof(QueryLanguageOperationResolver<,,>));
+        services.AddScoped(typeof(IQueryLanguageHandler<>), typeof(QueryLanguageHandler<>));
 
         return this;
     }

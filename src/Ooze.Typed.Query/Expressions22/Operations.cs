@@ -13,15 +13,15 @@ internal static class Operations
     public static readonly IReadOnlyDictionary<string, Func<Expression, Expression, Expression>>
         OperatorExpressionFactories = new Dictionary<string, Func<Expression, Expression, Expression>>()
         {
-            { QueryTokenizer.GreaterThan, Expression.GreaterThan },
-            { QueryTokenizer.GreaterThanOrEqual, Expression.GreaterThanOrEqual },
-            { QueryTokenizer.LessThan, Expression.LessThan },
-            { QueryTokenizer.LessThanOrEqual, Expression.LessThanOrEqual },
-            { QueryTokenizer.EqualTo, Expression.Equal },
-            { QueryTokenizer.NotEqualTo, Expression.NotEqual },
-            { QueryTokenizer.StartsWith, CreateStartsWithExpression },
-            { QueryTokenizer.EndsWith, CreateEndsWithExpression },
-            { QueryTokenizer.Contains, CreateContainsExpression },
+            { QueryLanguageTokenizer.GreaterThan, Expression.GreaterThan },
+            { QueryLanguageTokenizer.GreaterThanOrEqual, Expression.GreaterThanOrEqual },
+            { QueryLanguageTokenizer.LessThan, Expression.LessThan },
+            { QueryLanguageTokenizer.LessThanOrEqual, Expression.LessThanOrEqual },
+            { QueryLanguageTokenizer.EqualTo, Expression.Equal },
+            { QueryLanguageTokenizer.NotEqualTo, Expression.NotEqual },
+            { QueryLanguageTokenizer.StartsWith, CreateStartsWithExpression },
+            { QueryLanguageTokenizer.EndsWith, CreateEndsWithExpression },
+            { QueryLanguageTokenizer.Contains, CreateContainsExpression },
         };
 
     private static Expression CreateStartsWithExpression(Expression left, Expression right) =>

@@ -5,10 +5,10 @@ using Ooze.Typed.Paging;
 
 namespace Ooze.Typed.Query;
 
-internal class QueryOperationResolver(
+internal class QueryLanguageOperationResolver(
     IOperationResolver rootOperationResolver,
     IServiceProvider serviceProvider,
-    ILogger<QueryOperationResolver> log) : IQueryOperationResolver
+    ILogger<QueryLanguageOperationResolver> log) : IQueryLanguageOperationResolver
 {
     public IQueryable<TEntity> Sort<TEntity, TSorter>(
         IQueryable<TEntity> query,
@@ -31,7 +31,7 @@ internal class QueryOperationResolver(
         CursorPagingOptions<TAfter>? pagingOptions)
         => rootOperationResolver.PageWithCursor(query, cursorPropertyExpression, pagingOptions);
 
-    public IQueryable<TEntity> Query<TEntity>(
+    public IQueryable<TEntity> FilterWithQueryLanguage<TEntity>(
         IQueryable<TEntity> queryable,
         string? query)
     {
@@ -41,18 +41,18 @@ internal class QueryOperationResolver(
             return queryable;
         }
 
-        var queryHandler = serviceProvider.GetRequiredService<IQueryHandler<TEntity>>();
+        var queryHandler = serviceProvider.GetRequiredService<IQueryLanguageHandler<TEntity>>();
         queryable = queryHandler.Apply(queryable, query);
 
         return queryable;
     }
 }
 
-internal class QueryOperationResolver<TEntity, TFilters, TSorters>(
+internal class QueryLanguageOperationResolver<TEntity, TFilters, TSorters>(
     IOperationResolver<TEntity, TFilters, TSorters> rootOperationResolver,
-    IQueryHandler<TEntity> queryHandler,
-    ILogger<QueryOperationResolver<TEntity, TFilters, TSorters>> log)
-    : IQueryOperationResolver<TEntity, TFilters, TSorters>
+    IQueryLanguageHandler<TEntity> queryHandler,
+    ILogger<QueryLanguageOperationResolver<TEntity, TFilters, TSorters>> log)
+    : IQueryLanguageOperationResolver<TEntity, TFilters, TSorters>
 {
     public IOperationResolver<TEntity, TFilters, TSorters> WithQuery(IQueryable<TEntity> query)
         => rootOperationResolver.WithQuery(query);
@@ -89,7 +89,7 @@ internal class QueryOperationResolver<TEntity, TFilters, TSorters>(
         CursorPagingOptions<TAfter>? pagingOptions)
         => rootOperationResolver.Apply(query, sorters, filters, cursorPropertyExpression, pagingOptions);
 
-    public IQueryOperationResolver<TEntity, TFilters, TSorters> Query(string query)
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string query)
     {
         var queryable = Apply();
         if (string.IsNullOrEmpty(query))
