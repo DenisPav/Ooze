@@ -3,6 +3,7 @@ using Ooze.Typed.Query.Exceptions;
 
 namespace Ooze.Typed.Query.Filters;
 
+/// <inheritdoc />
 internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder<TEntity>
 {
     private readonly IList<QueryLanguageFilterDefinition<TEntity>> _filterDefinitions =

@@ -5,6 +5,7 @@ using Ooze.Typed.Paging;
 
 namespace Ooze.Typed.Query;
 
+/// <inheritdoc />
 internal class QueryLanguageOperationResolver(
     IOperationResolver rootOperationResolver,
     IServiceProvider serviceProvider,
@@ -48,6 +49,7 @@ internal class QueryLanguageOperationResolver(
     }
 }
 
+/// <inheritdoc />
 internal class QueryLanguageOperationResolver<TEntity, TFilters, TSorters>(
     IOperationResolver<TEntity, TFilters, TSorters> rootOperationResolver,
     IQueryLanguageHandler<TEntity> queryHandler,

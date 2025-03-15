@@ -6,9 +6,10 @@ namespace Ooze.Typed.Query.QueryLanguageExpressions;
 
 internal static class Operations
 {
-    private static readonly MethodInfo StartsWith = typeof(string).GetMethod("StartsWith", [typeof(string)]);
-    private static readonly MethodInfo EndsWith = typeof(string).GetMethod("EndsWith", [typeof(string)]);
-    private static readonly MethodInfo Contains = typeof(string).GetMethod("Contains", [typeof(string)]);
+    private static readonly Type StringType = typeof(string);
+    private static readonly MethodInfo StartsWith = StringType.GetMethod("StartsWith", [StringType])!;
+    private static readonly MethodInfo EndsWith = StringType.GetMethod("EndsWith", [StringType])!;
+    private static readonly MethodInfo Contains = StringType.GetMethod("Contains", [StringType])!;
 
     public static readonly IReadOnlyDictionary<string, Func<Expression, Expression, Expression>>
         OperatorExpressionFactories = new Dictionary<string, Func<Expression, Expression, Expression>>
@@ -24,10 +25,18 @@ internal static class Operations
             { QueryLanguageTokenizer.Contains, CreateContainsExpression },
         };
 
-    private static Expression CreateStartsWithExpression(Expression left, Expression right) =>
-        Expression.Call(left, StartsWith, right);
-    private static Expression CreateEndsWithExpression(Expression left, Expression right) =>
-        Expression.Call(left, EndsWith, right);
-    private static Expression CreateContainsExpression(Expression left, Expression right) =>
-        Expression.Call(left, Contains, right);
+    private static Expression CreateStartsWithExpression(
+        Expression left,
+        Expression right)
+        => Expression.Call(left, StartsWith, right);
+
+    private static Expression CreateEndsWithExpression(
+        Expression left,
+        Expression right)
+        => Expression.Call(left, EndsWith, right);
+
+    private static Expression CreateContainsExpression(
+        Expression left,
+        Expression right)
+        => Expression.Call(left, Contains, right);
 }
