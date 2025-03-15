@@ -13,12 +13,12 @@ public class SortDefinition<TEntity, TSorters>
     /// Sorting expression
     /// </summary>
     public LambdaExpression DataExpression { get; internal set; } = null!;
-    
+
     /// <summary>
     /// Delegate which decides if the sorter should be applied
     /// </summary>
     public Func<TSorters, bool> ShouldRun { get; set; } = null!;
-    
+
     /// <summary>
     /// Delegate which provides sorting direction
     /// </summary>

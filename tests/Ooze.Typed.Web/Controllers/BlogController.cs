@@ -74,7 +74,7 @@ public class BlogController : ControllerBase
 
     [HttpPost("/sql-server")]
     public async Task<IActionResult> PostSqlServer(
-        [FromServices] IAsyncOperationResolver<Blog, BlogFilters, BlogSorters> asyncResolver, 
+        [FromServices] IAsyncOperationResolver<Blog, BlogFilters, BlogSorters> asyncResolver,
         Input model)
     {
         IQueryable<Blog> query = _sqlServerDb.Set<Blog>();
@@ -90,10 +90,10 @@ public class BlogController : ControllerBase
         var results = await query.ToListAsync();
         return Ok(results);
     }
-    
+
     [HttpPost("/sql-server-automatic"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
     public IQueryable<Blog> PostSqlServerAutomatic() => _sqlServerDb.Set<Blog>();
-    
+
     [HttpPost("/sql-server-automatic-enumerable"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
     public async Task<IQueryable<Blog>> PostSqlServerEnumerable()
     {
@@ -120,11 +120,11 @@ public class BlogController : ControllerBase
     public async Task<IActionResult> PostMaria(Input model)
     {
         IQueryable<Blog> query = _mariaDb.Set<Blog>();
-    
+
         query = _nonTypedResolver
             .Filter(query, model.Filters);
         query = _nonTypedResolver.Sort(query, model.Sorters);
-    
+
         var results = await query.ToListAsync();
         return Ok(results);
     }

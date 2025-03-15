@@ -1,12 +1,10 @@
 ﻿using Ooze.Typed.EntityFrameworkCore.Extensions;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Filters.Async;
-using Ooze.Typed.Query;
-using Ooze.Typed.Query.Filters;
 using Ooze.Typed.Web.Entities;
 
-public class BlogFiltersProvider : 
-    IFilterProvider<Blog, BlogFilters>, 
+public class BlogFiltersProvider :
+    IFilterProvider<Blog, BlogFilters>,
     IAsyncFilterProvider<Blog, BlogFilters>,
     IQueryFilterProvider<Blog>
 {
@@ -17,12 +15,12 @@ public class BlogFiltersProvider :
     {
         _httpContextAccessor = httpContextAccessor;
     }
-    
+
     public IEnumerable<FilterDefinition<Blog, BlogFilters>> GetFilters()
     {
         var httpContext = _httpContextAccessor.HttpContext;
         var hasSecretParam = !httpContext?.Request.Query.ContainsKey("secret") ?? true;
-        
+
         return Filters.CreateFor<Blog, BlogFilters>()
             .Equal(blog => blog.Id, filter => filter.BlogId)
             .Range(blog => blog.Id, filter => filter.BlogRange, _ => hasSecretParam)
@@ -47,7 +45,7 @@ public class BlogFiltersProvider :
             })
             // .Add(filter => string.IsNullOrEmpty(filter.Query) == false, filter => _blogQueryHandler.Apply(null, filter.Query))
             .Build();
-        
+
         return ValueTask.FromResult(filters);
     }
 

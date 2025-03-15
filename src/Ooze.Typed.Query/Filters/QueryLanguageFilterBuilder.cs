@@ -17,7 +17,7 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
         {
             throw new MemberExpressionException($"Query filter expression incorrect! Please check your filter provider! Expression used: [{dataExpression}]");
         }
-        
+
         _filterDefinitions.Add(new QueryLanguageFilterDefinition<TEntity>
         {
             Name = string.IsNullOrEmpty(name)

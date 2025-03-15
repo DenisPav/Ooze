@@ -18,7 +18,7 @@ public interface IQueryLanguageFilterBuilder<TEntity>
     IQueryLanguageFilterBuilder<TEntity> Add<TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         string? name = null);
-    
+
     /// <summary>
     /// Return collection of created query language filter definitions
     /// </summary>

@@ -27,7 +27,7 @@ internal static class QueryLanguageTokenizer
     public const string StartsWith = "@=";
     public const string EndsWith = "=@";
     public const string Contains = "%%";
-    
+
     private static readonly TextParser<TextSpan> GreaterThanOrEqualParser = Span.EqualToIgnoreCase(GreaterThanOrEqual);
     private static readonly TextParser<TextSpan> GreaterThanParser = Span.EqualToIgnoreCase(GreaterThan).Try().Or(GreaterThanOrEqualParser);
     private static readonly TextParser<TextSpan> LessThanOrEqualParser = Span.EqualToIgnoreCase(LessThanOrEqual);

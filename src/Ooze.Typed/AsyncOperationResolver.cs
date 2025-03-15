@@ -57,7 +57,7 @@ internal class AsyncOperationResolver(
             log.LogDebug("Pagination options are not present");
             return ValueTask.FromResult(query);
         }
-        
+
         var pagingHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = pagingHandler.Apply(query, pagingOptions);
 
@@ -98,7 +98,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Query = query
         };
-        
+
         return this;
     }
 
@@ -108,7 +108,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Sorters = sorters
         };
-        
+
         return this;
     }
 
@@ -118,7 +118,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Filters = filters
         };
-        
+
         return this;
     }
 
@@ -128,7 +128,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Paging = pagingOptions
         };
-        
+
         return this;
     }
 
@@ -151,7 +151,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         if (_resolverData.Filters is { } filters)
         {
             log.LogDebug("Applying filters: [{typeName}]", typeof(TFilters).Name);
-            
+
             _resolverData = _resolverData with
             {
                 Query = await filterHandler.ApplyAsync(_resolverData.Query, filters)
@@ -162,13 +162,13 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         if (_resolverData.Paging is { } paging)
         {
             log.LogDebug("Applying pagination options");
-            
+
             _resolverData = _resolverData with
             {
                 Query = pagingHandler.Apply(_resolverData.Query, paging)
             };
         }
-            
+
 
         return _resolverData.Query;
     }

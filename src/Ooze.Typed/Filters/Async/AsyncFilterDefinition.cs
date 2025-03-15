@@ -13,7 +13,7 @@ public class AsyncFilterDefinition<TEntity, TFilter>
     /// Delegate which decides if the filter should be applied
     /// </summary>
     public Func<TFilter, Task<bool>> ShouldRun { get; init; } = null!;
-    
+
     /// <summary>
     /// Delegate which creates final expression used for filtering
     /// </summary>

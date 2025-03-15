@@ -26,7 +26,7 @@ internal class OozeServiceCollectionBuilder(IServiceCollection services) : IOoze
         var asyncFilterProvider = implementedInterfaces.SingleOrDefault(@interface => CheckTypePredicate(@interface, AsyncFilterProviderType));
         var asyncSorterProvider = implementedInterfaces.SingleOrDefault(@interface => CheckTypePredicate(@interface, AsyncSorterProviderType));
 
-        if (filterProvider is null 
+        if (filterProvider is null
             && sorterProvider is null
             && asyncFilterProvider is null
             && asyncSorterProvider is null)
