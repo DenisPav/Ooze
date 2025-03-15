@@ -44,7 +44,7 @@ public interface IQueryLanguageOperationResolver<TEntity, in TFilters, in TSorte
     /// implementation for entity type 
     /// </summary>
     /// <param name="sorters">Sorter definitions to apply over <see cref="IQueryable"/> instance</param>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters> sorters);
 
     /// <summary>
@@ -52,7 +52,7 @@ public interface IQueryLanguageOperationResolver<TEntity, in TFilters, in TSorte
     /// implementation for entity type
     /// </summary>
     /// <param name="filters">Filter definitions to apply over <see cref="IQueryable"/> instance</param>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters filters);
 
     /// <summary>
@@ -60,14 +60,14 @@ public interface IQueryLanguageOperationResolver<TEntity, in TFilters, in TSorte
     /// filter provider implementation for entity type
     /// </summary>
     /// <param name="query">Query language query to apply over <see cref="IQueryable"/> instance</param>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string query);
     
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance.
     /// </summary>
     /// <param name="pagingOptions">Instance of paging options</param>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions);
 
     /// <summary>
@@ -77,7 +77,7 @@ public interface IQueryLanguageOperationResolver<TEntity, in TFilters, in TSorte
     /// <param name="pagingOptions">Instance of cursor paging options</param>
     /// <typeparam name="TAfter">After type</typeparam>
     /// <typeparam name="TProperty">Property type</typeparam>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
         Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
         CursorPagingOptions<TAfter>? pagingOptions);

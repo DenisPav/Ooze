@@ -83,7 +83,7 @@ public interface IOperationResolver<TEntity, in TFilters, in TSorters>
     /// implementation for entity type 
     /// </summary>
     /// <param name="sorters">Sorter definitions to apply over <see cref="IQueryable"/> instance</param>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters> sorters);
 
     /// <summary>
@@ -91,14 +91,14 @@ public interface IOperationResolver<TEntity, in TFilters, in TSorters>
     /// implementation for entity type
     /// </summary>
     /// <param name="filters">Filter definitions to apply over <see cref="IQueryable"/> instance</param>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters filters);
 
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance.
     /// </summary>
     /// <param name="pagingOptions">Instance of paging options</param>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions);
 
     /// <summary>
@@ -108,7 +108,7 @@ public interface IOperationResolver<TEntity, in TFilters, in TSorters>
     /// <param name="pagingOptions">Instance of cursor paging options</param>
     /// <typeparam name="TAfter">After type</typeparam>
     /// <typeparam name="TProperty">Property type</typeparam>
-    /// <returns>Updated <see cref="IQueryable"/> instance</returns>
+    /// <returns>Resolver fluent instance</returns>
     IOperationResolver<TEntity, TFilters, TSorters> PageWithCursor<TAfter, TProperty>(
         Expression<Func<TEntity, TProperty>> cursorPropertyExpression,
         CursorPagingOptions<TAfter>? pagingOptions);
