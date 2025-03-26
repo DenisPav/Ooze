@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
 
 namespace Ooze.Typed.Query.Filters;
 
@@ -12,9 +12,9 @@ public class QueryLanguageFilterDefinition<TEntity>
     /// Optional name arguments used in query language queries
     /// </summary>
     public string? Name { get; init; }
-
+    
     /// <summary>
-    /// Targeted property information for single filter definition 
+    /// Targeted member expression used for a single filter definition
     /// </summary>
-    public PropertyInfo TargetProperty { get; init; } = null!;
+    public MemberExpression MemberExpression { get; init; } = null!;
 }

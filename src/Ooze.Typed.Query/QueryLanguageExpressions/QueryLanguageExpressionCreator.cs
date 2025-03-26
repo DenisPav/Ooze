@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Reflection;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Query.Exceptions;
 using Ooze.Typed.Query.Filters;
@@ -118,6 +119,7 @@ internal static class QueryLanguageExpressionCreator
     /// <summary>
     /// Take next 3 tokens and create member expression from them.
     /// </summary>
+    /// <param name="filterDefinitions">List of query language filter definitions</param>
     /// <param name="parameterExpression">Root parameter used for building expression</param>
     /// <param name="tokens">Current stack of tokens</param>
     /// <param name="propertyExpressions">List of member current member expressions</param>
@@ -130,20 +132,22 @@ internal static class QueryLanguageExpressionCreator
     {
         var token = tokens.Pop();
         var queryPropertyName = token.ToStringValue();
-        var property = filterDefinitions.Single(definition =>
-                string.Compare(queryPropertyName, definition.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-            .TargetProperty;
-        var currentMemberAccess = Expression.MakeMemberAccess(parameterExpression, property);
+        var filterDefinition = filterDefinitions.Single(definition =>
+                string.Compare(queryPropertyName, definition.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
+        
         token = tokens.Pop();
         var operationExpressionFactory = Operations.OperatorExpressionFactories[token.ToStringValue()];
         token = tokens.Pop();
 
         var value = token.ToStringValue();
         var clearValue = value.Replace(QueryLanguageTokenizer.ValueTick, string.Empty);
-        var convertedValue = TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(clearValue);
+        //TODO: maybe move this to definition so it fails there if this is not a property
+        var propertyInfo = (filterDefinition.MemberExpression.Member as PropertyInfo).PropertyType;
+        var convertedValue = TypeDescriptor.GetConverter(propertyInfo).ConvertFrom(clearValue);
         var valueExpression = BasicExpressions.GetWrappedConstantExpression(convertedValue);
 
-        var finalOperationExpression = operationExpressionFactory(currentMemberAccess, valueExpression);
+        var replaced = new ParameterReplacerVisitor(parameterExpression).Visit(filterDefinition.MemberExpression);
+        var finalOperationExpression = operationExpressionFactory(replaced, valueExpression);
         propertyExpressions.Add(finalOperationExpression);
     }
 }

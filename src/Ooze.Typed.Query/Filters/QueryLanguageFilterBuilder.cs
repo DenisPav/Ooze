@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Ooze.Typed.Expressions;
 using Ooze.Typed.Query.Exceptions;
 
 namespace Ooze.Typed.Query.Filters;
@@ -6,7 +7,8 @@ namespace Ooze.Typed.Query.Filters;
 /// <inheritdoc />
 internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder<TEntity>
 {
-    private static Type[] SupportedTypes =
+    //TODO: move out of here
+    private static readonly Type[] SupportedTypes =
     [
         typeof(bool),
         typeof(byte),
@@ -34,13 +36,15 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
         Expression<Func<TEntity, TProperty>> dataExpression,
         string? name = null)
     {
-        var memberExpression = ValidateExpression(dataExpression);
+        ValidateExpression(dataExpression);
+        
+        var memberExpression = BasicExpressions.GetMemberExpression(dataExpression.Body);
         _filterDefinitions.Add(new QueryLanguageFilterDefinition<TEntity>
         {
             Name = string.IsNullOrEmpty(name)
                 ? GetExpressionName(memberExpression)
                 : name,
-            TargetProperty = typeof(TEntity).GetProperty(GetExpressionName(memberExpression)),
+            MemberExpression = BasicExpressions.GetMemberExpression(dataExpression.Body)
         });
 
         return this;
@@ -49,15 +53,13 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
     private static string GetExpressionName(MemberExpression expression)
         => expression.Member.Name;
 
-    private static MemberExpression ValidateExpression<TProperty>(Expression<Func<TEntity, TProperty>> expression)
+    private static void ValidateExpression<TProperty>(Expression<Func<TEntity, TProperty>> expression)
     {
         if (expression.Body is not MemberExpression memberExpression || IsSupportedType(memberExpression.Type) == false)
         {
             throw new MemberExpressionException(
                 $"Query filter expression incorrect! Please check your filter provider! Expression used: [{expression}]");
         }
-
-        return memberExpression;
     }
 
     private static bool IsSupportedType(Type type)

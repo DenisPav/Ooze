@@ -99,4 +99,21 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(1, filteredItemsCount);
     }
+    
+    [Theory]
+    [InlineData("sample_2@email.com")]
+    [InlineData("sample_5@email.com")]
+    public async Task NestedProperty_Should_Update_Query_And_Return_Correct_Query(string email)
+    {
+        await using var context = fixture.CreateContext();
+
+        var resolver = fixture.CreateServiceProvider<CommentQueryFilterProvider>()
+            .GetRequiredService<IQueryLanguageOperationResolver>();
+        IQueryable<Comment> query = context.Set<Comment>();
+
+        query = resolver.FilterWithQueryLanguage(query, $"{nameof(Comment.User.Email)} == '{email}'");
+
+        var filteredItemsCount = await query.CountAsync();
+        Assert.Equal(1, filteredItemsCount);
+    }
 }
