@@ -4,14 +4,13 @@ using Ooze.Typed.Query.Exceptions;
 using Ooze.Typed.Query.Tests.Entities;
 using Ooze.Typed.Query.Tests.OozeQueryConfiguration;
 using Ooze.Typed.Query.Tokenization;
-using System.Linq;
 
 namespace Ooze.Typed.Query.Tests;
 
 public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<SqlServerFixture>
 {
     #region Multiple conditions
-    
+
     [Fact]
     public async Task Multiple_Conditions_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -27,7 +26,7 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(1, filteredItemsCount);
     }
-    
+
     [Fact]
     public async Task Multiple_Conditions_With_Nested_Filter_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -43,7 +42,7 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(1, filteredItemsCount);
     }
-    
+
     [Fact]
     public async Task Multiple_Conditions_With_Brackets_Should_Update_Query_And_Return_Correct_Query()
     {
@@ -59,9 +58,9 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(81, filteredItemsCount);
     }
-    
+
     #endregion
-    
+
     [Theory]
     [InlineData(QueryLanguageTokenizer.GreaterThan, 20, 80)]
     [InlineData(QueryLanguageTokenizer.GreaterThanOrEqual, 20, 81)]
@@ -78,26 +77,24 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
         int? expectedCount = null,
         bool throws = false)
     {
-        var jao_meni = 0;
-        
         await using var context = fixture.CreateContext();
 
         var resolver = fixture.CreateServiceProvider<PostQueryFilterProvider>()
             .GetRequiredService<IQueryLanguageOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var languageQuery = $"{nameof(Post.Id)} {operation} '{value}' ";
-        
+
         if (throws == true)
         {
             Assert.Throws<ExpressionCreatorException>(() => resolver.FilterWithQueryLanguage(query, languageQuery));
             return;
         }
-        
+
         query = resolver.FilterWithQueryLanguage(query, languageQuery);
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(expectedCount, filteredItemsCount);
     }
-    
+
     [Theory]
     [InlineData(QueryLanguageTokenizer.EqualTo, "5_Sample_post_5", 1)]
     [InlineData(QueryLanguageTokenizer.NotEqualTo, "5_Sample_post_5", 99)]
@@ -120,18 +117,18 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
             .GetRequiredService<IQueryLanguageOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var languageQuery = $"{nameof(Post.Name)} {operation} '{value}' ";
-        
+
         if (throws == true)
         {
             Assert.Throws<ExpressionCreatorException>(() => resolver.FilterWithQueryLanguage(query, languageQuery));
             return;
         }
-        
+
         query = resolver.FilterWithQueryLanguage(query, languageQuery);
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(expectedCount, filteredItemsCount);
     }
-    
+
     [Theory]
     [InlineData(QueryLanguageTokenizer.EqualTo, true, 50)]
     [InlineData(QueryLanguageTokenizer.NotEqualTo, true, 50)]
@@ -154,18 +151,18 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
             .GetRequiredService<IQueryLanguageOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var languageQuery = $"{nameof(Post.Enabled)} {operation} '{value}' ";
-        
+
         if (throws == true)
         {
             Assert.Throws<ExpressionCreatorException>(() => resolver.FilterWithQueryLanguage(query, languageQuery));
             return;
         }
-        
+
         query = resolver.FilterWithQueryLanguage(query, languageQuery);
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(expectedCount, filteredItemsCount);
     }
-    
+
     [Theory]
     [InlineData(QueryLanguageTokenizer.EqualTo, 2.5, 1)]
     [InlineData(QueryLanguageTokenizer.NotEqualTo, 2.5, 99)]
@@ -188,18 +185,18 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
             .GetRequiredService<IQueryLanguageOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var languageQuery = $"{nameof(Post.Rating)} {operation} '{value}' ";
-        
+
         if (throws == true)
         {
             Assert.Throws<ExpressionCreatorException>(() => resolver.FilterWithQueryLanguage(query, languageQuery));
             return;
         }
-        
+
         query = resolver.FilterWithQueryLanguage(query, languageQuery);
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(expectedCount, filteredItemsCount);
     }
-    
+
     [Theory]
     [InlineData(QueryLanguageTokenizer.EqualTo, "1.4.2022", 1)]
     [InlineData(QueryLanguageTokenizer.NotEqualTo, "1.4.2022", 99)]
@@ -222,13 +219,13 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
             .GetRequiredService<IQueryLanguageOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var languageQuery = $"{nameof(Post.OnlyDate)} {operation} '{value}' ";
-        
+
         if (throws == true)
         {
             Assert.Throws<ExpressionCreatorException>(() => resolver.FilterWithQueryLanguage(query, languageQuery));
             return;
         }
-        
+
         query = resolver.FilterWithQueryLanguage(query, languageQuery);
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(expectedCount, filteredItemsCount);
