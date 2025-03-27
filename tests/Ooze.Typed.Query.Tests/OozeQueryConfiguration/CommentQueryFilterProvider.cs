@@ -8,6 +8,7 @@ public class CommentQueryFilterProvider : IQueryLanguageFilterProvider<Comment>
     public IEnumerable<QueryLanguageFilterDefinition<Comment>> GetMappings()
     {
         return QueryLanguageFilters.CreateFor<Comment>()
+            .Add(x => x.Id)
             .Add(x => x.User.Email)
             .Build();
     }

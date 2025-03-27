@@ -7,6 +7,8 @@ namespace Ooze.Typed.Query.Tests;
 
 public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<SqlServerFixture>
 {
+    #region Single Field Equality
+    
     [Theory]
     [InlineData(10)]
     [InlineData(1)]
@@ -74,7 +76,7 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
             .GetRequiredService<IQueryLanguageOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
 
-        query = resolver.FilterWithQueryLanguage(query, $"Date == '{month}.{day}.{year}. {hour}:{minute}:{second}'");
+        query = resolver.FilterWithQueryLanguage(query, $"{nameof(Post.Date)} == '{month}.{day}.{year}. {hour}:{minute}:{second}'");
 
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(1, filteredItemsCount);
@@ -115,5 +117,55 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
 
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(1, filteredItemsCount);
+    }
+    
+    #endregion
+    
+    [Fact]
+    public async Task Multiple_Conditions_Should_Update_Query_And_Return_Correct_Query()
+    {
+        await using var context = fixture.CreateContext();
+
+        var resolver = fixture.CreateServiceProvider<PostQueryFilterProvider>()
+            .GetRequiredService<IQueryLanguageOperationResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+
+        query = resolver.FilterWithQueryLanguage(query, @$"{nameof(Post.Id)} >> '20' 
+&& {nameof(Post.Name)} == '23_Sample_post_23'");
+
+        var filteredItemsCount = await query.CountAsync();
+        Assert.Equal(1, filteredItemsCount);
+    }
+    
+    [Fact]
+    public async Task Multiple_Conditions_With_Nested_Filter_Should_Update_Query_And_Return_Correct_Query()
+    {
+        await using var context = fixture.CreateContext();
+
+        var resolver = fixture.CreateServiceProvider<CommentQueryFilterProvider>()
+            .GetRequiredService<IQueryLanguageOperationResolver>();
+        IQueryable<Comment> query = context.Set<Comment>();
+
+        query = resolver.FilterWithQueryLanguage(query, @$"{nameof(Comment.Id)} >> '20' 
+&& {nameof(Comment.User.Email)} == 'sample_26@email.com'");
+
+        var filteredItemsCount = await query.CountAsync();
+        Assert.Equal(1, filteredItemsCount);
+    }
+    
+    [Fact]
+    public async Task Multiple_Conditions_With_Brackets_Should_Update_Query_And_Return_Correct_Query()
+    {
+        await using var context = fixture.CreateContext();
+
+        var resolver = fixture.CreateServiceProvider<PostQueryFilterProvider>()
+            .GetRequiredService<IQueryLanguageOperationResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+
+        query = resolver.FilterWithQueryLanguage(query, @$"{nameof(Post.Id)} >> '20' 
+|| ({nameof(Post.Name)} == '2_Sample_post_2' && {nameof(Post.Id)} == '2')");
+
+        var filteredItemsCount = await query.CountAsync();
+        Assert.Equal(81, filteredItemsCount);
     }
 }

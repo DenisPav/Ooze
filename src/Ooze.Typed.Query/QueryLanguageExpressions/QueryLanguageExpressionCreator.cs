@@ -66,7 +66,8 @@ internal static class QueryLanguageExpressionCreator
                     break;
                 case QueryLanguageToken.LogicalOperation:
                     tokenStack.Pop();
-                    logicalOperationExpressions.Add(Expression.AndAlso);
+                    var isAnd = token.Span.ToStringValue().Contains("&&");
+                    logicalOperationExpressions.Add(isAnd ? Expression.AndAlso : Expression.OrElse);
                     break;
                 case QueryLanguageToken.BracketLeft:
                     tokenStack.Pop();
