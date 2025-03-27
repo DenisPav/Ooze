@@ -7,5 +7,6 @@ public class Post
     public bool Enabled { get; set; }
     public DateTime Date { get; set; }
     public DateOnly OnlyDate { get; set; }
+    public decimal Rating { get; set; }
     public ICollection<Comment> Comments { get; set; }
 }

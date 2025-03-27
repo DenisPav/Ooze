@@ -38,6 +38,7 @@ public class SqlServerContext(DbContextOptions options) : DbContext(options)
                 Name = $"{id}_Sample_post_{id}",
                 Date = date.AddDays(id),
                 OnlyDate = DateOnly.FromDateTime(date.AddDays(id)),
+                Rating = 0.5m + id,
                 Comments =
                 [
                     new Comment

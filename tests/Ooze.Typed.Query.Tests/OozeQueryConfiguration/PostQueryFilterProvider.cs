@@ -13,7 +13,9 @@ public class PostQueryFilterProvider : IQueryLanguageFilterProvider<Post>
             .Add(x => x.OnlyDate)
             .Add(x => x.Enabled)
             .Add(x => x.Name)
+            .Add(x => x.Rating)
             //TODO: add tests for this when using builder not full integration test
+            //TODO: also add test for when trying to create QL query for propery which is not mapped
             // .Add(x => x.Comments)
             .Build();
     }

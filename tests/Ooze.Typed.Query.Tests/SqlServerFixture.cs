@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Extensions;
 using Ooze.Typed.Query.Extensions;
@@ -41,6 +42,8 @@ public class SqlServerFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo("en-EN");
+        
         await _sqlServerContainer.StartAsync()
             .ConfigureAwait(false);
         await using var context = CreateContext();
