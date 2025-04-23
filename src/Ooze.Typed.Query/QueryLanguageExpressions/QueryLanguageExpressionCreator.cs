@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Reflection;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Query.Exceptions;
 using Ooze.Typed.Query.Filters;
@@ -135,7 +134,7 @@ internal static class QueryLanguageExpressionCreator
         var queryPropertyName = token.ToStringValue();
         var filterDefinition = filterDefinitions.Single(definition =>
                 string.Compare(queryPropertyName, definition.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
-        
+
         token = tokens.Pop();
         var operationExpressionFactory = Operations.OperatorExpressionFactories[token.ToStringValue()];
         token = tokens.Pop();
