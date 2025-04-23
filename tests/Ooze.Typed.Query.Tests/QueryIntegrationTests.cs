@@ -230,4 +230,48 @@ public class QueryIntegrationTests(SqlServerFixture fixture) : IClassFixture<Sql
         var filteredItemsCount = await query.CountAsync();
         Assert.Equal(expectedCount, filteredItemsCount);
     }
+    
+    [Theory]
+    [InlineData(QueryLanguageTokenizer.EqualTo, 1, false)]
+    [InlineData(QueryLanguageTokenizer.NotEqualTo, 99, false)]
+    [InlineData(QueryLanguageTokenizer.StartsWith, null, true)]
+    [InlineData(QueryLanguageTokenizer.EndsWith, null, true)]
+    [InlineData(QueryLanguageTokenizer.Contains, null, true)]
+    public async Task Operation_On_Guid_Should_Update_Query_And_Return_Correct_Query(
+        string operation,
+        int? expectedCount = null,
+        bool throws = false)
+    {
+        await using var context = fixture.CreateContext();
+
+        var resolver = fixture.CreateServiceProvider<PostQueryFilterProvider>()
+            .GetRequiredService<IQueryLanguageOperationResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        var sampleValue = (await query.FirstAsync()).GuidId;
+        
+        var languageQuery = $"{nameof(Post.GuidId)} {operation} '{sampleValue}' ";
+
+        if (throws == true)
+        {
+            Assert.Throws<ExpressionCreatorException>(() => resolver.FilterWithQueryLanguage(query, languageQuery));
+            return;
+        }
+
+        query = resolver.FilterWithQueryLanguage(query, languageQuery);
+        var filteredItemsCount = await query.CountAsync();
+        Assert.Equal(expectedCount, filteredItemsCount);
+    }
+    
+    [Fact]
+    public async Task Operation_On_Non_Existing_Field_Should_Throw_Exception()
+    {
+        await using var context = fixture.CreateContext();
+
+        var resolver = fixture.CreateServiceProvider<PostQueryFilterProvider>()
+            .GetRequiredService<IQueryLanguageOperationResolver>();
+        IQueryable<Post> query = context.Set<Post>();
+        
+        const string languageQuery = $"randomnonexistingfield {QueryLanguageTokenizer.EqualTo} 'value' ";
+        Assert.Throws<QueryTokenizerException>(() => resolver.FilterWithQueryLanguage(query, languageQuery));
+    }
 }

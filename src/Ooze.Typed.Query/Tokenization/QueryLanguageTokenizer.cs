@@ -91,7 +91,7 @@ internal static class QueryLanguageTokenizer
         IEnumerable<QueryLanguageFilterDefinition<TEntity>> filterDefinitions,
         string queryDefinition)
     {
-        var propertyFieldNameParser = filterDefinitions.Aggregate((TextParser<TextSpan>)null, (agg, current) =>
+        var propertyFieldNameParser = filterDefinitions.Aggregate((TextParser<TextSpan>?)null, (agg, current) =>
         {
             var currentNameParser = Span.EqualToIgnoreCase(current.Name);
             return agg == null
@@ -103,7 +103,7 @@ internal static class QueryLanguageTokenizer
             .Ignore(Span.WhiteSpace)
             .Match(LeftBracketParser, QueryLanguageToken.BracketLeft)
             .Match(RightBracketParser, QueryLanguageToken.BracketRight)
-            .Match(propertyFieldNameParser, QueryLanguageToken.Property)
+            .Match(propertyFieldNameParser!, QueryLanguageToken.Property)
             .Match(OperatorParser, QueryLanguageToken.Operation)
             .Match(LogicalOperatorParser, QueryLanguageToken.LogicalOperation)
             .Match(ValueParser, QueryLanguageToken.Value)

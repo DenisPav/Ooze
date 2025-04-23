@@ -1,4 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿// ReSharper disable StaticMemberInGenericType
+
+using System.Linq.Expressions;
+using System.Reflection;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Query.Exceptions;
 
@@ -7,7 +10,6 @@ namespace Ooze.Typed.Query.Filters;
 /// <inheritdoc />
 internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder<TEntity>
 {
-    //TODO: move out of here
     private static readonly Type[] SupportedTypes =
     [
         typeof(bool),
@@ -37,14 +39,17 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
         string? name = null)
     {
         ValidateExpression(dataExpression);
-        
+
         var memberExpression = BasicExpressions.GetMemberExpression(dataExpression.Body);
+        var propertyType = (memberExpression.Member as PropertyInfo)!.PropertyType;
+        
         _filterDefinitions.Add(new QueryLanguageFilterDefinition<TEntity>
         {
             Name = string.IsNullOrEmpty(name)
                 ? GetExpressionName(memberExpression)
                 : name,
-            MemberExpression = BasicExpressions.GetMemberExpression(dataExpression.Body)
+            MemberExpression = memberExpression,
+            PropertyType = propertyType
         });
 
         return this;
@@ -55,7 +60,9 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
 
     private static void ValidateExpression<TProperty>(Expression<Func<TEntity, TProperty>> expression)
     {
-        if (expression.Body is not MemberExpression memberExpression || IsSupportedType(memberExpression.Type) == false)
+        if (expression.Body is not MemberExpression memberExpression 
+            || IsSupportedType(memberExpression.Type) == false
+            || memberExpression.Member is not PropertyInfo)
         {
             throw new MemberExpressionException(
                 $"Query filter expression incorrect! Please check your filter provider! Expression used: [{expression}]");
@@ -65,7 +72,7 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
     private static bool IsSupportedType(Type type)
     {
         return type.IsPrimitive
-               || SupportedTypes.Contains(type) 
+               || SupportedTypes.Contains(type)
                || type.IsEnum;
     }
 

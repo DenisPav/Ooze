@@ -34,6 +34,7 @@ public class SqlServerContext(DbContextOptions options) : DbContext(options)
             .Select(id => new Post
             {
                 Id = 0,
+                GuidId = Guid.NewGuid(),
                 Enabled = id % 2 == 0,
                 Name = $"{id}_Sample_post_{id}",
                 Date = date.AddDays(id),

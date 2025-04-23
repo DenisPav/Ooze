@@ -33,7 +33,7 @@ internal static class QueryLanguageExpressionCreator
             if (bracketStack.Any())
                 throw new ExpressionCreatorException("no matching ending bracket");
 
-            var finalExpression = Expression.Lambda<Func<TEntity, bool>>(createdExpr, parameterExpression);
+            var finalExpression = Expression.Lambda<Func<TEntity, bool>>(createdExpr!, parameterExpression);
             var quoteExpr = Expression.Quote(finalExpression);
             var callExpr = Expression.Call(typeof(Queryable), Where, [typeof(TEntity)], queryExpression,
                 quoteExpr);
@@ -73,7 +73,7 @@ internal static class QueryLanguageExpressionCreator
                     tokenStack.Pop();
                     bracketStack.Push(token);
                     var subExpr = CreateExpression(filterDefinitions, parameterExpression, tokenStack, bracketStack);
-                    propertyExpressions.Add(subExpr);
+                    propertyExpressions.Add(subExpr!);
                     break;
                 case QueryLanguageToken.BracketRight:
                     tokenStack.Pop();
@@ -99,7 +99,7 @@ internal static class QueryLanguageExpressionCreator
             return propertyExpressions.FirstOrDefault();
 
         var skip = 0;
-        var expression = logicalOperationExpressions.Aggregate((Expression)null, (agg, current) =>
+        var expression = logicalOperationExpressions.Aggregate((Expression?)null, (agg, current) =>
         {
             if (agg == null)
             {
@@ -142,9 +142,8 @@ internal static class QueryLanguageExpressionCreator
 
         var value = token.ToStringValue();
         var clearValue = value.Replace(QueryLanguageTokenizer.ValueTick, string.Empty);
-        //TODO: maybe move this to definition so it fails there if this is not a property
-        var propertyInfo = (filterDefinition.MemberExpression.Member as PropertyInfo).PropertyType;
-        var convertedValue = TypeDescriptor.GetConverter(propertyInfo).ConvertFrom(clearValue);
+        var convertedValue = TypeDescriptor.GetConverter(filterDefinition.PropertyType)
+            .ConvertFrom(clearValue);
         var valueExpression = BasicExpressions.GetWrappedConstantExpression(convertedValue);
 
         var replaced = new ParameterReplacerVisitor(parameterExpression).Visit(filterDefinition.MemberExpression);
