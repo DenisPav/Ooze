@@ -42,12 +42,15 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
 
         var memberExpression = BasicExpressions.GetMemberExpression(dataExpression.Body);
         var propertyType = (memberExpression.Member as PropertyInfo)!.PropertyType;
+        var filterName = string.IsNullOrEmpty(name)
+            ? GetExpressionName(memberExpression)
+            : name;
+        
+        ValidateName(filterName);
         
         _filterDefinitions.Add(new QueryLanguageFilterDefinition<TEntity>
         {
-            Name = string.IsNullOrEmpty(name)
-                ? GetExpressionName(memberExpression)
-                : name,
+            Name = filterName,
             MemberExpression = memberExpression,
             PropertyType = propertyType
         });
@@ -55,6 +58,16 @@ internal class QueryLanguageFilterBuilder<TEntity> : IQueryLanguageFilterBuilder
         return this;
     }
 
+    private void ValidateName(string name)
+    {
+        var nameAlreadyExists = _filterDefinitions.Any(filter => filter.Name == name);
+        if (nameAlreadyExists)
+        {
+            throw new QueryLanguageFilterDefinitionException(
+                $"Duplicate filter name detected! Name: [{name}]");
+        }
+    }
+    
     private static string GetExpressionName(MemberExpression expression)
         => expression.Member.Name;
 

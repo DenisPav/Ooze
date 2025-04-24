@@ -59,4 +59,12 @@ public class QueryFilterProviderTests
 
         Assert.Throws<MemberExpressionException>(() => provider.GetMappings());
     }
+    
+    [Fact]
+    public void GetMappings_Should_Throw_Exception_For_Duplicate_Definitions()
+    {
+        var provider = new DuplicatePostQueryFilterProvider();
+
+        Assert.Throws<QueryLanguageFilterDefinitionException>(() => provider.GetMappings());
+    }
 }
