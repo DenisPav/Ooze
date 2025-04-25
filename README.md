@@ -10,7 +10,7 @@ This package provides a simple mechanism for applying filters, sorters, paging t
 ## Installation ⚙
 You can find latest versions on nuget [on this location](https://www.nuget.org/packages/Ooze.Typed/).
 
-## Additional filter extensions 🎁
+## Additional packages 🎁
 Except base `Ooze.Typed` package there are few more that add additional filter extensions to the filter builder that you use in your provider implementations. These are listed below:
  - [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
  - [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
@@ -18,7 +18,8 @@ Except base `Ooze.Typed` package there are few more that add additional filter e
  - [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql/)
  - [Ooze.Typed.EntityFrameworkCore.MySql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.MySql/)
 
-These packages provide additional provider specific `EF` extensions to the filter builder pipeline.
+These packages provide additional provider specific `EF` extensions to the filter builder pipeline. There is another package which can be installed and it will provide `query language` filtration:
+ - [Ooze.Typed.Query](https://www.nuget.org/packages/Ooze.Typed.Query/)
 
 ## Registering Ooze 🧰
 After installation you'll need to register Ooze to your service collection. To do so you need to call `.AddOozeTyped()` method. Example of this can be seen below:
@@ -231,6 +232,82 @@ record class Input(MyFilters Filters, IEnumerable<MySorters> Sorters, PagingOpti
 
 **NOTE:**
 `AsyncFilters/Sorters` builders will currently internally wrap the operations into `Tasks` even if they initially do not look like ones.
+
+## Query language 👓
+Ooze supports a subset of operations to be used via `Query Language`. In order to use/support these you will need to installed mentioned package from the `Additional Packages` section (`Ooze.Typed.Query`). In order to register related implementations be sure to call next method:
+
+```csharp
+// Example for minimal APIs registration
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddOozeTyped()
+    .AddOozeQueryLanguage()
+    .AddQueryProvider<BlogQueryLanguageProvider>();
+
+// Example for Startup class registration
+public class Startup 
+{
+    ...
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddOozeTyped()
+            .AddOozeQueryLanguage()
+            .AddQueryProvider<BlogQueryLanguageProvider>();
+    }
+    ...
+}
+
+```
+
+Calling  `.AddOozeQueryLanguage()` will register `IQueryLanguageOperationResolver` to services collection which can then be used to filter `IQueryable<T>` instances with query language.
+
+Package provides `IQueryLanguageFilterProvider<TEntity>` which can be used to create implementations of query language filter providers. Similar to how ordinary filter providers in Ooze work, you will have access to `QueryLanguageFilters` static class which can be used to start the process of creating a query language registration. Example of this can be seen below:
+
+```csharp
+public class BlogFiltersProvider : IQueryLanguageFilterProvider<Blog>
+{
+    public IEnumerable<QueryLanguageFilterDefinition<Blog>> GetMappings()
+    {
+        return QueryLanguageFilters.CreateFor<Blog>()
+            .Add(x => x.Id)
+            .Add(x => x.Rating)
+            .Add(x => x.Name, "Status")
+            .Build();
+    }
+}
+```
+
+Each query language filter registration for entity can be customized with unique name or it will be inherited from the expression provided to `.Add()` method.
+
+Query language supports next operations:
+- **Equal**: `property == 'value'`
+- **Not Equal**: `property != 'value'`
+- **Greater Than**: `property >> 'value'`
+- **Greater Than or Equal**: `property >= 'value'`
+- **Less Than**: `property << 'value'`
+- **Less Than or Equal**: `property <= 'value'`
+- **Contains**: `property %% 'value'`
+- **Starts With**: `property @= 'value'`
+- **Ends With**: `property =@ 'value'`
+- **Logical Operators**: `&&` (AND), `||` (OR)
+- **Grouping**: (  )
+
+Few examples of QL queries for provider declared in previous examples can be seen below:
+```
+Id == '3'
+
+Id >> '3' && Status == 'Blog 1'
+
+Id << '100' && (Status @= 'Blog' || Rating >= '5')
+```
+
+Example of using query language can be seen below:
+```csharp
+var resultingQueryable = resolver
+    .WithQuery(query)
+    .FilterWithQueryLanguage("price << 1000 && category == 'Electronics'")
+    .Sort(sorterOptions)
+    .Apply();
+```
 
 ## Advanced 🧠
  
