@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Paging;
 using Ooze.Typed.Query;
 using Ooze.Typed.Web.Entities;
-using Ooze.Typed.Web.Filters;
 
 namespace Ooze.Typed.Web.Controllers;
 

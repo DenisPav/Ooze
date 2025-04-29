@@ -1,5 +1,4 @@
-﻿using System.Data.Common;
-using Bogus;
+﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Web.Entities;
 
