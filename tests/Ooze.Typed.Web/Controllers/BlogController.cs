@@ -1,45 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Paging;
+using Ooze.Typed.Query;
 using Ooze.Typed.Web.Entities;
 using Ooze.Typed.Web.Filters;
 
 namespace Ooze.Typed.Web.Controllers;
 
 [ApiController, Route("~/")]
-public class BlogController : ControllerBase
+public class BlogController(
+    SqliteDatabaseContext db,
+    IQueryLanguageOperationResolver nonTypedResolver,
+    IQueryLanguageOperationResolver<Blog, BlogFilters, BlogSorters> resolver)
+    : ControllerBase
 {
-    private readonly SqliteDatabaseContext _db;
-    private readonly SqlServerDatabaseContext _sqlServerDb;
-    private readonly PostgresDatabaseContext _postgresDb;
-    private readonly MariaDbDatabaseContext _mariaDb;
-    private readonly IOperationResolver _nonTypedResolver;
-    private readonly IOperationResolver<Blog, BlogFilters, BlogSorters> _resolver;
-
-    public BlogController(
-        SqliteDatabaseContext db,
-        SqlServerDatabaseContext sqlServerDb,
-        PostgresDatabaseContext postgresDb,
-        MariaDbDatabaseContext mariaDb,
-        IOperationResolver nonTypedResolver,
-        IOperationResolver<Blog, BlogFilters, BlogSorters> resolver)
-    {
-        _db = db;
-        _sqlServerDb = sqlServerDb;
-        _postgresDb = postgresDb;
-        _mariaDb = mariaDb;
-        _nonTypedResolver = nonTypedResolver;
-        _resolver = resolver;
-    }
-
     [HttpPost]
     public async Task<IActionResult> Post(Input model)
     {
-        IQueryable<Blog> query = _db.Set<Blog>();
+        IQueryable<Blog> query = db.Set<Blog>();
 
-        query = _nonTypedResolver
+        query = nonTypedResolver
             .Filter(query, model.Filters);
-        query = _nonTypedResolver.Sort(query, model.Sorters);
+        query = nonTypedResolver.Sort(query, model.Sorters);
 
         var results = await query.ToListAsync();
         return Ok(results);
@@ -48,9 +30,10 @@ public class BlogController : ControllerBase
     [HttpPost("/typed")]
     public async Task<IActionResult> PostTyped(Input model)
     {
-        IQueryable<Blog> query = _db.Set<Blog>();
+        IQueryable<Blog> query = db.Set<Blog>();
 
-        query = _resolver.Apply(query, model.Sorters, model.Filters, model.Paging);
+        // query = _nonTypedResolver.Filter(query, model.Filters);
+        query = nonTypedResolver.FilterWithQueryLanguage(query, model.Query);
 
         var results = await query.ToListAsync();
         return Ok(results);
@@ -59,9 +42,9 @@ public class BlogController : ControllerBase
     [HttpPost("/typed-expanded")]
     public async Task<IActionResult> PostTypedExpanded(Input model)
     {
-        IQueryable<Blog> query = _db.Set<Blog>();
+        IQueryable<Blog> query = db.Set<Blog>();
 
-        query = _resolver
+        query = resolver
             .WithQuery(query)
             .Sort(model.Sorters)
             .Filter(model.Filters)
@@ -71,63 +54,7 @@ public class BlogController : ControllerBase
         var results = await query.ToListAsync();
         return Ok(results);
     }
-
-    [HttpPost("/sql-server")]
-    public async Task<IActionResult> PostSqlServer(
-        [FromServices] IAsyncOperationResolver<Blog, BlogFilters, BlogSorters> asyncResolver,
-        Input model)
-    {
-        IQueryable<Blog> query = _sqlServerDb.Set<Blog>();
-
-        // query = _nonTypedResolver
-        //     .Filter(query, model.Filters);
-        // query = _nonTypedResolver.Sort(query, model.Sorters);
-        query = await asyncResolver.WithQuery(query)
-            .Filter(model.Filters)
-            .Sort(model.Sorters)
-            .ApplyAsync();
-
-        var results = await query.ToListAsync();
-        return Ok(results);
-    }
-
-    [HttpPost("/sql-server-automatic"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
-    public IQueryable<Blog> PostSqlServerAutomatic() => _sqlServerDb.Set<Blog>();
-
-    [HttpPost("/sql-server-automatic-enumerable"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
-    public async Task<IQueryable<Blog>> PostSqlServerEnumerable()
-    {
-        var results = await _sqlServerDb.Set<Blog>()
-            .ToListAsync();
-
-        return results.AsQueryable();
-    }
-
-    [HttpPost("/postgres")]
-    public async Task<IActionResult> PostPostgres(Input model)
-    {
-        IQueryable<Blog> query = _postgresDb.Set<Blog>();
-
-        query = _nonTypedResolver
-            .Filter(query, model.Filters);
-        query = _nonTypedResolver.Sort(query, model.Sorters);
-
-        var results = await query.ToListAsync();
-        return Ok(results);
-    }
-
-    [HttpPost("/mariadb")]
-    public async Task<IActionResult> PostMaria(Input model)
-    {
-        IQueryable<Blog> query = _mariaDb.Set<Blog>();
-
-        query = _nonTypedResolver
-            .Filter(query, model.Filters);
-        query = _nonTypedResolver.Sort(query, model.Sorters);
-
-        var results = await query.ToListAsync();
-        return Ok(results);
-    }
 }
 
-public record Input(BlogFilters Filters, IEnumerable<BlogSorters> Sorters, PagingOptions Paging);
+public record Input(BlogFilters Filters, IEnumerable<BlogSorters> Sorters, PagingOptions Paging, string Query);
+public record CommentInput(CommentFilters Filters);

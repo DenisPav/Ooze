@@ -17,15 +17,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.2" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.MySql\Ooze.Typed.EntityFrameworkCore.MySql.csproj" />
-    <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.Npgsql\Ooze.Typed.EntityFrameworkCore.Npgsql.csproj" />
     <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.Sqlite\Ooze.Typed.EntityFrameworkCore.Sqlite.csproj" />
-    <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.SqlServer\Ooze.Typed.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Ooze.Typed.Query\Ooze.Typed.Query.csproj" />
     <ProjectReference Include="..\..\src\Ooze.Typed\Ooze.Typed.csproj" />
