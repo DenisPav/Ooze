@@ -1,11 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Ooze.Typed.Query</PackageId>
-    <Version>1.0.78</Version>
+    <Version>1.0.79</Version>
     <RepositoryUrl>https://github.com/DenisPav/Ooze</RepositoryUrl>
     <Description>
       This package provides simple mechanism for applying filters, sorters, paging to your IQueryable queries. Contains additional extensions for query language searching.
@@ -17,21 +16,18 @@
     <LangVersion>latest</LangVersion>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
-
   <ItemGroup>
-      <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-      <None Include="..\..\LICENSE.MD" Pack="true" PackagePath="\" />
-      <PackageReference Include="Superpower" Version="3.0.0" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.MD" Pack="true" PackagePath="\" />
+    <PackageReference Include="Superpower" Version="3.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Ooze.Typed\Ooze.Typed.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Include="..\Ooze.Typed\Expressions\BasicExpressions.cs">
       <Link>Expressions\BasicExpressions.cs</Link>
@@ -43,5 +39,4 @@
       <Link>Expressions\OozeValue.cs</Link>
     </Compile>
   </ItemGroup>
-
 </Project>
