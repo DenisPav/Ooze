@@ -117,7 +117,7 @@ internal static class BasicExpressions
 
     internal static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
     {
-        var constantType = typeof(TProperty);
+        var constantType = constant?.GetType() ?? typeof(TProperty);
         var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
         var createWrapper = CommonMethods.CreateWrapperObject.MakeGenericMethod(correctType);
         var wrapper = createWrapper?.Invoke(null, [constant!]);

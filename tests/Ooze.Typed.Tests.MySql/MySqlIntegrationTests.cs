@@ -139,16 +139,16 @@ public class MySqlIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFi
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();
-        
+
         query = resolver.Sort(query,
             new[] { new PostSorters(Id: SortDirection.Descending) });
         var sortedIds = await query.Select(x => x.Id)
-            .ToListAsync(); 
-        
+            .ToListAsync();
+
         Assert.True(defaultIds.SequenceEqual(sortedIds) == false);
         Assert.True(defaultIds.Except(sortedIds).Any() == false);
         Assert.True(defaultIds.Intersect(sortedIds).Count() == 100);
-        
+
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("ORDER BY", StringComparison.InvariantCultureIgnoreCase);
         Assert.True(sqlContainsCall);

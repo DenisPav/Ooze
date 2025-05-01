@@ -13,7 +13,7 @@ public class FilterDefinition<TEntity, TFilter>
     /// Delegate which decides if the filter should be applied
     /// </summary>
     public Func<TFilter, bool> ShouldRun { get; set; } = null!;
-    
+
     /// <summary>
     /// Delegate which creates final expression used for filtering
     /// </summary>

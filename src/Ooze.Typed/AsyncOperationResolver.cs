@@ -1,10 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Ooze.Typed.Filters;
 using Ooze.Typed.Filters.Async;
 using Ooze.Typed.Paging;
-using Ooze.Typed.Sorters;
 using Ooze.Typed.Sorters.Async;
 
 namespace Ooze.Typed;
@@ -36,7 +34,7 @@ internal class AsyncOperationResolver(
         IQueryable<TEntity> query,
         IEnumerable<TSorters>? sorters)
     {
-        sorters ??= Enumerable.Empty<TSorters>();
+        sorters ??= [];
         if (sorters.Any() == false)
         {
             log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);
@@ -59,7 +57,7 @@ internal class AsyncOperationResolver(
             log.LogDebug("Pagination options are not present");
             return ValueTask.FromResult(query);
         }
-        
+
         var pagingHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
         query = pagingHandler.Apply(query, pagingOptions);
 
@@ -100,7 +98,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Query = query
         };
-        
+
         return this;
     }
 
@@ -110,7 +108,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Sorters = sorters
         };
-        
+
         return this;
     }
 
@@ -120,7 +118,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Filters = filters
         };
-        
+
         return this;
     }
 
@@ -130,7 +128,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         {
             Paging = pagingOptions
         };
-        
+
         return this;
     }
 
@@ -153,7 +151,7 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
         if (_resolverData.Filters is { } filters)
         {
             log.LogDebug("Applying filters: [{typeName}]", typeof(TFilters).Name);
-            
+
             _resolverData = _resolverData with
             {
                 Query = await filterHandler.ApplyAsync(_resolverData.Query, filters)
@@ -161,17 +159,16 @@ internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
             };
         }
 
-
         if (_resolverData.Paging is { } paging)
         {
             log.LogDebug("Applying pagination options");
-            
+
             _resolverData = _resolverData with
             {
                 Query = pagingHandler.Apply(_resolverData.Query, paging)
             };
         }
-            
+
 
         return _resolverData.Query;
     }

@@ -28,7 +28,7 @@ public static class FilterBuilderExtensions
         DateDiffOperation operation,
         int diffConstant = 0)
         => filterBuilder.IsDateDiffFilter(Shared.DateDiffDayMethod, dataExpression, filterFunc, operation, diffConstant);
-    
+
     /// <summary>
     /// Creates DateDiffMonth filter over entity property and filter value
     /// </summary>
@@ -55,7 +55,7 @@ public static class FilterBuilderExtensions
             operation,
             diffConstant,
             shouldRun);
-    
+
     /// <summary>
     /// Creates DateDiffYear filter over entity property and filter value
     /// </summary>
@@ -82,7 +82,7 @@ public static class FilterBuilderExtensions
             operation,
             diffConstant,
             shouldRun);
-    
+
     /// <summary>
     /// Creates DateDiffHour filter over entity property and filter value
     /// </summary>
@@ -109,7 +109,7 @@ public static class FilterBuilderExtensions
             operation,
             diffConstant,
             shouldRun);
-    
+
     /// <summary>
     /// Creates DateDiffMinute filter over entity property and filter value
     /// </summary>
@@ -136,7 +136,7 @@ public static class FilterBuilderExtensions
             operation,
             diffConstant,
             shouldRun);
-    
+
     /// <summary>
     /// Creates DateDiffSecond filter over entity property and filter value
     /// </summary>
@@ -163,7 +163,7 @@ public static class FilterBuilderExtensions
             operation,
             diffConstant,
             shouldRun);
-    
+
     /// <summary>
     /// Creates DateDiffMicrosecond filter over entity property and filter value
     /// </summary>
@@ -190,7 +190,7 @@ public static class FilterBuilderExtensions
             operation,
             diffConstant,
             shouldRun);
-    
+
     private static IFilterBuilder<TEntity, TFilter> IsDateDiffFilter<TEntity, TFilter>(
         this IFilterBuilder<TEntity, TFilter> filterBuilder,
         string methodName,
@@ -225,7 +225,7 @@ public static class FilterBuilderExtensions
         filterBuilder.Add(shouldRun, FilterExpressionFactory);
         return filterBuilder;
     }
-    
+
     private static Func<Expression, Expression, Expression> GetOperationFactory(DateDiffOperation operation)
         => operation switch
         {

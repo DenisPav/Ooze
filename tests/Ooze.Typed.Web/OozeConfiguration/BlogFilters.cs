@@ -9,4 +9,5 @@ public class BlogFilters
     public bool? IsNameDate { get; set; } = default!;
     public bool? IsNameNumeric { get; set; } = default!;
     public DateTime? DateDiffFilter { get; set; } = default!;
+    public string? Query { get; set; }
 }

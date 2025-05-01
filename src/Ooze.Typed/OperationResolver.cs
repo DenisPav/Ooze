@@ -33,7 +33,7 @@ internal class OperationResolver(
         IQueryable<TEntity> query,
         IEnumerable<TSorters>? sorters)
     {
-        sorters ??= Enumerable.Empty<TSorters>();
+        sorters ??= [];
         if (sorters.Any() == false)
         {
             log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);
@@ -100,7 +100,7 @@ internal class OperationResolver<TEntity, TFilters, TSorters>(
 
     public IOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters>? sorters)
     {
-        sorters ??= Enumerable.Empty<TSorters>();
+        sorters ??= [];
         if (sorters.Any() == false)
         {
             log.LogDebug("Sorters of type: [{typeName}] are not present", typeof(TSorters).Name);

@@ -2,14 +2,13 @@
 
 namespace Ooze.Typed.Web;
 
-public class DatabaseContext : DbContext
+public class SqliteDatabaseContext(DbContextOptions<SqliteDatabaseContext> options) : DbContext(options)
 {
-    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly, type => type.Namespace == "Ooze.Typed.Web.Entities");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SqliteDatabaseContext).Assembly,
+            //TODO: move this to a sub folder so that each context has related entity configurations
+            //TODO: maybe using a single set of configurations is possible across multiple db context implementations
+            type => type.Namespace == "Ooze.Typed.Web.Entities");
     }
 }

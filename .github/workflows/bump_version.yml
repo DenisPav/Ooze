@@ -47,6 +47,9 @@ jobs:
           $xml = [Xml] (Get-Content .\src\Ooze.Typed.EntityFrameworkCore.MySql\Ooze.Typed.EntityFrameworkCore.MySql.csproj)
           $xml.Project.PropertyGroup.Version = $newVersion
           $xml.Save("./src/Ooze.Typed.EntityFrameworkCore.MySql/Ooze.Typed.EntityFrameworkCore.MySql.csproj")
+          $xml = [Xml] (Get-Content .\src\Ooze.Typed.Query\Ooze.Typed.Query.csproj)
+          $xml.Project.PropertyGroup.Version = $newVersion
+          $xml.Save("./src/Ooze.Typed.Query/Ooze.Typed.Query.csproj")
           echo "::set-output name=newVersion::$newVersion"
       - name: Commit changes
         run: |

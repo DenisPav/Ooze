@@ -21,7 +21,7 @@ public interface IAsyncSorterBuilder<TEntity, TSorters>
         Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TSorters, SortDirection?> sorterFunc,
         Func<TSorters, bool>? shouldRun = null);
-    
+
     /// <summary>
     /// Creates a new async sort definition fluently for specified entity property and sorter property
     /// </summary>
