@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Expressions;
 using Ooze.Typed.Filters;
 using static System.Linq.Expressions.Expression;

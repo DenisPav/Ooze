@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Extensions;
-using Ooze.Typed.Tests.SqlServer.OozeConfiguration;
 using Testcontainers.MsSql;
 
 namespace Ooze.Typed.Tests.SqlServer;

@@ -13,12 +13,12 @@ public class AsyncSortDefinition<TEntity, TSorters>
     /// Sorting expression
     /// </summary>
     public LambdaExpression DataExpression { get; init; } = null!;
-    
+
     /// <summary>
     /// Delegate which decides if the sorter should be applied
     /// </summary>
     public Func<TSorters, Task<bool>> ShouldRun { get; init; } = null!;
-    
+
     /// <summary>
     /// Delegate which provides sorting direction
     /// </summary>

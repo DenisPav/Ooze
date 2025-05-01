@@ -65,7 +65,7 @@ public class FilterBuilderTests
     [InlineData(null, "name", null, 1)]
     public void Should_Run_Correct_Filters(
         int? id,
-        string name,
+        string? name,
         int? numberOfComments,
         int numberOfFilters)
     {
@@ -92,7 +92,7 @@ public class FilterBuilderTests
     [InlineData(3213, "123", 4, 3)]
     public void Should_Run_Correct_Custom_Filters(
         int? id,
-        string name,
+        string? name,
         int? numberOfComments,
         int numberOfFilters)
     {

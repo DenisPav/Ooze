@@ -4,34 +4,21 @@ using Ooze.Typed.Web.Entities;
 
 namespace Ooze.Typed.Web;
 
-public class SeedService : IHostedService
+public class SeedService(IServiceScopeFactory scopeFactory) : IHostedService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-
-    public SeedService(IServiceScopeFactory scopeFactory)
-    {
-        _scopeFactory = scopeFactory;
-    }
-
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = _scopeFactory.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-        var sqlServerDb = scope.ServiceProvider.GetRequiredService<SqlServerDatabaseContext>();
-        var postgresDb = scope.ServiceProvider.GetRequiredService<PostgresDatabaseContext>();
-        var mariaDb = scope.ServiceProvider.GetRequiredService<MariaDbDatabaseContext>();
-
-        await Task.WhenAll(
-            SeedRecords(db, cancellationToken),
-            SeedRecords(sqlServerDb, cancellationToken),
-            SeedRecords(postgresDb, cancellationToken),
-            SeedRecords(mariaDb, cancellationToken));
+        using var scope = scopeFactory.CreateScope();
+        var sqliteDb = scope.ServiceProvider.GetRequiredService<SqliteDatabaseContext>();
+        await SeedRecords(sqliteDb, cancellationToken);
     }
 
     private static async Task SeedRecords(
         DbContext db,
         CancellationToken cancellationToken)
     {
+        await db.Database.EnsureCreatedAsync(cancellationToken);
+        
         if (await db.Set<Blog>().AnyAsync(cancellationToken))
         {
             return;

@@ -12,7 +12,7 @@ internal class AsyncFilterHandler<TEntity, TFilters>(
         TFilters filters)
     {
         log.LogDebug("Processing available filters!");
-        
+
         var filterDefinitions = new List<AsyncFilterDefinition<TEntity, TFilters>>();
         foreach (var provider in filterProviders)
         {
@@ -20,7 +20,7 @@ internal class AsyncFilterHandler<TEntity, TFilters>(
                 .ConfigureAwait(false);
             filterDefinitions.AddRange(definitions);
         }
-        
+
         foreach (var filterDefinition in filterDefinitions)
         {
             var shouldRun = await filterDefinition.ShouldRun(filters)
