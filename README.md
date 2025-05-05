@@ -1,16 +1,47 @@
-# Ooze.Typed 🌳💧🔧 
+# Ooze.Typed 🌳💧🔧
 [![Nuget](https://img.shields.io/nuget/v/Ooze.Typed)](https://www.nuget.org/packages/Ooze.Typed/)
 ![framework](https://img.shields.io/badge/framework-.net%208.0-green)
 ![framework](https://img.shields.io/badge/framework-.net%209.0-green)
 ![GitHub Repo stars](https://img.shields.io/github/stars/DenisPav/Ooze)
 ![Nuget](https://img.shields.io/nuget/dt/Ooze.Typed)
 
-This package provides a simple mechanism for applying filters, sorters, paging to your `IQueryable<T>` queries. Packages are available on the `NuGet` so you can install them from there.
+## Table of Contents
+- [About](#about)
+- [Installation](#installation-)
+- [Additional Packages](#additional-packages-)
+- [Documentation](#documentation-)
+  - [Registering Ooze](#registering-ooze-)
+  - [Adding Filters](#adding-filters-️)
+  - [Adding Sorters](#adding-sorters-)
+  - [Paging](#paging-)
+      - [Cursor Paging](#cursor-paging-)
+  - [Applying Definitions](#applying-definitions-)
+  - [Async Support](#async-support-)
+  - [Query Language](#query-language-)
+  - [Advanced](#advanced-)
+      - [Controlling Filter Builders/Providers](#controlling-filter-buildersproviders)
+      - [Automatic Application in MVC via ResultFilter](#automatic-application-in-mvc-via-resultfilter)
+      - [Applying Filters and Sorters on IEnumerable Collections](#applying-filters-and-sorters-on-ienumerable-collections)
+- [Filter Extensions](#filter-extensions-)
+    - [Ooze.Typed.EntityFrameworkCore](#oozetypedentityframeworkcore)
+    - [Ooze.Typed.EntityFrameworkCore.Sqlite](#oozetypedentityframeworkcoresqlite)
+    - [Ooze.Typed.EntityFrameworkCore.SqlServer](#oozetypedentityframeworkcoresqlserver)
+    - [Ooze.Typed.EntityFrameworkCore.Npgsql](#oozetypedentityframeworkcorenpgsql)
+    - [Ooze.Typed.EntityFrameworkCore.MySql](#oozetypedentityframeworkcoremysql)
 
-## Installation ⚙
+
+## About
+
+**Ooze.Typed** is a .NET library that simplifies data querying in your applications by providing a strongly-typed approach to filtering, sorting, and paging operations on `IQueryable<T>` sources. Key features of library are:
+- **Strongly-typed filters/sorters**
+- **Pagination**
+- **Query language** - Optional support for string-based query expressions
+- **Async capabilities** - Optional opt in async/await support
+
+## Installation
 You can find latest versions on nuget [on this location](https://www.nuget.org/packages/Ooze.Typed/).
 
-## Additional packages 🎁
+## Additional packages
 Except base `Ooze.Typed` package there are few more that add additional filter extensions to the filter builder that you use in your provider implementations. These are listed below:
  - [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
  - [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
@@ -21,7 +52,9 @@ Except base `Ooze.Typed` package there are few more that add additional filter e
 These packages provide additional provider specific `EF` extensions to the filter builder pipeline. There is another package which can be installed and it will provide `query language` filtration:
  - [Ooze.Typed.Query](https://www.nuget.org/packages/Ooze.Typed.Query/)
 
-## Registering Ooze 🧰
+## Documentation
+
+### Registering Ooze
 After installation you'll need to register Ooze to your service collection. To do so you need to call `.AddOozeTyped()` method. Example of this can be seen below:
 ```csharp
 //Example for minimal apis
@@ -42,7 +75,7 @@ public class Startup
 
 This call will register internal services needed by `Ooze` and will in turn return a related "builder" via which you can then register your `provider` implementations.
 
-## Adding Filters 🗡️🧀
+### Adding Filters
 After registering Ooze you need to create your filter definition. This can be done by implementing `IFilterProvider<TEntity, TFilter>` interface. After creating implementation you can use static `Filters` class to start of the builder which will in turn create your filter definitions. Example can be seen below:
 ```csharp
 public class MyClassFiltersProvider : IFilterProvider<MyClass, MyClassFilters>
@@ -103,7 +136,7 @@ services.AddOozeTyped()
 
 By default all the provider implementations that you register via `.Add<TProvider>()` method will be registered to `IServiceCollection` as a `Singleton` but you can provide your own `LifeTime` by providing `ServiceLifetime` argument into the method.
 
-## Adding sorters 🔼🔽
+### Adding sorters
 Similarly how you can define filter definitions, you can create sorter definitions which can be then used
 by `Ooze` to sort your queries. This is done by implementing `ISorterProvider<TEntity, TSorters>` interface, and using `Sorters` static class to start of builder for creating sorters. Example of this can be found below:
 ```csharp
@@ -123,7 +156,7 @@ Sorters are added to `Ooze` in same manner as Filters so you can reuse the examp
 **NOTE:**
 Sorters by default use `SortDirection` enumeration in order to specify property sorting direction.
 
-## Paging 📰
+### Paging
 Paging is done via `.Page` method on resolver. You just need to pass instance of `PagingOptions` to the before mentioned method. For example:
 ```csharp
 query = resolver
@@ -136,7 +169,7 @@ query = resolver
         .Apply();
 ```
 
-#### Cursor paging 👉
+#### Cursor paging
 There is also additional support for cursor paging via `.PageWithCursor` method on the resolver. If you want to use cursor paging you'll be using `CursorPagingOptions<T>` in this case and you'll need to pass a property you want to use as a cursor source. Example of this can be found in the next example:
 ```csharp
 query = resolver
@@ -152,7 +185,7 @@ query = resolver
         .Apply();
 ```
 
-## Applying definitions 🧪
+### Applying definitions
 In order to apply filter/sorter definitions you need to get instance of `IOperationResolver`/`IOperationResolver<TEntity, TFilters, TSorters>` after that you can just call methods in order to change `IQueryable<TEntity>` instance. Here is a more elaborate example below:
 ```csharp
 //lets say you have a route which gets filters/sorters from request body
@@ -178,7 +211,7 @@ public record class Input(MyEntityFilters Filters, MyEntitySorters Sorters, Pagi
 **NOTE:**
 Example before is bound to POST method, but you can use GET or anything else that suits you. For more elaborate example look [here](https://github.com/DenisPav/Ooze/tree/master/tests/Ooze.Typed.Web). Ooze only cares that you provide instances of your `filters`,  `sorters` which will be then applied to `IQueryable` instances.
 
-## Async support 🔃
+### Async support
 If needed you can opt in for the `async` version of the pipeline for the resolvers for different operations. In order to opt into async support you'll need to call `EnableAsyncResolvers()` call on the `IOozeServiceCollectionBuilder` which is exposed when calling `.AddOoze()` extension. Then you can just register providers as before via `.Add<TProvider>()` method.
 
 In order for `FilterProvider` or `SorterProvider` to be of `async` nature you need to use `IAsyncFilterProvider` or `IAsyncSorterProvider` interfaces. Accompanying `AsyncFilters` and `AsyncSorters` static classes are present to help you out with the building process as they are in non async version.
@@ -233,7 +266,7 @@ record class Input(MyFilters Filters, IEnumerable<MySorters> Sorters, PagingOpti
 **NOTE:**
 `AsyncFilters/Sorters` builders will currently internally wrap the operations into `Tasks` even if they initially do not look like ones.
 
-## Query language 👓
+### Query language
 Ooze supports a subset of operations to be used via `Query Language`. In order to use/support these you will need to installed mentioned package from the `Additional Packages` section (`Ooze.Typed.Query`). In order to register related implementations be sure to call next method:
 
 ```csharp
@@ -258,7 +291,7 @@ public class Startup
 
 ```
 
-Calling  `.AddOozeQueryLanguage()` will register `IQueryLanguageOperationResolver` to services collection which can then be used to filter `IQueryable<T>` instances with query language.
+Calling `.AddOozeQueryLanguage()` will register `IQueryLanguageOperationResolver` to services collection which can then be used to filter `IQueryable<T>` instances with query language.
 
 Package provides `IQueryLanguageFilterProvider<TEntity>` which can be used to create implementations of query language filter providers. Similar to how ordinary filter providers in Ooze work, you will have access to `QueryLanguageFilters` static class which can be used to start the process of creating a query language registration. Example of this can be seen below:
 
@@ -309,10 +342,9 @@ var resultingQueryable = resolver
     .Apply();
 ```
 
-## Advanced 🧠
+### Advanced
  
-<details>
-  <summary>Controlling filter builders/providers</summary>
+#### Controlling filter builders/providers
 
 Filter builders have a special parameter called `shouldRun` which is by default nullable. You can use this if you want to manually decide when the filter needs to be called. You will get instance of the filters to the delegate and then can apply your custom logic for the specific filter. 
 
@@ -361,10 +393,8 @@ public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>
 Similar can be applied to `SorterProvider` implementations which also contain `shouldRun` parameter on
 sorter builder extensions. Be careful when using `IHttpContextAccessor` in this way and be sure to read about
 how to correctly use it over on [this link](https://github.com/davidfowl/AspNetCoreDiagnosticScenarios/blob/master/AspNetCoreGuidance.md#do-not-store-ihttpcontextaccessorhttpcontext-in-a-field).
-</details>
 
-<details>
-  <summary>Automatic application in MVC via ResultFilter</summary>
+#### Automatic application in MVC via ResultFilter
 
 If needed you can even streamline the whole process if you create a simple `IAsyncResultFilter` so that you only need to return `IQueryable<T>` instance back from your controller actions. 
 
@@ -435,10 +465,8 @@ public IQueryable<Blog> PostSqlServerAutomatic() => _sqlServerDb.Set<Blog>();
 ```
 
 For more details look at sample project in `tests/Ooze.Typed.Web`.
-</details>
 
-<details>
-  <summary>Applying filters and sorters on IEnumerable collections</summary>
+#### Applying filters and sorters on IEnumerable collections
 
 Due to nature of `IQueryable<T>` and `IEnumerable<T>` you can even use `OozeOperationResolver` on materialized or in memory collections for example `List<T>`. You'll just need to convert it (cast it) to `IQueryable<T>` via `.AsQueryable()` method. Notice that this can lead to exception since not all operations can be used this way. Some operations can't be used on `client side` and this can cause errors. 
 
@@ -463,20 +491,19 @@ As mentioned before if you use `.Like()` filter by providing `Name` filter you'l
 ```
 
 Be sure to know what you'll be using this for so you don't get unwanted issues.
-</details>
 
-## Filter extensions 🎁
+### Filter extensions
 As previously mentioned additional packages contains some usefull extensions when working with specific "flavor" of EF. For example you might be using `Sqlite` or `SqlServer` or `Postgres` etc. For these situations you can install these specific packages which contain extensions methods for the specific flavor. More about what is supported on each of the packages can be seen below.
 
-### [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
+#### [Ooze.Typed.EntityFrameworkCore](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore/)
 This packages depends on EF Core packages and exposes next extensions:
  - `Like()` - EF.Eunctions.Like
 
-### [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
+#### [Ooze.Typed.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Sqlite/)
 This packages depends on EF Core Sqlite package and package mentioned beforehand and exposes next extensions:
  - `Glob()` - EF.Functions.Glob
 
-### [Ooze.Typed.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.SqlServer/)
+#### [Ooze.Typed.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.SqlServer/)
 This package depends on EF Core SqlServer package and package mentioned beforehand and exposes next extensions:
  - `IsDate()` - EF.Functions.IsDate
  - `IsNumeric()` - EF.Functions.IsNumeric
@@ -492,12 +519,12 @@ This package depends on EF Core SqlServer package and package mentioned beforeha
  - `IsDateDiffMicrosecond()` - EF.Functions.DateDiffMicrosecond
  - `IsDateDiffNanosecond()` - EF.Functions.DateDiffNanosecond
 
-### [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql)
+#### [Ooze.Typed.EntityFrameworkCore.Npgsql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.Npgsql)
 This package depends on EF Core Npgsql package and package mentioned beforehand and exposes next extensions:
  - `InsensitiveLike()` - EF.Functions.ILike
  - `SoundexEqual()` - EF.Functions.FuzzyStringMatchSoundex
 
-### [Ooze.Typed.EntityFrameworkCore.MySql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.MySql)
+#### [Ooze.Typed.EntityFrameworkCore.MySql](https://www.nuget.org/packages/Ooze.Typed.EntityFrameworkCore.MySql)
 This package depends on EF Core MySql (Pomelo) package and package mentioned beforehand and exposes next extensions:
 - `IsDateDiffDay()` - EF.Functions.DateDiffDay
 - `IsDateDiffMonth()` - EF.Functions.DateDiffMonth
