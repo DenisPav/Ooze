@@ -8,6 +8,9 @@ Filters can be created by implementing an registering and implementation of `IFi
 - [Registering filter implementation](#registering-filter-implementation)
 - [Async support](#async-support)
 - [Advanced](#advanced)
+  - [shouldRun parameter](#shouldrun-parameter)
+  - [Filter provider lifetimes](#filter-provider-lifetimes)
+  - [Filtering in-memory data](#filtering-in-memory-data)
   
 
 ## Creating a filter provider
@@ -24,7 +27,7 @@ public class Blog
 public class BlogFilters
 {
     public int[] Ids { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
 }
 
 
@@ -93,5 +96,86 @@ In order for `Ooze` to see your filter implementation you will need to register 
 By default filter implementations registered via `Add` method are `Singletons`. But you can override this behaviour by passing lifetime as additional argument to the `Add` method.
 
 ## Async support
+Filters can also be used in `async` fashion. Async support is currently hidden behind `EnableAsyncResolvers` call. If you wish to use async filtering be sure to call that while registering related `Ooze` code. Below we can see example of async filter declaration, notice the usage of `IAsyncFilterProvider` and `AsyncFilters`.
+
+```csharp
+public class BlogFiltersProvider : IAsyncFilterProvider<Blog, BlogFilters>
+{
+     public ValueTask<IEnumerable<AsyncFilterDefinition<Blog, BlogFilters>>> GetFiltersAsync()
+        => ValueTask.FromResult(AsyncFilters.CreateFor<Blog, BlogFilters>()
+            .Equal(blog => blog.Name, filter => filter.Name)
+            .AddAsync(async filters =>
+            {
+                await Task.CompletedTask;
+                return filters.Ids != null;
+            }, async filters =>
+            {
+                await Task.CompletedTask;
+                return blog => filter.Ids.Contains(blog.Id);
+            })
+            .Build());
+}
+```
+
+`IAsyncFilterProvider` is a filter provider interface that works in similar fashion to non async `IFilterProvider`. Same goes for `AsyncFilters` builder vs `Filters` builder. All filter operations that are available on the non async version are also exposed on async supported one. In order to consume these filters you will also need to register them to `service collection` and then use `IAsyncOperationResolver` in order for them to be applied.
+
+In current versions `Cancellation tokens` are not yet supported.
 
 ## Advanced
+
+### shouldRun parameter
+This parameter is present in all filter operations. If you do not provide it it will be defaulted to a sane default. With it you can decide when you want to allow some filter to be applied or to be skipped. Example can be seen below:
+
+```csharp
+return Filters.CreateFor<Blog, BlogFilters>()
+        .Equal(blog => blog.Name, filter => filter.Name, filter => filter.Name?.StartsWith("start"))
+        .In(blog => blog.Id, filter => filter.Ids, filters => false)
+        .Build();
+```
+
+In this example `equality` filter will be applied in case when filter argument will contain string `start`. While `contains/in` filter will never be applied.
+
+### Filter provider lifetimes
+By default when you register a `Filter provider` via `.Add()` method, it will be registered as `Singleton`. This can be changed to `Scoped/Transient` if needed. Due to this you can even create filters differently depending on some external factors. Check the examples below:
+
+```csharp
+//register this filter provider with .Add<BlogFiltersProvider>(ServiceLifetime.Scoped)
+public class BlogFiltersProvider : IFilterProvider<Blog, BlogFilters>
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public BlogFiltersProvider(IHttpContextAccessor httpContextAccessor) 
+        => _httpContextAccessor = httpContextAccessor;
+    
+    public IEnumerable<FilterDefinition<Blog, BlogFilters>> GetFilters()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        var hasSecretParam = !httpContext?.Request.Query.ContainsKey("secret") ?? false;
+        
+        return Filters.CreateFor<Blog, BlogFilters>()
+            .Equal(blog => blog.Name, filter => filter.Name, _ => hasSecretParam)
+            .Build();
+    }
+}
+```
+
+Here we can see that `equality` filter will only be applied in case when `query string` will contain `secret` parameter. Otherwise it will be skipped. In order for this to work correctly be sure to change default `lifetime` of a filter provider upon registration.
+
+### Filtering in-memory data
+Due to nature of `IQueryable/IEnumerable` collections, you can apply filter providers even on a `List` if needed. This does come with some limitations also. For example `.Like` operation would not work and would throw `System.InvalidOperationException` in that case. Like operator is used as a marker in case of `IQueryable` queries which gets transformed into the `like` sql counterpart and thus in case of `IEnumerable` is not present. On the other hand, common in-memory operations will continue to work normally as before. Example of this can be seen below:
+
+```csharp
+[HttpPost]
+public async Task<IEnumerable<Blog>> FilterBlogs(
+    [FromService] DatabaseContext db,
+    [FromService] IOperationResolver resolver
+    BlogFilters filters)
+{
+    var materializedBlogs = await db.Set<Blog>()
+        .ToListAsync();
+    var blogsCastedToQueryable = materializedBlogs.AsQueryable();
+    blogsCastedToQueryable = resolver.Filter(blogsCastedToQueryable, Filters);
+
+    return blogsCastedToQueryable.ToList();
+}
+```
