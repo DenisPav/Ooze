@@ -11,6 +11,7 @@ Filters can be created by implementing an registering and implementation of `IFi
   - [shouldRun parameter](#shouldrun-parameter)
   - [Filter provider lifetimes](#filter-provider-lifetimes)
   - [Filtering in-memory data](#filtering-in-memory-data)
+  - [Automatic applying on controllers](#automatic-applying-on-controllers)
   
 
 ## Creating a filter provider
@@ -179,3 +180,64 @@ public async Task<IEnumerable<Blog>> FilterBlogs(
     return blogsCastedToQueryable.ToList();
 }
 ```
+
+### Automatic applying on controllers
+We can combine `Ooze` filters with `IAsyncResultFilter` interface in order to "automate" filtering if needed. We can return `IQueryable` query back from the controller action which will then be consumed and filtered in the result filter. Example of this process can be seen below:
+
+```csharp
+public sealed class OozeFilter<TEntity, TFilters, TSorters> : IAsyncResultFilter
+    where TEntity : class
+{
+    private readonly IOperationResolver<TEntity, TFilters, TSorters> _resolver;
+    private readonly ILogger<OozeFilter<TEntity, TFilters, TSorters>> _log;
+
+    public OozeFilter(
+        IOperationResolver<TEntity, TFilters, TSorters> resolver,
+        ILogger<OozeFilter<TEntity, TFilters, TSorters>> log)
+    {
+        _resolver = resolver;
+        _log = log;
+    }
+
+    public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+    {
+        var objectResult = context.Result as ObjectResult;
+
+        if (objectResult?.Value is IQueryable<TEntity> query
+            && context.Controller is ControllerBase)
+        {
+            _log.LogDebug("Binding {modelName}", nameof(RequestInput));
+
+            var model = await JsonSerializer.DeserializeAsync<RequestInput?>(context.HttpContext.Request.Body,
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+            if (model is not null)
+            {
+                objectResult.Value = _resolver.Apply(query, model.Sorters, model.Filters, model.Paging);
+            }
+            else
+            {
+                _log.LogWarning("Binding of {modelName} failed", nameof(RequestInput));
+            }
+        }
+
+        await next();
+    }
+}
+
+public class RequestInput
+{
+    public TFilters? Filters { get; set; }
+    public IEnumerable<TSorters>? Sorters { get; set; }
+    public PagingOptions? Paging { get; set; }
+}
+```
+
+Notice that we are binding `RequestInput` class from the body of the request. So in this situation this would be provided in `Post` or `Put` http request or any that actualy has a body. Then our controller action would look something like the following example:
+
+```csharp
+[HttpPost("/blogs/filtered"), ServiceFilter(typeof(OozeFilter<Blog, BlogFilters, BlogSorters>))]
+public IQueryable<Blog> PostSqlServerAutomatic() => databaseContext.Set<Blog>();
+```
+
+One more thing to notice here is that we are using `Sorting` and `Paging` also in this example.
