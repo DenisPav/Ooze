@@ -94,7 +94,7 @@ Since `Add` method receives a factory which creates an `expression` that is appl
 ## Registering filter implementation
 In order for `Ooze` to see your filter implementation you will need to register it into the `ServiceCollection`. Easiest way to do so is to use `.Add()` method that is exposed on the builder that is returned by calling `.AddOozeTyped()`. You can also register it manually to the `ServiceCollection` if needed.
 
-By default filter implementations registered via `Add` method are `Singletons`. But you can override this behaviour by passing lifetime as additional argument to the `Add` method.
+By default all provider implementations registered via `Add` method are `Singletons`. But you can override this behaviour by passing lifetime as additional argument to the `Add` method.
 
 ## Async support
 Filters can also be used in `async` fashion. Async support is currently hidden behind `EnableAsyncResolvers` call. If you wish to use async filtering be sure to call that while registering related `Ooze` code. Below we can see example of async filter declaration, notice the usage of `IAsyncFilterProvider` and `AsyncFilters`.
