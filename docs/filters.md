@@ -168,8 +168,8 @@ Due to nature of `IQueryable/IEnumerable` collections, you can apply filter prov
 ```csharp
 [HttpPost]
 public async Task<IEnumerable<Blog>> FilterBlogs(
-    [FromService] DatabaseContext db,
-    [FromService] IOperationResolver resolver
+    [FromServices] DatabaseContext db,
+    [FromServices] IOperationResolver resolver
     BlogFilters filters)
 {
     var materializedBlogs = await db.Set<Blog>()
