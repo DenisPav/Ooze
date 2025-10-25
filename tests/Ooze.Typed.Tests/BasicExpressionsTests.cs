@@ -496,7 +496,8 @@ public class BasicExpressionsTests
     public void StringOperation_StartsWith_With_Matching_Prefix_Should_Return_True()
     {
         var entity = new TestEntity(1, null, "TestName", null, 0, null, DateTime.Now, null, false, null, 0, null);
-        var expression = BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Test", CommonMethods.StringStartsWith, false);
+        var expression =
+            BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Test", CommonMethods.StringStartsWith, false);
 
         var compiledExpression = expression.Compile();
         var result = compiledExpression(entity);
@@ -508,7 +509,8 @@ public class BasicExpressionsTests
     public void StringOperation_StartsWith_With_Non_Matching_Prefix_Should_Return_False()
     {
         var entity = new TestEntity(1, null, "TestName", null, 0, null, DateTime.Now, null, false, null, 0, null);
-        var expression = BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Name", CommonMethods.StringStartsWith, false);
+        var expression =
+            BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Name", CommonMethods.StringStartsWith, false);
 
         var compiledExpression = expression.Compile();
         var result = compiledExpression(entity);
@@ -520,7 +522,8 @@ public class BasicExpressionsTests
     public void StringOperation_EndsWith_With_Matching_Suffix_Should_Return_True()
     {
         var entity = new TestEntity(1, null, "TestName", null, 0, null, DateTime.Now, null, false, null, 0, null);
-        var expression = BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Name", CommonMethods.StringEndsWith, false);
+        var expression =
+            BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Name", CommonMethods.StringEndsWith, false);
 
         var compiledExpression = expression.Compile();
         var result = compiledExpression(entity);
@@ -532,7 +535,8 @@ public class BasicExpressionsTests
     public void StringOperation_EndsWith_With_Non_Matching_Suffix_Should_Return_False()
     {
         var entity = new TestEntity(1, null, "TestName", null, 0, null, DateTime.Now, null, false, null, 0, null);
-        var expression = BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Test", CommonMethods.StringEndsWith, false);
+        var expression =
+            BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Test", CommonMethods.StringEndsWith, false);
 
         var compiledExpression = expression.Compile();
         var result = compiledExpression(entity);
@@ -571,7 +575,8 @@ public class BasicExpressionsTests
     public void StringOperation_StartsWith_With_Negated_And_Matching_Prefix_Should_Return_False()
     {
         var entity = new TestEntity(1, null, "TestName", null, 0, null, DateTime.Now, null, false, null, 0, null);
-        var expression = BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Test", CommonMethods.StringStartsWith, true);
+        var expression =
+            BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Test", CommonMethods.StringStartsWith, true);
 
         var compiledExpression = expression.Compile();
         var result = compiledExpression(entity);
@@ -583,7 +588,8 @@ public class BasicExpressionsTests
     public void StringOperation_StartsWith_With_Negated_And_Non_Matching_Prefix_Should_Return_True()
     {
         var entity = new TestEntity(1, null, "TestName", null, 0, null, DateTime.Now, null, false, null, 0, null);
-        var expression = BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Name", CommonMethods.StringStartsWith, true);
+        var expression =
+            BasicExpressions.StringOperation<TestEntity>(x => x.Text, "Name", CommonMethods.StringStartsWith, true);
 
         var compiledExpression = expression.Compile();
         var result = compiledExpression(entity);
