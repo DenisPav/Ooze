@@ -5,42 +5,73 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Typed.Expressions;
 
-internal static class BasicExpressions
+/// <summary>
+/// Provides methods for building basic filter expressions
+/// </summary>
+public static class BasicExpressions
 {
-    internal static Expression<Func<TEntity, bool>> Equal<TEntity, TProperty>(
+    /// <summary>
+    /// Creates an equality filter expression
+    /// </summary>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterValue">Value to compare against</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Filter expression</returns>
+    public static Expression<Func<TEntity, bool>> Equal<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         TProperty filterValue)
         => BasicOperationExpressionFactory(dataExpression, filterValue, Expression.Equal);
 
-    internal static Expression<Func<TEntity, bool>> NotEqual<TEntity, TProperty>(
+    /// <summary>
+    /// Creates a not-equal filter expression
+    /// </summary>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterValue">Value to compare against</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Filter expression</returns>
+    public static Expression<Func<TEntity, bool>> NotEqual<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         TProperty filterValue)
         => BasicOperationExpressionFactory(dataExpression, filterValue, Expression.NotEqual);
 
-    internal static Expression<Func<TEntity, bool>> GreaterThan<TEntity, TProperty>(
+    /// <summary>
+    /// Creates a greater-than filter expression
+    /// </summary>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterValue">Value to compare against</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Filter expression</returns>
+    public static Expression<Func<TEntity, bool>> GreaterThan<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         TProperty filterValue)
         => BasicOperationExpressionFactory(dataExpression, filterValue, Expression.GreaterThan);
 
-    internal static Expression<Func<TEntity, bool>> LessThan<TEntity, TProperty>(
+    /// <summary>
+    /// Creates a less-than filter expression
+    /// </summary>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterValue">Value to compare against</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Filter expression</returns>
+    public static Expression<Func<TEntity, bool>> LessThan<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         TProperty filterValue)
         => BasicOperationExpressionFactory(dataExpression, filterValue, Expression.LessThan);
 
-    private static Expression<Func<TEntity, bool>> BasicOperationExpressionFactory<TEntity, TProperty>(
-        Expression<Func<TEntity, TProperty>> dataExpression,
-        TProperty filterValue,
-        Func<Expression, Expression, Expression> operationFactory)
-    {
-        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
-        var result = GetWrappedConstantExpression(filterValue);
-        var operationExpression = operationFactory(memberAccessExpression, result);
-        var parameter = ExtractParameterExpression(memberAccessExpression);
-
-        return GetLambdaExpression<TEntity>(operationExpression, parameter);
-    }
-
-    internal static Expression<Func<TEntity, bool>> In<TEntity, TProperty>(
+    /// <summary>
+    /// Creates an "In" filter expression
+    /// </summary>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterValue">Collection of values to check against</param>
+    /// <param name="isNegated">Whether to negate the expression</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Filter expression</returns>
+    public static Expression<Func<TEntity, bool>> In<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         IEnumerable<TProperty>? filterValue,
         bool isNegated = false)
@@ -57,7 +88,16 @@ internal static class BasicExpressions
         return GetLambdaExpression<TEntity>(lambdaBody, parameter);
     }
 
-    internal static Expression<Func<TEntity, bool>> Range<TEntity, TProperty>(
+    /// <summary>
+    /// Creates a range filter expression
+    /// </summary>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="rangeFilterValue">Range filter with From and To values</param>
+    /// <param name="isNegated">Whether to negate the expression</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Filter expression</returns>
+    public static Expression<Func<TEntity, bool>> Range<TEntity, TProperty>(
         Expression<Func<TEntity, TProperty>> dataExpression,
         RangeFilter<TProperty>? rangeFilterValue,
         bool isNegated = false)
@@ -79,7 +119,16 @@ internal static class BasicExpressions
         return GetLambdaExpression<TEntity>(lambdaBody, parameter);
     }
 
-    internal static Expression<Func<TEntity, bool>> StringOperation<TEntity>(
+    /// <summary>
+    /// Creates a string operation filter expression
+    /// </summary>
+    /// <param name="dataExpression">Expression targeting entity property</param>
+    /// <param name="filterValue">String value to compare against</param>
+    /// <param name="operationMethod">String operation method (e.g., Contains, StartsWith, EndsWith)</param>
+    /// <param name="isNegated">Whether to negate the expression</param>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <returns>Filter expression</returns>
+    public static Expression<Func<TEntity, bool>> StringOperation<TEntity>(
         Expression<Func<TEntity, string>> dataExpression,
         string? filterValue,
         MethodInfo operationMethod,
@@ -96,7 +145,13 @@ internal static class BasicExpressions
         return GetLambdaExpression<TEntity>(lambdaBody, parameter);
     }
 
-    internal static MemberExpression GetMemberExpression(
+    /// <summary>
+    /// Extracts a member expression from an expression body
+    /// </summary>
+    /// <param name="expressionBody">Expression body to extract from</param>
+    /// <param name="skipDefaultingToValueProp">Whether to skip defaulting to Value property for nullable types</param>
+    /// <returns>Extracted member expression</returns>
+    public static MemberExpression GetMemberExpression(
         Expression expressionBody,
         bool skipDefaultingToValueProp = false)
     {
@@ -112,12 +167,13 @@ internal static class BasicExpressions
         return memberAccessExpression!;
     }
 
-    internal static Expression<Func<TEntity, bool>> GetLambdaExpression<TEntity>(
-        Expression body,
-        params ParameterExpression[] parameterExpressions)
-        => Lambda<Func<TEntity, bool>>(body, parameterExpressions);
-
-    internal static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
+    /// <summary>
+    /// Wraps a constant value in an OozeValue wrapper for EF Core parameterization
+    /// </summary>
+    /// <param name="constant">Constant value to wrap</param>
+    /// <typeparam name="TProperty">Property type</typeparam>
+    /// <returns>Expression accessing the wrapped constant</returns>
+    public static Expression GetWrappedConstantExpression<TProperty>(TProperty constant)
     {
         var constantType = constant?.GetType() ?? typeof(TProperty);
         var correctType = Nullable.GetUnderlyingType(constantType) ?? constantType;
@@ -127,7 +183,12 @@ internal static class BasicExpressions
         return Property(Constant(wrapper), nameof(OozeValue<TProperty>.p));
     }
 
-    internal static ParameterExpression ExtractParameterExpression(MemberExpression memberExpression)
+    /// <summary>
+    /// Extracts the parameter expression from a member expression
+    /// </summary>
+    /// <param name="memberExpression">Member expression to extract from</param>
+    /// <returns>Parameter expression</returns>
+    public static ParameterExpression ExtractParameterExpression(MemberExpression memberExpression)
     {
         var intermediateExpression = memberExpression.Expression;
         while (intermediateExpression is MemberExpression member)
@@ -135,6 +196,11 @@ internal static class BasicExpressions
         return intermediateExpression as ParameterExpression
                ?? throw new Exception("Passed member expression can not be extracted correctly!");
     }
+
+    internal static Expression<Func<TEntity, bool>> GetLambdaExpression<TEntity>(
+        Expression body,
+        params ParameterExpression[] parameterExpressions)
+        => Lambda<Func<TEntity, bool>>(body, parameterExpressions);
 
     /// <summary>
     /// Used by CommonMethods to create a wrapped object which will be resolved as a parameter in the EF generated SQL query
@@ -148,5 +214,18 @@ internal static class BasicExpressions
         {
             p = value
         };
+    }
+
+    private static Expression<Func<TEntity, bool>> BasicOperationExpressionFactory<TEntity, TProperty>(
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        TProperty filterValue,
+        Func<Expression, Expression, Expression> operationFactory)
+    {
+        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
+        var result = GetWrappedConstantExpression(filterValue);
+        var operationExpression = operationFactory(memberAccessExpression, result);
+        var parameter = ExtractParameterExpression(memberAccessExpression);
+
+        return GetLambdaExpression<TEntity>(operationExpression, parameter);
     }
 }

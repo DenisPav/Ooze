@@ -20,17 +20,6 @@
     <ProjectReference Include="..\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Ooze.Typed\Ooze.Typed.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\Ooze.Typed\Expressions\BasicExpressions.cs">
-      <Link>Expressions\BasicExpressions.cs</Link>
-    </Compile>
-    <Compile Include="..\Ooze.Typed\Expressions\CommonMethods.cs">
-      <Link>Expressions\CommonMethods.cs</Link>
-    </Compile>
-    <Compile Include="..\Ooze.Typed\Expressions\OozeValue.cs">
-      <Link>Expressions\OozeValue.cs</Link>
-    </Compile>
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
   </ItemGroup>

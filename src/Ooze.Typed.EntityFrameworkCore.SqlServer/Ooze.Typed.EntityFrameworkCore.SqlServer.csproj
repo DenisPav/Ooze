@@ -17,17 +17,6 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Ooze.Typed\Expressions\BasicExpressions.cs">
-      <Link>Expressions\BasicExpressions.cs</Link>
-    </Compile>
-    <Compile Include="..\Ooze.Typed\Expressions\CommonMethods.cs">
-      <Link>Expressions\CommonMethods.cs</Link>
-    </Compile>
-    <Compile Include="..\Ooze.Typed\Expressions\OozeValue.cs">
-      <Link>Expressions\OozeValue.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
