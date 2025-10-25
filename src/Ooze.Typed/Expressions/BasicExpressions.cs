@@ -41,11 +41,11 @@ internal static class BasicExpressions
     }
 
     internal static Expression<Func<TEntity, bool>> In<TEntity, TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         IEnumerable<TProperty>? filterValue,
         bool isNegated = false)
     {
-        var memberAccessExpression = GetMemberExpression(dataExpression.Body);
+        var memberAccessExpression = GetMemberExpression(dataExpression.Body, true);
         var genericMethod = CommonMethods.EnumerableContains.MakeGenericMethod(typeof(TProperty));
         var collectionConstantExpression = GetWrappedConstantExpression(filterValue);
         var callExpression = Call(genericMethod, collectionConstantExpression, memberAccessExpression);
@@ -58,7 +58,7 @@ internal static class BasicExpressions
     }
 
     internal static Expression<Func<TEntity, bool>> Range<TEntity, TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         RangeFilter<TProperty>? rangeFilterValue,
         bool isNegated = false)
     {
@@ -96,7 +96,9 @@ internal static class BasicExpressions
         return GetLambdaExpression<TEntity>(lambdaBody, parameter);
     }
 
-    internal static MemberExpression GetMemberExpression(Expression expressionBody)
+    internal static MemberExpression GetMemberExpression(
+        Expression expressionBody,
+        bool skipDefaultingToValueProp = false)
     {
         var memberAccessExpression = expressionBody switch
         {
@@ -105,7 +107,7 @@ internal static class BasicExpressions
             _ => throw new Exception("Error while extracting member expression!")
         };
 
-        if (Nullable.GetUnderlyingType(memberAccessExpression!.Type) != null)
+        if (skipDefaultingToValueProp == false && Nullable.GetUnderlyingType(memberAccessExpression!.Type) != null)
             memberAccessExpression = Property(memberAccessExpression, "Value");
         return memberAccessExpression!;
     }
@@ -135,7 +137,7 @@ internal static class BasicExpressions
     }
 
     /// <summary>
-    /// Used by CommonMethods to create a wrapped object which will be resolved as an parameter in the EF generated SQL query
+    /// Used by CommonMethods to create a wrapped object which will be resolved as a parameter in the EF generated SQL query
     /// </summary>
     /// <param name="value">Value to wrap</param>
     /// <typeparam name="TType">Type of value which is being wrapped</typeparam>

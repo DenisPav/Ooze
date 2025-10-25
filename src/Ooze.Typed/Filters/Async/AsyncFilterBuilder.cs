@@ -10,8 +10,8 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
         new List<AsyncFilterDefinition<TEntity, TFilter>>();
 
     public IAsyncFilterBuilder<TEntity, TFilter> Equal<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -28,8 +28,8 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
     }
 
     public IAsyncFilterBuilder<TEntity, TFilter> NotEqual<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -45,8 +45,8 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
     }
 
     public IAsyncFilterBuilder<TEntity, TFilter> GreaterThan<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -63,8 +63,8 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
     }
 
     public IAsyncFilterBuilder<TEntity, TFilter> LessThan<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -81,7 +81,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
     }
 
     public IAsyncFilterBuilder<TEntity, TFilter> In<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, IEnumerable<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -102,7 +102,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
     }
 
     public IAsyncFilterBuilder<TEntity, TFilter> NotIn<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, IEnumerable<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -125,7 +125,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
     }
 
     public IAsyncFilterBuilder<TEntity, TFilter> Range<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, RangeFilter<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -147,7 +147,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
     }
 
     public IAsyncFilterBuilder<TEntity, TFilter> OutOfRange<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, RangeFilter<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -171,7 +171,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
 
     public IAsyncFilterBuilder<TEntity, TFilter> StartsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;
@@ -190,7 +190,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
 
     public IAsyncFilterBuilder<TEntity, TFilter> DoesntStartWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;
@@ -209,7 +209,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
 
     public IAsyncFilterBuilder<TEntity, TFilter> EndsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;
@@ -228,7 +228,7 @@ internal class AsyncFilterBuilder<TEntity, TFilter> : IAsyncFilterBuilder<TEntit
 
     public IAsyncFilterBuilder<TEntity, TFilter> DoesntEndWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;
