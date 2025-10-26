@@ -2,7 +2,7 @@
 
 namespace Ooze.Typed.Paging;
 
-internal interface IOozePagingHandler<TEntity>
+internal interface IPagingHandler<TEntity>
 {
     IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,

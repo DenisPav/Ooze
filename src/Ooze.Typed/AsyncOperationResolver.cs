@@ -58,7 +58,7 @@ internal class AsyncOperationResolver(
             return ValueTask.FromResult(query);
         }
 
-        var pagingHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        var pagingHandler = serviceProvider.GetRequiredService<IPagingHandler<TEntity>>();
         query = pagingHandler.Apply(query, pagingOptions);
 
         return ValueTask.FromResult(query);
@@ -75,7 +75,7 @@ internal class AsyncOperationResolver(
             return ValueTask.FromResult(query);
         }
 
-        var sorterHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        var sorterHandler = serviceProvider.GetRequiredService<IPagingHandler<TEntity>>();
         query = sorterHandler.ApplyCursor(query, cursorPropertyExpression, pagingOptions);
 
         return ValueTask.FromResult(query);
@@ -86,7 +86,7 @@ internal class AsyncOperationResolver(
 internal class AsyncOperationResolver<TEntity, TFilters, TSorters>(
     IAsyncSorterHandler<TEntity, TSorters> sorterHandler,
     IAsyncFilterHandler<TEntity, TFilters> filterHandler,
-    IOozePagingHandler<TEntity> pagingHandler,
+    IPagingHandler<TEntity> pagingHandler,
     ILogger<AsyncOperationResolver<TEntity, TFilters, TSorters>> log)
     : IAsyncOperationResolver<TEntity, TFilters, TSorters>
 {

@@ -5,7 +5,7 @@ using static System.Linq.Expressions.Expression;
 
 namespace Ooze.Typed.Paging;
 
-internal class OozePagingHandler<TEntity>(ILogger<OozePagingHandler<TEntity>> log) : IOozePagingHandler<TEntity>
+internal class PagingHandler<TEntity>(ILogger<PagingHandler<TEntity>> log) : IPagingHandler<TEntity>
 {
     public IQueryable<TEntity> Apply(
         IQueryable<TEntity> query,
