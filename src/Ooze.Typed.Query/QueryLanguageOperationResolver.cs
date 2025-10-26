@@ -74,7 +74,7 @@ internal class QueryLanguageOperationResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string query)
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string? query)
     {
         var queryable = Apply();
         if (string.IsNullOrEmpty(query))
