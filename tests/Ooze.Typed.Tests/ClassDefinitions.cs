@@ -27,6 +27,23 @@ public class Blog
     }
 }
 
-public record BlogFilters(int? IdFilter, string NameFilter, int? NumberOfCommentsFilter);
+public class BlogFilters
+{
+    public int? IdFilter { get; set; }
+    public string NameFilter { get; set; }
+    public int? NumberOfCommentsFilter { get; set; }
+
+    public BlogFilters()
+    {
+        
+    }
+    
+    public BlogFilters(int? idFilter, string nameFilter, int? numberOfCommentsFilter)
+    {
+        IdFilter = idFilter;
+        NameFilter = nameFilter;
+        NumberOfCommentsFilter = numberOfCommentsFilter;
+    }
+}
 
 public record BlogSorters(SortDirection? IdSort, SortDirection? NameSort, SortDirection? NumberOfCommentsSort);

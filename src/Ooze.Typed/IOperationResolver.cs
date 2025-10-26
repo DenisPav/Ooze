@@ -84,7 +84,7 @@ public interface IOperationResolver<TEntity, in TFilters, in TSorters>
     /// </summary>
     /// <param name="sorters">Sorter definitions to apply over <see cref="IQueryable"/> instance</param>
     /// <returns>Resolver fluent instance</returns>
-    IOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters> sorters);
+    IOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters>? sorters);
 
     /// <summary>
     /// Applies valid filters over <see cref="IQueryable"/> instance. Filter application is based of filter provider
@@ -92,14 +92,14 @@ public interface IOperationResolver<TEntity, in TFilters, in TSorters>
     /// </summary>
     /// <param name="filters">Filter definitions to apply over <see cref="IQueryable"/> instance</param>
     /// <returns>Resolver fluent instance</returns>
-    IOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters filters);
+    IOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters? filters);
 
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance.
     /// </summary>
     /// <param name="pagingOptions">Instance of paging options</param>
     /// <returns>Resolver fluent instance</returns>
-    IOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions);
+    IOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions? pagingOptions);
 
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance. 
