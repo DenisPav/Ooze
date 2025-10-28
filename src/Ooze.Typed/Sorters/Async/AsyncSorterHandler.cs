@@ -37,7 +37,7 @@ internal class AsyncSorterHandler<TEntity, TSorters>(
                         return sorterDefinition;
                 }
 
-                return default;
+                return null;
             }
 
             var sortDefinition = await GetSorterDefinition().ConfigureAwait(false);

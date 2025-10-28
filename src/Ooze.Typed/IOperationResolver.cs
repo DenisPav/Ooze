@@ -20,7 +20,7 @@ public interface IOperationResolver
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
     IQueryable<TEntity> Sort<TEntity, TSorter>(
         IQueryable<TEntity> query,
-        IEnumerable<TSorter> sorters);
+        IEnumerable<TSorter>? sorters);
 
     /// <summary>
     /// Applies valid filters over <see cref="IQueryable"/> instance. Filter application is based of filter provider
@@ -33,7 +33,7 @@ public interface IOperationResolver
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
     IQueryable<TEntity> Filter<TEntity, TFilters>(
         IQueryable<TEntity> query,
-        TFilters filters);
+        TFilters? filters);
 
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance.
@@ -44,7 +44,7 @@ public interface IOperationResolver
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
     IQueryable<TEntity> Page<TEntity>(
         IQueryable<TEntity> query,
-        PagingOptions pagingOptions);
+        PagingOptions? pagingOptions);
 
     /// <summary>
     /// Applies valid cursor paging options over <see cref="IQueryable"/> instance. 
