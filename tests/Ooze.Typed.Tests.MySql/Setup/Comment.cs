@@ -1,4 +1,4 @@
-﻿namespace Ooze.Typed.Tests.MySql;
+﻿namespace Ooze.Typed.Tests.MySql.Setup;
 
 public class Comment
 {

@@ -1,6 +1,6 @@
 ﻿namespace Ooze.Typed.Tests.MySql;
 
-public record PostFilters(
+public record PostDateFilters(
     DateTime? DateDiffDayFilter = null,
     DateTime? DateDiffMonthFilter = null,
     DateTime? DateDiffYearFilter = null,

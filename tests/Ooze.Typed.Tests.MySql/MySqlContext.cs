@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ooze.Typed.Tests.MySql.Setup;
 
 namespace Ooze.Typed.Tests.MySql;
 
 public class MySqlContext(DbContextOptions options) : DbContext(options)
 {
-    public const int TotalRecords = 100;
+    public const int TotalCountOfFakes = 100;
+    public DbSet<Post> Posts { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,7 +33,7 @@ public class MySqlContext(DbContextOptions options) : DbContext(options)
     public async Task Seed()
     {
         var date = new DateTime(2022, 1, 1, 20, 20, 22);
-        var posts = Enumerable.Range(1, TotalRecords)
+        var posts = Enumerable.Range(1, TotalCountOfFakes)
             .Select(id => new Post
             {
                 Id = 0,

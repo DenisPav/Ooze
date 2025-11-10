@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.Sorters;
-using Ooze.Typed.Tests.MySql.OozeConfiguration.Async;
+using Ooze.Typed.Tests.MySql.Setup;
 
 namespace Ooze.Typed.Tests.MySql;
 
@@ -12,11 +12,11 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
-            new PostFilters(DateDiffDayFilter: new DateTime(2022, 5, 20)));
+            new PostDateFilters(DateDiffDayFilter: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(DAY,", StringComparison.InvariantCultureIgnoreCase);
@@ -31,11 +31,11 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
-            new PostFilters(DateDiffMonthFilter: new DateTime(2022, 5, 20)));
+            new PostDateFilters(DateDiffMonthFilter: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(MONTH,", StringComparison.InvariantCultureIgnoreCase);
@@ -50,11 +50,11 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
-            new PostFilters(DateDiffYearFilter: new DateTime(2022, 5, 20)));
+            new PostDateFilters(DateDiffYearFilter: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(YEAR,", StringComparison.InvariantCultureIgnoreCase);
@@ -69,11 +69,11 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
-            new PostFilters(DateDiffHourFilter: new DateTime(2022, 5, 20)));
+            new PostDateFilters(DateDiffHourFilter: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(HOUR,", StringComparison.InvariantCultureIgnoreCase);
@@ -88,11 +88,11 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
-            new PostFilters(DateDiffMinuteFilter: new DateTime(2022, 5, 20)));
+            new PostDateFilters(DateDiffMinuteFilter: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(MINUTE,", StringComparison.InvariantCultureIgnoreCase);
@@ -107,11 +107,11 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
-            new PostFilters(DateDiffSecondFilter: new DateTime(2022, 5, 20)));
+            new PostDateFilters(DateDiffSecondFilter: new DateTime(2022, 5, 20)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(SECOND,", StringComparison.InvariantCultureIgnoreCase);
@@ -126,11 +126,11 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncFiltersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
-            new PostFilters(DateDiffMicrosecondFilter: new DateTime(2022, 2, 2, 20, 20, 22)));
+            new PostDateFilters(DateDiffMicrosecondFilter: new DateTime(2022, 2, 2, 20, 20, 22)));
 
         var sql = query.ToQueryString();
         var sqlContainsCall = sql.Contains("TIMESTAMPDIFF(MICROSECOND,", StringComparison.InvariantCultureIgnoreCase);
@@ -142,14 +142,14 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<My
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = fixture.CreateServiceProvider<PostAsyncSortersProvider>(true)
+        var resolver = fixture.CreateServiceProvider<PostSortersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
             .ToListAsync();
 
         query = await resolver.SortAsync(query,
-            new[] { new PostSorters(Id: SortDirection.Descending) });
+            [new PostSorters(Id: SortDirection.Descending, null, null)]);
         var sortedIds = await query.Select(x => x.Id)
             .ToListAsync();
 

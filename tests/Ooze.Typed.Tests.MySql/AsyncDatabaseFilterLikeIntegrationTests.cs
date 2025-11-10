@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Ooze.Typed.EntityFrameworkCore.Extensions;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Filters.Async;
+using Ooze.Typed.Tests.MySql.Setup;
 
 namespace Ooze.Typed.Tests.MySql;
 
@@ -12,7 +13,7 @@ public class AsyncDatabaseFilterLikeIntegrationTests(MySqlFixture fixture)
     [Fact]
     public async Task Should_Correctly_Filter_Data_By_Like_Filter()
     {
-        using var scope = fixture.CreateServiceProvider<PostLikeFiltersProvider>(true).CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostLikeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -26,7 +27,7 @@ public class AsyncDatabaseFilterLikeIntegrationTests(MySqlFixture fixture)
         var queryString = query.ToQueryString();
         var results = await query.ToListAsync();
         Assert.True(queryString.Contains("LIKE", StringComparison.InvariantCultureIgnoreCase));
-        Assert.True(results.Count == MySqlContext.TotalRecords);
+        Assert.True(results.Count == MySqlContext.TotalCountOfFakes);
     }
 
     [Theory]
@@ -36,7 +37,7 @@ public class AsyncDatabaseFilterLikeIntegrationTests(MySqlFixture fixture)
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Like_Int_Filter(int postId)
     {
-        using var scope = fixture.CreateServiceProvider<PostLikeFiltersProvider>(true).CreateScope();
+        using var scope = fixture.CreateServiceProvider<PostLikeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();

@@ -13,30 +13,29 @@ public class MySqlFixture : IAsyncLifetime
         .WithCleanUp(true)
         .Build();
 
-    private static IServiceCollection CreateServiceCollection<TProvider>(bool enableAsyncSupport = false)
+    private static IServiceCollection CreateServiceCollection<TProvider>()
     {
         var services = new ServiceCollection().AddLogging();
         var oozeBuilder = services.AddOozeTyped();
-        if (enableAsyncSupport == true)
-            oozeBuilder.EnableAsyncResolvers();
+        oozeBuilder.EnableAsyncResolvers();
         oozeBuilder.Add<TProvider>();
 
         return services;
     }
 
-    public IServiceProvider CreateServiceProvider<TProvider>(bool enableAsyncSupport = false) => new DefaultServiceProviderFactory(
+    public IServiceProvider CreateServiceProvider<TProvider>() => new DefaultServiceProviderFactory(
         new ServiceProviderOptions
         {
             ValidateScopes = false
-        }).CreateServiceProvider(CreateServiceCollection<TProvider>(enableAsyncSupport));
+        }).CreateServiceProvider(CreateServiceCollection<TProvider>());
 
     public MySqlContext CreateContext()
     {
         var correctConnectionString = _mariaDbContainer.GetConnectionString();
         var serverVersion = ServerVersion.Create(new Version("10.9"), ServerType.MariaDb);
-        var sqlServerOptions = new DbContextOptionsBuilder()
+        var mySqlOptions = new DbContextOptionsBuilder()
             .UseMySql(correctConnectionString, serverVersion);
-        return new MySqlContext(sqlServerOptions.Options);
+        return new MySqlContext(mySqlOptions.Options);
     }
 
     public async Task InitializeAsync()
