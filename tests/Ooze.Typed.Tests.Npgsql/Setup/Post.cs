@@ -1,4 +1,4 @@
-﻿namespace Ooze.Typed.Tests.Npgsql;
+﻿namespace Ooze.Typed.Tests.Npgsql.Setup;
 
 public class Post
 {

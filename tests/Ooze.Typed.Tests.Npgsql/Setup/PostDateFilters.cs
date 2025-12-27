@@ -1,4 +1,4 @@
-﻿namespace Ooze.Typed.Tests.MySql;
+﻿namespace Ooze.Typed.Tests.Npgsql.Setup;
 
 public record PostDateFilters(
     DateTime? DateDiffDayFilter = null,
