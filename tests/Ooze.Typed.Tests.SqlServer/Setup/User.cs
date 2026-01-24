@@ -1,4 +1,4 @@
-﻿namespace Ooze.Typed.Tests.SqlServer;
+﻿namespace Ooze.Typed.Tests.SqlServer.Setup;
 
 public class User
 {

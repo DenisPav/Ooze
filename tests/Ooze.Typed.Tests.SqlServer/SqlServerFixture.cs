@@ -7,28 +7,27 @@ namespace Ooze.Typed.Tests.SqlServer;
 
 public class SqlServerFixture : IAsyncLifetime
 {
-    private readonly MsSqlContainer _sqlServerContainer = new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
-        .WithPortBinding(1433, true)
-        .WithCleanUp(true)
-        .Build();
+    private readonly MsSqlContainer _sqlServerContainer =
+        new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
+            .WithPortBinding(1433, true)
+            .WithCleanUp(true)
+            .Build();
 
-    private static IServiceCollection CreateServiceCollection<TProvider>(bool enableAsyncSupport = false)
+    private static IServiceCollection CreateServiceCollection<TProvider>()
     {
         var services = new ServiceCollection().AddLogging();
         var oozeBuilder = services.AddOozeTyped();
-        if (enableAsyncSupport == true)
-            oozeBuilder.EnableAsyncResolvers();
+        oozeBuilder.EnableAsyncResolvers();
         oozeBuilder.Add<TProvider>();
 
         return services;
     }
 
-    public IServiceProvider CreateServiceProvider<TProvider>(bool enableAsyncSupport = false) => new DefaultServiceProviderFactory(
+    public IServiceProvider CreateServiceProvider<TProvider>() => new DefaultServiceProviderFactory(
         new ServiceProviderOptions
         {
             ValidateScopes = false
-        }).CreateServiceProvider(CreateServiceCollection<TProvider>(enableAsyncSupport));
+        }).CreateServiceProvider(CreateServiceCollection<TProvider>());
 
     public SqlServerContext CreateContext()
     {
