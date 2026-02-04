@@ -25,6 +25,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.SqlServer\Ooze.Typed.EntityFrameworkCore.SqlServer.csproj" />
+    <ProjectReference Include="..\Ooze.Typed.Tests.Base\Ooze.Typed.Tests.Base.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Setup\" />
   </ItemGroup>
 
 </Project>

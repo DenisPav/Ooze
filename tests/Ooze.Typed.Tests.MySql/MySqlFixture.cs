@@ -1,56 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Ooze.Typed.Extensions;
+﻿using DotNet.Testcontainers.Containers;
+using Microsoft.EntityFrameworkCore;
+using Ooze.Typed.Tests.Base;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Testcontainers.MariaDb;
 
 namespace Ooze.Typed.Tests.MySql;
 
-public class MySqlFixture : IAsyncLifetime
+public class MySqlFixture : DbFixture
 {
-    private readonly MariaDbContainer _mariaDbContainer = new MariaDbBuilder()
+    protected override IDatabaseContainer TestContainer { get; } = new MariaDbBuilder()
         .WithImage("mariadb:10.9")
         .WithCleanUp(true)
         .Build();
 
-    private static IServiceCollection CreateServiceCollection<TProvider>()
+    public override MySqlContext CreateContext()
     {
-        var services = new ServiceCollection().AddLogging();
-        var oozeBuilder = services.AddOozeTyped();
-        oozeBuilder.EnableAsyncResolvers();
-        oozeBuilder.Add<TProvider>();
-
-        return services;
-    }
-
-    public IServiceProvider CreateServiceProvider<TProvider>() => new DefaultServiceProviderFactory(
-        new ServiceProviderOptions
-        {
-            ValidateScopes = false
-        }).CreateServiceProvider(CreateServiceCollection<TProvider>());
-
-    public MySqlContext CreateContext()
-    {
-        var correctConnectionString = _mariaDbContainer.GetConnectionString();
+        var correctConnectionString = TestContainer.GetConnectionString();
         var serverVersion = ServerVersion.Create(new Version("10.9"), ServerType.MariaDb);
         var mySqlOptions = new DbContextOptionsBuilder()
             .UseMySql(correctConnectionString, serverVersion);
         return new MySqlContext(mySqlOptions.Options);
-    }
-
-    public async Task InitializeAsync()
-    {
-        await _mariaDbContainer.StartAsync()
-            .ConfigureAwait(false);
-        await using var context = CreateContext();
-        await context.Database.EnsureCreatedAsync();
-        await context.Seed();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _mariaDbContainer
-            .DisposeAsync()
-            .ConfigureAwait(false);
     }
 }

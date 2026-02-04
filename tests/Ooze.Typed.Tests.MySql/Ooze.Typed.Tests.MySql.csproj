@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ooze.Typed.EntityFrameworkCore.MySql\Ooze.Typed.EntityFrameworkCore.MySql.csproj" />
+    <ProjectReference Include="..\Ooze.Typed.Tests.Base\Ooze.Typed.Tests.Base.csproj" />
   </ItemGroup>
 
 </Project>

@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ooze.Typed.Query.Tests", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ooze.Typed.Tests.Sqlite", "tests\Ooze.Typed.Tests.Sqlite\Ooze.Typed.Tests.Sqlite.csproj", "{82CB7082-7AB7-4D4E-B380-4B877C745201}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ooze.Typed.Tests.Base", "tests\Ooze.Typed.Tests.Base\Ooze.Typed.Tests.Base.csproj", "{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -213,6 +215,18 @@ Global
 		{82CB7082-7AB7-4D4E-B380-4B877C745201}.Release|x64.Build.0 = Release|Any CPU
 		{82CB7082-7AB7-4D4E-B380-4B877C745201}.Release|x86.ActiveCfg = Release|Any CPU
 		{82CB7082-7AB7-4D4E-B380-4B877C745201}.Release|x86.Build.0 = Release|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Debug|x64.Build.0 = Debug|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Debug|x86.Build.0 = Debug|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Release|x64.ActiveCfg = Release|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Release|x64.Build.0 = Release|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Release|x86.ActiveCfg = Release|Any CPU
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,6 +246,7 @@ Global
 		{0F79798B-8C15-4D42-AA0F-D75B778E2EDB} = {310905B6-B901-4204-BE35-A4A2284C1B54}
 		{F58E82E4-3CCC-413F-8675-FE75CCEE569E} = {D705A499-AD1D-4FC8-8EF6-2B5687E84CBE}
 		{82CB7082-7AB7-4D4E-B380-4B877C745201} = {D705A499-AD1D-4FC8-8EF6-2B5687E84CBE}
+		{F36DCA8C-ED18-49A2-AF28-CFD14E72117F} = {D705A499-AD1D-4FC8-8EF6-2B5687E84CBE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E41E3159-33C1-4D70-850D-6A350115C70C}
