@@ -1,6 +1,7 @@
 ﻿using Ooze.Typed.EntityFrameworkCore.Sqlite.Extensions;
 using Ooze.Typed.Filters;
 using Ooze.Typed.Filters.Async;
+using Ooze.Typed.Tests.Base.Setup;
 
 namespace Ooze.Typed.Tests.Sqlite.Setup;
 

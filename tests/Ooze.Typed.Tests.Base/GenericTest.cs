@@ -14,7 +14,7 @@ public abstract class GenericTest<TFixture> : IClassFixture<TFixture>
 
 public abstract class DbFixture : IAsyncLifetime
 {
-    protected abstract IDatabaseContainer TestContainer { get; }
+    protected abstract IDatabaseContainer? TestContainer { get; }
     
     public static IServiceProvider CreateServiceProvider<TProvider>() => new DefaultServiceProviderFactory(
         new ServiceProviderOptions
@@ -36,6 +36,9 @@ public abstract class DbFixture : IAsyncLifetime
     
     public async Task InitializeAsync()
     {
+        if (TestContainer is null)
+            return;
+        
         await TestContainer.StartAsync()
             .ConfigureAwait(false);
         await using var context = CreateContext();
@@ -45,6 +48,9 @@ public abstract class DbFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
+        if (TestContainer is null)
+            return;
+        
         await TestContainer
             .DisposeAsync()
             .ConfigureAwait(false);

@@ -36,7 +36,7 @@ public class DbFixture<TContext>
             .Options;
         var context = new DatabaseContext(contextOptions);
 
-        context.Prepare().Wait();
+        context.Seed().Wait();
 
         return context;
     }

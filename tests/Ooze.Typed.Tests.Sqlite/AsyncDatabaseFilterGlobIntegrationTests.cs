@@ -1,16 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Ooze.Typed.Tests.Base;
+using Ooze.Typed.Tests.Base.Setup;
 using Ooze.Typed.Tests.Sqlite.Setup;
 
 namespace Ooze.Typed.Tests.Sqlite;
 
-public class AsyncDatabaseFilterGlobIntegrationTests(DbFixture<DatabaseContext> fixture)
-    : IClassFixture<DbFixture<DatabaseContext>>
+public class AsyncDatabaseFilterGlobIntegrationTests(SqliteFixture fixture)
+    : IClassFixture<SqliteFixture>
 {
     [Fact]
     public async Task Should_Correctly_Filter_Data_By_Glob_Filter()
     {
-        using var scope = fixture.CreateServiceProvider<PostGlobFiltersProvider>().CreateScope();
+        using var scope = DbFixture.CreateServiceProvider<PostGlobFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -18,11 +20,11 @@ public class AsyncDatabaseFilterGlobIntegrationTests(DbFixture<DatabaseContext> 
 
         IQueryable<Post> query = context.Posts;
         query = await oozeResolver.WithQuery(query)
-            .Filter(new PostGlobFilters("*Sample*post"))
+            .Filter(new PostGlobFilters("*Sample*post*"))
             .ApplyAsync();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == DatabaseContext.TotalCountOfFakes);
+        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
     }
 
     [Theory]
@@ -32,7 +34,7 @@ public class AsyncDatabaseFilterGlobIntegrationTests(DbFixture<DatabaseContext> 
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Glob_Int_Filter(int postId)
     {
-        using var scope = fixture.CreateServiceProvider<PostGlobFiltersProvider>().CreateScope();
+        using var scope = DbFixture.CreateServiceProvider<PostGlobFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -40,7 +42,7 @@ public class AsyncDatabaseFilterGlobIntegrationTests(DbFixture<DatabaseContext> 
 
         IQueryable<Post> query = context.Posts;
         query = await oozeResolver.WithQuery(query)
-            .Filter(new PostGlobFilters($"{postId}_Sample*post"))
+            .Filter(new PostGlobFilters($"{postId}_Sample*post*"))
             .ApplyAsync();
 
         var results = await query.ToListAsync();
