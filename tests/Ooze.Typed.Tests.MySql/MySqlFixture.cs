@@ -1,17 +1,22 @@
 ﻿using DotNet.Testcontainers.Containers;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Tests.Base;
+using Ooze.Typed.Tests.MySql;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Testcontainers.MariaDb;
+
+[assembly: AssemblyFixture(typeof(MySqlFixture))]
 
 namespace Ooze.Typed.Tests.MySql;
 
 public class MySqlFixture : DbFixture
 {
-    protected override IDatabaseContainer TestContainer { get; } = new MariaDbBuilder()
+    private static readonly IDatabaseContainer DbContainer = new MariaDbBuilder()
         .WithImage("mariadb:10.9")
         .WithCleanUp(true)
         .Build();
+
+    protected override IDatabaseContainer TestContainer => DbContainer;
 
     public override MySqlContext CreateContext()
     {

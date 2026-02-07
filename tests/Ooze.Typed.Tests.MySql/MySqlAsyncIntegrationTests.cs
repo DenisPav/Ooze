@@ -7,7 +7,7 @@ using Ooze.Typed.Tests.MySql.Setup;
 
 namespace Ooze.Typed.Tests.MySql;
 
-public class MySqlAsyncIntegrationTests(MySqlFixture fixture) : IClassFixture<MySqlFixture>
+public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
 {
     #region NonAsync
 

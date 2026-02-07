@@ -6,10 +6,6 @@ namespace Ooze.Typed.Tests.MySql;
 
 public class MySqlContext(DbContextOptions options) : TestDbContext(options)
 {
-    public DbSet<Post> Posts { get; set; }
-    public DbSet<Comment> Comments { get; set; }
-    public DbSet<User> Users { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var post = modelBuilder.Entity<Post>();

@@ -6,7 +6,7 @@ using Ooze.Typed.Tests.Npgsql.Setup;
 
 namespace Ooze.Typed.Tests.Npgsql;
 
-public class NpgsqlAsyncIntegrationTests(NpgsqlFixture fixture) : IClassFixture<NpgsqlFixture>
+public class NpgsqlAsyncIntegrationTests(NpgsqlFixture fixture)
 {
     #region NonAsync
 

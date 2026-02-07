@@ -9,12 +9,13 @@ namespace Ooze.Typed.Tests.Base;
 //move to Ooze.Typed.Tests then reference that project from other tests projects
 //move tests into Collection fixtures based on this https://github.com/xunit/xunit/discussions/2834#discussioncomment-7758196
 //in order to reduce number of containers starting up for each case
-public abstract class GenericTest<TFixture> : IClassFixture<TFixture>
+public abstract class GenericTest<TFixture> 
     where TFixture : DbFixture;
 
-public abstract class DbFixture : IAsyncLifetime
+
+public class DbFixture : IAsyncLifetime
 {
-    protected abstract IDatabaseContainer? TestContainer { get; }
+    protected virtual IDatabaseContainer? TestContainer { get; }
     
     public static IServiceProvider CreateServiceProvider<TProvider>() => new DefaultServiceProviderFactory(
         new ServiceProviderOptions
@@ -32,21 +33,22 @@ public abstract class DbFixture : IAsyncLifetime
         return services;
     }
 
-    public abstract TestDbContext CreateContext();
-    
-    public async Task InitializeAsync()
+    public virtual TestDbContext CreateContext() => throw new NotImplementedException();
+
+    public async ValueTask InitializeAsync()
     {
         if (TestContainer is null)
             return;
-        
+
         await TestContainer.StartAsync()
             .ConfigureAwait(false);
         await using var context = CreateContext();
         await context.Database.EnsureCreatedAsync();
+        
         await context.Seed();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (TestContainer is null)
             return;

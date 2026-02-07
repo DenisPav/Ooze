@@ -2,7 +2,10 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Tests.Base;
+using Ooze.Typed.Tests.Sqlite;
 using Ooze.Typed.Tests.Sqlite.Setup;
+
+[assembly: AssemblyFixture(typeof(SqliteFixture))]
 
 namespace Ooze.Typed.Tests.Sqlite;
 
