@@ -6,23 +6,19 @@ using Ooze.Typed.Tests.Base.Setup;
 
 namespace Ooze.Typed.Tests.Base;
 
-//move to Ooze.Typed.Tests then reference that project from other tests projects
-//move tests into Collection fixtures based on this https://github.com/xunit/xunit/discussions/2834#discussioncomment-7758196
-//in order to reduce number of containers starting up for each case
-public abstract class GenericTest<TFixture> 
+public abstract class GenericTest<TFixture>
     where TFixture : DbFixture;
-
 
 public class DbFixture : IAsyncLifetime
 {
-    protected virtual IDatabaseContainer? TestContainer { get; }
-    
+    protected virtual IDatabaseContainer? TestContainer => throw new NotImplementedException();
+
     public static IServiceProvider CreateServiceProvider<TProvider>() => new DefaultServiceProviderFactory(
         new ServiceProviderOptions
         {
             ValidateScopes = false
         }).CreateServiceProvider(CreateServiceCollection<TProvider>());
-    
+
     private static IServiceCollection CreateServiceCollection<TProvider>()
     {
         var services = new ServiceCollection().AddLogging();
@@ -44,7 +40,7 @@ public class DbFixture : IAsyncLifetime
             .ConfigureAwait(false);
         await using var context = CreateContext();
         await context.Database.EnsureCreatedAsync();
-        
+
         await context.Seed();
     }
 
@@ -52,14 +48,14 @@ public class DbFixture : IAsyncLifetime
     {
         if (TestContainer is null)
             return;
-        
+
         await TestContainer
             .DisposeAsync()
             .ConfigureAwait(false);
     }
 }
 
-public abstract class TestDbContext(DbContextOptions options) 
+public abstract class TestDbContext(DbContextOptions options)
     : DbContext(options)
 {
     public const int TotalCountOfFakes = 100;
