@@ -11,7 +11,7 @@ if ($directories) {
 }
 
 Write-Host "Running test projects" -ForegroundColor Cyan
-dotnet test --collect:"XPlat Code Coverage" 
+dotnet test --coverage --coverage-output-format cobertura --ignore-exit-code 8
 
 Write-Host "Creating reports" -ForegroundColor Cyan
-dotnet reportgenerator -reports:**/TestResults/**/coverage.cobertura.xml -targetdir:CoverageReport -reporttypes:Html_Dark,Badges
+dotnet reportgenerator -reports:tests/**/TestResults/*.cobertura.xml -targetdir:CoverageReport -reporttypes:Html_Dark,Badges
