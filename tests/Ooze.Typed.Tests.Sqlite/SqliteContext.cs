@@ -2,9 +2,9 @@
 using Ooze.Typed.Tests.Base;
 using Ooze.Typed.Tests.Base.Setup;
 
-namespace Ooze.Typed.Tests.Sqlite.Setup;
+namespace Ooze.Typed.Tests.Sqlite;
 
-public class DatabaseContext(DbContextOptions options) : GenericTestDbContext(options)
+public class SqliteContext(DbContextOptions options) : GenericTestDbContext(options)
 {
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }

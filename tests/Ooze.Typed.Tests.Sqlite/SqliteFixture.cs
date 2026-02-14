@@ -3,7 +3,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Tests.Base;
 using Ooze.Typed.Tests.Sqlite;
-using Ooze.Typed.Tests.Sqlite.Setup;
 
 [assembly: AssemblyFixture(typeof(SqliteFixture))]
 
@@ -13,15 +12,15 @@ public class SqliteFixture : GenericDbFixture
 {
     protected override IDatabaseContainer? TestContainer => null;
 
-    public override DatabaseContext CreateContext()
+    public override SqliteContext CreateContext()
     {
         var connection = new SqliteConnection("Filename=:memory:");
         connection.Open();
 
-        var contextOptions = new DbContextOptionsBuilder<DatabaseContext>()
+        var contextOptions = new DbContextOptionsBuilder<SqliteContext>()
             .UseSqlite(connection)
             .Options;
-        var context = new DatabaseContext(contextOptions);
+        var context = new SqliteContext(contextOptions);
 
         context.Database.EnsureCreated();
         context.Seed().Wait();
