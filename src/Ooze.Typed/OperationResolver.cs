@@ -58,7 +58,7 @@ internal class OperationResolver(
         }
 
 
-        var sorterHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        var sorterHandler = serviceProvider.GetRequiredService<IPagingHandler<TEntity>>();
         query = sorterHandler.Apply(query, pagingOptions);
 
         return query;
@@ -75,7 +75,7 @@ internal class OperationResolver(
             return query;
         }
 
-        var sorterHandler = serviceProvider.GetRequiredService<IOozePagingHandler<TEntity>>();
+        var sorterHandler = serviceProvider.GetRequiredService<IPagingHandler<TEntity>>();
         query = sorterHandler.ApplyCursor(query, cursorPropertyExpression, pagingOptions);
 
         return query;
@@ -86,7 +86,7 @@ internal class OperationResolver(
 internal class OperationResolver<TEntity, TFilters, TSorters>(
     ISorterHandler<TEntity, TSorters> sorterHandler,
     IFilterHandler<TEntity, TFilters> filterHandler,
-    IOozePagingHandler<TEntity> pagingHandler,
+    IPagingHandler<TEntity> pagingHandler,
     ILogger<OperationResolver<TEntity, TFilters, TSorters>> log)
     : IOperationResolver<TEntity, TFilters, TSorters>
 {

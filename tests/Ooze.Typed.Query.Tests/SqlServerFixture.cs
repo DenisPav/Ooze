@@ -20,7 +20,7 @@ public class SqlServerFixture : IAsyncLifetime
         var services = new ServiceCollection().AddLogging();
         services.AddOozeTyped();
         var oozeQueryBuilder = services.AddOozeQueryLanguage();
-        
+
         oozeQueryBuilder.AddQueryProvider<TProvider>();
 
         return services;
@@ -40,10 +40,10 @@ public class SqlServerFixture : IAsyncLifetime
         return new SqlServerContext(sqlServerOptions.Options);
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo("en-EN");
-        
+
         await _sqlServerContainer.StartAsync()
             .ConfigureAwait(false);
         await using var context = CreateContext();
@@ -51,7 +51,7 @@ public class SqlServerFixture : IAsyncLifetime
         await context.Seed();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _sqlServerContainer
             .DisposeAsync()

@@ -19,11 +19,15 @@ jobs:
             9.0.x
             10.0.x
       - name: Restore dependencies
-        run: dotnet restore
+        run: |
+          dotnet restore
+          dotnet tool restore
       - name: Build
         run: dotnet build --no-restore
       - name: Run tests
-        run: dotnet test
+        run: |
+          dotnet test -- --coverage --coverage-output-format cobertura --ignore-exit-code 8
+          dotnet reportgenerator "-reports:tests/**/TestResults/**/*.cobertura.xml" -targetdir:CoverageReport -reporttypes:Html_Dark,Badges
       - name: Bump version
         id: bump
         shell: pwsh
@@ -58,5 +62,6 @@ jobs:
           git config user.name "ooze"
           git config user.email "ooze@users.noreply.github.com"
           git add ./src/*
+          git add ./CoverageReport/badge_combined.svg -f
           git commit -m "Bump project version to ${{ steps.bump.outputs.newVersion }}"
           git push

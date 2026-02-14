@@ -13,17 +13,17 @@ internal class QueryLanguageOperationResolver(
 {
     public IQueryable<TEntity> Sort<TEntity, TSorter>(
         IQueryable<TEntity> query,
-        IEnumerable<TSorter> sorters)
+        IEnumerable<TSorter>? sorters)
         => rootOperationResolver.Sort(query, sorters);
 
     public IQueryable<TEntity> Filter<TEntity, TFilters>(
         IQueryable<TEntity> query,
-        TFilters filters)
+        TFilters? filters)
         => rootOperationResolver.Filter(query, filters);
 
     public IQueryable<TEntity> Page<TEntity>(
         IQueryable<TEntity> query,
-        PagingOptions pagingOptions)
+        PagingOptions? pagingOptions)
         => rootOperationResolver.Page(query, pagingOptions);
 
     public IQueryable<TEntity> PageWithCursor<TEntity, TAfter, TProperty>(
@@ -74,7 +74,7 @@ internal class QueryLanguageOperationResolver<TEntity, TFilters, TSorters>(
         return this;
     }
 
-    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string query)
+    public IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string? query)
     {
         var queryable = Apply();
         if (string.IsNullOrEmpty(query))

@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ooze.Typed.Tests.Base;
+using Ooze.Typed.Tests.Base.Setup;
 
 namespace Ooze.Typed.Tests.Npgsql;
 
-public class NpgsqlContext(DbContextOptions options) : DbContext(options)
+public class NpgsqlContext(DbContextOptions options) : GenericTestDbContext(options)
 {
-    public const int TotalRecords = 100;
+    public DbSet<Post>? Posts { get; set; }
+    public DbSet<Comment>? Comments { get; set; }
+    public DbSet<User>? Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,34 +30,9 @@ public class NpgsqlContext(DbContextOptions options) : DbContext(options)
         user.Property(x => x.Id);
     }
 
-    public async Task Seed()
+    public override async Task Seed()
     {
-        var date = new DateTime(2022, 1, 1, 20, 20, 22);
-        var posts = Enumerable.Range(1, TotalRecords)
-            .Select(id => new Post
-            {
-                Id = 0,
-                Enabled = id % 2 == 0,
-                Name = $"{id}_Sample_post_{id}",
-                Date = date.AddDays(id).ToUniversalTime(),
-                Comments = new[]
-                {
-                    new Comment
-                    {
-                        Id = 0,
-                        Date = DateTime.Now.AddDays(id).ToUniversalTime(),
-                        Text = $"Sample comment {id}",
-                        User = new User
-                        {
-                            Id = 0,
-                            Email = $"sample_{id}@email.com"
-                        }
-                    }
-                }
-            });
-
-
-        Set<Post>().AddRange(posts);
-        await SaveChangesAsync();
+        await base.Seed();
+        await Database.ExecuteSqlAsync($"CREATE EXTENSION fuzzystrmatch;");
     }
 }

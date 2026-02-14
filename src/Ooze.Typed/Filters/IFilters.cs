@@ -15,12 +15,12 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn Equal<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
@@ -28,12 +28,12 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn NotEqual<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
@@ -41,12 +41,12 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn GreaterThan<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
@@ -54,12 +54,12 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn LessThan<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
@@ -67,11 +67,11 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn In<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, IEnumerable<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
@@ -80,11 +80,11 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn NotIn<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, IEnumerable<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
@@ -93,11 +93,11 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn Range<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, RangeFilter<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
@@ -106,11 +106,11 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
+    /// <typeparam name="TProperty">Target type of entity property</typeparam>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn OutOfRange<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, RangeFilter<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
@@ -123,7 +123,7 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn StartsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
@@ -131,11 +131,11 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param> 
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn DoesntStartWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
@@ -143,11 +143,11 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param> 
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn EndsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
@@ -155,11 +155,11 @@ public interface IFilters<TEntity, out TFilter, out TReturn>
     /// </summary>
     /// <param name="dataExpression">Expression targeting property of specified entity class</param>
     /// <param name="filterFunc">Delegate targeting property of filter class</param>
-    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param> 
+    /// <param name="shouldRun">Delegate returning bool value which denotes if filter should be applied</param>
     /// <returns>Instance of builder for fluent building of multiple filter definitions</returns>
     TReturn DoesntEndWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null);
 
     /// <summary>
