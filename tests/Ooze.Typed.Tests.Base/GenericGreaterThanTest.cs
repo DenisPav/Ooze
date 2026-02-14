@@ -6,7 +6,7 @@ using Ooze.Typed.Tests.Base.Setup.Async;
 namespace Ooze.Typed.Tests.Base;
 
 public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : GenericTest<TFixture>
-    where TFixture : DbFixture
+    where TFixture : GenericDbFixture
 {
     #region NonAsync
 
@@ -17,7 +17,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Greater_Than_Int_Filter(int postId)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -27,7 +27,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
         query = oozeResolver.WithQuery(query)
             .Filter(new PostFilters(postId, null, null, null))
             .Apply();
-        var expectedCount = TestDbContext.TotalCountOfFakes - postId;
+        var expectedCount = GenericTestDbContext.TotalCountOfFakes - postId;
 
         var results = await query.ToListAsync();
         Assert.True(results.Count == expectedCount);
@@ -41,7 +41,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
     [InlineData("100_Sample_post")]
     public async Task Should_Fail_To_Filter_Data_By_Greater_Than_String_Filter(string postName)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -58,7 +58,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
     [InlineData(false)]
     public async Task Should_Fail_To_Filter_Data_By_Greater_Than_Bool_Filter(bool enabled)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -79,7 +79,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
         int month,
         int day)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -107,7 +107,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Greater_Than_Int_Filter_Async(int postId)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -117,7 +117,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
         query = await oozeResolver.WithQuery(query)
             .Filter(new PostFilters(postId, null, null, null))
             .ApplyAsync();
-        var expectedCount = TestDbContext.TotalCountOfFakes - postId;
+        var expectedCount = GenericTestDbContext.TotalCountOfFakes - postId;
 
         var results = await query.ToListAsync();
         Assert.True(results.Count == expectedCount);
@@ -131,7 +131,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
     [InlineData("100_Sample_post")]
     public async Task Should_Fail_To_Filter_Data_By_Greater_Than_String_Filter_Async(string postName)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -148,7 +148,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
     [InlineData(false)]
     public async Task Should_Fail_To_Filter_Data_By_Greater_Than_Bool_Filter_Async(bool enabled)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -169,7 +169,7 @@ public abstract class GenericGreaterThanTest<TFixture>(TFixture fixture) : Gener
         int month,
         int day)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostGreaterThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();

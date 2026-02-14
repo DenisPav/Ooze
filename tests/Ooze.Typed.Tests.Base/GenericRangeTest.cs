@@ -7,7 +7,7 @@ using Ooze.Typed.Tests.Base.Setup.Async;
 namespace Ooze.Typed.Tests.Base;
 
 public abstract class GenericRangeTest<TFixture>(TFixture fixture) : GenericTest<TFixture>
-    where TFixture : DbFixture
+    where TFixture : GenericDbFixture
 {
     #region NonAsync
 
@@ -21,7 +21,7 @@ public abstract class GenericRangeTest<TFixture>(TFixture fixture) : GenericTest
         int to)
     {
         var filter = new RangeFilter<long> { From = from, To = to };
-        using var scope = DbFixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -43,7 +43,7 @@ public abstract class GenericRangeTest<TFixture>(TFixture fixture) : GenericTest
     public async Task Should_Correctly_Filter_Data_By_Range_String_Filter(string from, string to)
     {
         var filter = new RangeFilter<string> { From = from, To = to };
-        using var scope = DbFixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -66,7 +66,7 @@ public abstract class GenericRangeTest<TFixture>(TFixture fixture) : GenericTest
             To = to
         };
 
-        using var scope = DbFixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -97,7 +97,7 @@ public abstract class GenericRangeTest<TFixture>(TFixture fixture) : GenericTest
         int to)
     {
         var filter = new RangeFilter<long> { From = from, To = to };
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostRangeFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -121,7 +121,7 @@ public abstract class GenericRangeTest<TFixture>(TFixture fixture) : GenericTest
         string to)
     {
         var filter = new RangeFilter<string> { From = from, To = to };
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostRangeFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -144,7 +144,7 @@ public abstract class GenericRangeTest<TFixture>(TFixture fixture) : GenericTest
             To = to
         };
 
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostRangeFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostRangeFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();

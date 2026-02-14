@@ -9,7 +9,7 @@ using Ooze.Typed.Tests.Sqlite.Setup;
 
 namespace Ooze.Typed.Tests.Sqlite;
 
-public class SqliteFixture : DbFixture
+public class SqliteFixture : GenericDbFixture
 {
     protected override IDatabaseContainer? TestContainer => null;
 

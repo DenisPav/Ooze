@@ -9,7 +9,7 @@ using Testcontainers.MariaDb;
 
 namespace Ooze.Typed.Tests.MySql;
 
-public class MySqlFixture : DbFixture
+public class MySqlFixture : GenericDbFixture
 {
     private static readonly IDatabaseContainer DbContainer = new MariaDbBuilder()
         .WithImage("mariadb:10.9")

@@ -4,7 +4,7 @@ using Ooze.Typed.Tests.Base.Setup;
 
 namespace Ooze.Typed.Tests.SqlServer;
 
-public class SqlServerContext(DbContextOptions options) : TestDbContext(options)
+public class SqlServerContext(DbContextOptions options) : GenericTestDbContext(options)
 {
     public DbSet<Post>? Posts { get; set; }
     public DbSet<Comment>? Comments { get; set; }

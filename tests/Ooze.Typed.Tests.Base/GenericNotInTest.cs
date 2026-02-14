@@ -6,7 +6,7 @@ using Ooze.Typed.Tests.Base.Setup.Async;
 namespace Ooze.Typed.Tests.Base;
 
 public abstract class GenericNotInTest<TFixture>(TFixture fixture) : GenericTest<TFixture>
-    where TFixture : DbFixture
+    where TFixture : GenericDbFixture
 {
     #region NonAsync
 
@@ -18,8 +18,8 @@ public abstract class GenericNotInTest<TFixture>(TFixture fixture) : GenericTest
     public async Task Should_Correctly_Filter_Data_By_Not_In_Int_Filter(params int[] postIds)
     {
         var castedIds = postIds.Select(x => (long)x).ToArray();
-        var validIds = castedIds.Where(x => x <= TestDbContext.TotalCountOfFakes);
-        using var scope = DbFixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
+        var validIds = castedIds.Where(x => x <= GenericTestDbContext.TotalCountOfFakes);
+        using var scope = GenericDbFixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -42,7 +42,7 @@ public abstract class GenericNotInTest<TFixture>(TFixture fixture) : GenericTest
     [InlineData("100_Sample_post_100", "101_Sample_post_101", "102_Sample_post_102", "103")]
     public async Task Should_Correctly_Filter_Data_By_Not_In_String_Filter(params string[] postNames)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -62,7 +62,7 @@ public abstract class GenericNotInTest<TFixture>(TFixture fixture) : GenericTest
     [ClassData(typeof(DateData))]
     public async Task Should_Correctly_Filter_Data_By_Not_In_DateTime_Filter(params DateTime[] dates)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -90,8 +90,8 @@ public abstract class GenericNotInTest<TFixture>(TFixture fixture) : GenericTest
     public async Task Should_Correctly_Filter_Data_By_Not_In_Int_Filter_Async(params int[] postIds)
     {
         var castedIds = postIds.Select(x => (long)x);
-        var validIds = castedIds.Where(x => x <= TestDbContext.TotalCountOfFakes);
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostNotInFiltersProvider>().CreateScope();
+        var validIds = castedIds.Where(x => x <= GenericTestDbContext.TotalCountOfFakes);
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -114,7 +114,7 @@ public abstract class GenericNotInTest<TFixture>(TFixture fixture) : GenericTest
     [InlineData("100_Sample_post", "101_Sample_post", "102_Sample_post", "103")]
     public async Task Should_Correctly_Filter_Data_By_Not_In_String_Filter_Async(params string[] postNames)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostNotInFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -134,7 +134,7 @@ public abstract class GenericNotInTest<TFixture>(TFixture fixture) : GenericTest
     [ClassData(typeof(DateData))]
     public async Task Should_Correctly_Filter_Data_By_Not_In_DateTime_Filter_Async(params DateTime[] dates)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostNotInFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostNotInFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();

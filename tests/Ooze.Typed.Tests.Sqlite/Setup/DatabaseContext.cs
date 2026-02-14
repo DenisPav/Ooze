@@ -4,7 +4,7 @@ using Ooze.Typed.Tests.Base.Setup;
 
 namespace Ooze.Typed.Tests.Sqlite.Setup;
 
-public class DatabaseContext(DbContextOptions options) : TestDbContext(options)
+public class DatabaseContext(DbContextOptions options) : GenericTestDbContext(options)
 {
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }

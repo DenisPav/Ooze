@@ -6,7 +6,7 @@ using Ooze.Typed.Tests.Base.Setup.Async;
 namespace Ooze.Typed.Tests.Base;
 
 public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericTest<TFixture>
-    where TFixture : DbFixture
+    where TFixture : GenericDbFixture
 {
     #region NonAsync
 
@@ -17,7 +17,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Not_Equal_Int_Filter(int postId)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -40,7 +40,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
     [InlineData("100_Sample_post_100")]
     public async Task Should_Correctly_Filter_Data_By_Not_Equal_String_Filter(string postName)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -61,7 +61,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(false)]
     public async Task Should_Correctly_Filter_Data_By_Not_Equal_Bool_Filter(bool enabled)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -86,7 +86,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
         int month,
         int day)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -114,7 +114,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Not_Equal_Int_Filter_Async(int postId)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -137,7 +137,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
     [InlineData("100_Sample_post_100")]
     public async Task Should_Correctly_Filter_Data_By_Not_Equal_String_Filter_Async(string postName)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -158,7 +158,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(false)]
     public async Task Should_Correctly_Filter_Data_By_Not_Equal_Bool_Filter_Async(bool enabled)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -183,7 +183,7 @@ public abstract class GenericNotEqualTest<TFixture>(TFixture fixture) : GenericT
         int month,
         int day)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostNotEqualFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();

@@ -6,7 +6,7 @@ using Ooze.Typed.Tests.Base.Setup.Async;
 namespace Ooze.Typed.Tests.Base;
 
 public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericTest<TFixture>
-    where TFixture : DbFixture
+    where TFixture : GenericDbFixture
 {
     #region NonAsync
 
@@ -17,7 +17,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Less_Than_Int_Filter(int postId)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -41,7 +41,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
     [InlineData("100_Sample_post")]
     public async Task Should_Fail_To_Filter_Data_By_Less_Than_String_Filter(string postName)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -58,7 +58,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(false)]
     public async Task Should_Fail_To_Filter_Data_By_Less_Than_Bool_Filter(bool enabled)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -79,7 +79,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
         int month,
         int day)
     {
-        using var scope = DbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -107,7 +107,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(100)]
     public async Task Should_Correctly_Filter_Data_By_Less_Than_Int_Filter_Async(int postId)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -131,7 +131,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
     [InlineData("100_Sample_post")]
     public async Task Should_Fail_To_Filter_Data_By_Less_Than_String_Filter_Async(string postName)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -148,7 +148,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
     [InlineData(false)]
     public async Task Should_Fail_To_Filter_Data_By_Less_Than_Bool_Filter_Async(bool enabled)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -169,7 +169,7 @@ public abstract class GenericLessThanTest<TFixture>(TFixture fixture) : GenericT
         int month,
         int day)
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostLessThanFiltersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();

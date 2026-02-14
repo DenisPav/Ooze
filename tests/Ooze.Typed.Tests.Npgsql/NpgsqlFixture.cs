@@ -8,7 +8,7 @@ using Testcontainers.PostgreSql;
 
 namespace Ooze.Typed.Tests.Npgsql;
 
-public class NpgsqlFixture : DbFixture
+public class NpgsqlFixture : GenericDbFixture
 {
     private static readonly IDatabaseContainer DbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:15.1")

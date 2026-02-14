@@ -16,7 +16,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
@@ -35,7 +35,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
@@ -54,7 +54,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
@@ -73,7 +73,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
@@ -92,7 +92,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
@@ -111,7 +111,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
@@ -130,7 +130,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query,
@@ -146,7 +146,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<PostSortersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<PostSortersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)
@@ -175,7 +175,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
@@ -194,7 +194,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
@@ -213,7 +213,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
@@ -232,7 +232,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
@@ -251,7 +251,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
@@ -270,7 +270,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
@@ -289,7 +289,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<MySqlPostDateFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query,
@@ -305,7 +305,7 @@ public class MySqlAsyncIntegrationTests(MySqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<PostSortersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<PostSortersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         var defaultIds = await query.Select(x => x.Id)

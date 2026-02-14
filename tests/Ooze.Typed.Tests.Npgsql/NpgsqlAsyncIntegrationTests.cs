@@ -15,7 +15,7 @@ public class NpgsqlAsyncIntegrationTests(NpgsqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostPsqlFilters("%Sample%", null));
@@ -33,7 +33,7 @@ public class NpgsqlAsyncIntegrationTests(NpgsqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
             .GetRequiredService<IOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = resolver.Filter(query, new PostPsqlFilters(null, "%Sample%"));
@@ -55,7 +55,7 @@ public class NpgsqlAsyncIntegrationTests(NpgsqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query, new PostPsqlFilters("%Sample%", null));
@@ -73,7 +73,7 @@ public class NpgsqlAsyncIntegrationTests(NpgsqlFixture fixture)
     {
         await using var context = fixture.CreateContext();
 
-        var resolver = DbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
+        var resolver = GenericDbFixture.CreateServiceProvider<PsqlPostFiltersProvider>()
             .GetRequiredService<IAsyncOperationResolver>();
         IQueryable<Post> query = context.Set<Post>();
         query = await resolver.FilterAsync(query, new PostPsqlFilters(null, "%Sample%"));

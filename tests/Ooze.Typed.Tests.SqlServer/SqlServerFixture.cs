@@ -8,7 +8,7 @@ using Testcontainers.MsSql;
 
 namespace Ooze.Typed.Tests.SqlServer;
 
-public class SqlServerFixture : DbFixture
+public class SqlServerFixture : GenericDbFixture
 {
     private static readonly IDatabaseContainer DbContainer = 
         new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")

@@ -8,14 +8,14 @@ using Ooze.Typed.Tests.Base.Setup.Async;
 namespace Ooze.Typed.Tests.Base;
 
 public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTest<TFixture>
-    where TFixture : DbFixture
+    where TFixture : GenericDbFixture
 {
     #region NonAsync
 
     [Fact]
     public async Task Should_Correctly_Sort_Data_Descending_By_Single_Field()
     {
-        using var scope = DbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -31,7 +31,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .Apply();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 100);
         Assert.True(results[99].Id == 1);
     }
@@ -39,7 +39,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
     [Fact]
     public async Task Should_Correctly_Sort_Data_Ascending_By_Single_Field()
     {
-        using var scope = DbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -55,7 +55,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .Apply();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 1);
         Assert.True(results[99].Id == 100);
     }
@@ -63,7 +63,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
     [Fact]
     public async Task Should_Correctly_Sort_Data_Ascending_By_Multple_Fields()
     {
-        using var scope = DbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -80,7 +80,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .Apply();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 1);
         Assert.True(results[1].Id == 2);
     }
@@ -88,7 +88,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
     [Fact]
     public async Task Should_Not_Sort_Data_If_Sort_Not_Provided()
     {
-        using var scope = DbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<PostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -101,7 +101,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .Apply();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 1);
         Assert.True(results[99].Id == 100);
     }
@@ -113,7 +113,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
     [Fact]
     public async Task Should_Correctly_Sort_Data_Descending_By_Single_Field_Async()
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -129,7 +129,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .ApplyAsync();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 100);
         Assert.True(results[99].Id == 1);
     }
@@ -137,7 +137,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
     [Fact]
     public async Task Should_Correctly_Sort_Data_Ascending_By_Single_Field_Async()
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -153,7 +153,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .ApplyAsync();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 1);
         Assert.True(results[99].Id == 100);
     }
@@ -161,7 +161,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
     [Fact]
     public async Task Should_Correctly_Sort_Data_Ascending_By_Multple_Fields_Async()
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -178,7 +178,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .ApplyAsync();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 1);
         Assert.True(results[1].Id == 2);
     }
@@ -186,7 +186,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
     [Fact]
     public async Task Should_Not_Sort_Data_If_Sort_Not_Provided_Async()
     {
-        using var scope = DbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
+        using var scope = GenericDbFixture.CreateServiceProvider<AsyncPostSortersProvider>().CreateScope();
         var provider = scope.ServiceProvider;
 
         await using var context = fixture.CreateContext();
@@ -199,7 +199,7 @@ public abstract class GenericSorterTest<TFixture>(TFixture fixture) : GenericTes
             .ApplyAsync();
 
         var results = await query.ToListAsync();
-        Assert.True(results.Count == TestDbContext.TotalCountOfFakes);
+        Assert.True(results.Count == GenericTestDbContext.TotalCountOfFakes);
         Assert.True(results[0].Id == 1);
         Assert.True(results[99].Id == 100);
     }

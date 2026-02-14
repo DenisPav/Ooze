@@ -4,7 +4,7 @@ using Ooze.Typed.Tests.Base.Setup;
 
 namespace Ooze.Typed.Tests.MySql;
 
-public class MySqlContext(DbContextOptions options) : TestDbContext(options)
+public class MySqlContext(DbContextOptions options) : GenericTestDbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

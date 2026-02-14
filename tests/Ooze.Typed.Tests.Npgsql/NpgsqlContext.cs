@@ -4,7 +4,7 @@ using Ooze.Typed.Tests.Base.Setup;
 
 namespace Ooze.Typed.Tests.Npgsql;
 
-public class NpgsqlContext(DbContextOptions options) : TestDbContext(options)
+public class NpgsqlContext(DbContextOptions options) : GenericTestDbContext(options)
 {
     public DbSet<Post>? Posts { get; set; }
     public DbSet<Comment>? Comments { get; set; }

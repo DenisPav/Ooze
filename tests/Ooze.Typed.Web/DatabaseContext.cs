@@ -7,8 +7,6 @@ public class SqliteDatabaseContext(DbContextOptions<SqliteDatabaseContext> optio
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SqliteDatabaseContext).Assembly,
-            //TODO: move this to a sub folder so that each context has related entity configurations
-            //TODO: maybe using a single set of configurations is possible across multiple db context implementations
             type => type.Namespace == "Ooze.Typed.Web.Entities");
     }
 }
