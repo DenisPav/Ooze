@@ -1,0 +1,76 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Ooze.Typed -->
+    <GlobalPackageReference Include="DotNet.ReproducibleBuilds" Version="2.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <!-- Ooze.Typed -->
+    
+    <!-- Ooze.Typed.EntityFrameworkCore -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.11" Condition=" '$(TargetFramework)' == 'net8.0' " />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.0" Condition=" '$(TargetFramework)' == 'net9.0' " />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <!-- Ooze.Typed.EntityFrameworkCore -->
+
+    <!-- Ooze.Typed.EntityFrameworkCore.MySql -->
+    <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" Condition=" '$(TargetFramework)' == 'net8.0' " />
+    <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" Condition=" '$(TargetFramework)' == 'net9.0' " />
+    <PackageVersion Include="Microting.EntityFrameworkCore.MySql" Version="10.0.3" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <!-- Ooze.Typed.EntityFrameworkCore.MySql -->
+
+    <!-- Ooze.Typed.EntityFrameworkCore.Npgsql -->
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" Condition=" '$(TargetFramework)' == 'net8.0' " />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" Condition=" '$(TargetFramework)' == 'net9.0' " />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <!-- Ooze.Typed.EntityFrameworkCore.Npgsql -->
+
+    <!-- Ooze.Typed.EntityFrameworkCore.SqlServer -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" Condition=" '$(TargetFramework)' == 'net8.0' " />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" Condition=" '$(TargetFramework)' == 'net9.0' " />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <!-- Ooze.Typed.EntityFrameworkCore.SqlServer -->
+
+    <!-- Ooze.Typed.EntityFrameworkCore.Sqlite -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" Condition=" '$(TargetFramework)' == 'net8.0' " />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" Condition=" '$(TargetFramework)' == 'net9.0' " />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <!-- Ooze.Typed.EntityFrameworkCore.Sqlite -->
+
+    <!-- Ooze.Typed.Query -->
+    <PackageVersion Include="Superpower" Version="3.0.0" />
+    <!-- Ooze.Typed.Query -->
+
+    <!-- Ooze.Typed.Tests -->
+    <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
+    <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <!-- Ooze.Typed.Tests -->
+
+    <!-- Ooze.Typed.Tests.Base -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.4.1" />
+    <PackageVersion Include="Testcontainers" Version="4.10.0" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
+    <!-- Ooze.Typed.Tests.Base -->
+
+    <!-- Ooze.Typed.Tests.MySql -->
+    <PackageVersion Include="Testcontainers.MariaDb" Version="4.10.0" />
+    <!-- Ooze.Typed.Tests.MySql -->
+
+    <!-- Ooze.Typed.Tests.Npgsql -->
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.10.0" />
+    <!-- Ooze.Typed.Tests.Npgsql -->
+
+    <!-- Ooze.Typed.Tests.SqlServer -->
+    <PackageVersion Include="Testcontainers.MsSql" Version="4.10.0" />
+    <!-- Ooze.Typed.Tests.SqlServer -->
+
+    <!-- Ooze.Typed.Web -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.2" />
+    <!-- Ooze.Typed.Web -->
+  </ItemGroup>
+</Project>
