@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Ooze.Typed.EntityFrameworkCore.SqlServer</PackageId>
-    <Version>1.0.86</Version>
+    <Version>1.0.87</Version>
     <Description>
       This package provides simple mechanism for applying filters, sorters, paging to your IQueryable queries. Contains additional extensions for Sql Server.
     </Description>
