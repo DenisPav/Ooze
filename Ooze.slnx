@@ -1,0 +1,26 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/Ooze.Typed.EntityFrameworkCore.MySql/Ooze.Typed.EntityFrameworkCore.MySql.csproj" />
+    <Project Path="src/Ooze.Typed.EntityFrameworkCore.Npgsql/Ooze.Typed.EntityFrameworkCore.Npgsql.csproj" />
+    <Project Path="src/Ooze.Typed.EntityFrameworkCore.Sqlite/Ooze.Typed.EntityFrameworkCore.Sqlite.csproj" />
+    <Project Path="src/Ooze.Typed.EntityFrameworkCore.SqlServer/Ooze.Typed.EntityFrameworkCore.SqlServer.csproj" />
+    <Project Path="src/Ooze.Typed.EntityFrameworkCore/Ooze.Typed.EntityFrameworkCore.csproj" />
+    <Project Path="src/Ooze.Typed.Query/Ooze.Typed.Query.csproj" />
+    <Project Path="src/Ooze.Typed/Ooze.Typed.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ooze.Typed.Query.Tests/Ooze.Typed.Query.Tests.csproj" />
+    <Project Path="tests/Ooze.Typed.Tests.Base/Ooze.Typed.Tests.Base.csproj" />
+    <Project Path="tests/Ooze.Typed.Tests.MySql/Ooze.Typed.Tests.MySql.csproj" />
+    <Project Path="tests/Ooze.Typed.Tests.Npgsql/Ooze.Typed.Tests.Npgsql.csproj" />
+    <Project Path="tests/Ooze.Typed.Tests.Sqlite/Ooze.Typed.Tests.Sqlite.csproj" />
+    <Project Path="tests/Ooze.Typed.Tests.SqlServer/Ooze.Typed.Tests.SqlServer.csproj" />
+    <Project Path="tests/Ooze.Typed.Tests/Ooze.Typed.Tests.csproj" />
+    <Project Path="tests/Ooze.Typed.Web/Ooze.Typed.Web.csproj" />
+  </Folder>
+</Solution>
