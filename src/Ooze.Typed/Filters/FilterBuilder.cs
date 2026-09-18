@@ -10,8 +10,8 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
         new List<FilterDefinition<TEntity, TFilter>>();
 
     public IFilterBuilder<TEntity, TFilter> Equal<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -25,8 +25,8 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     }
 
     public IFilterBuilder<TEntity, TFilter> NotEqual<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -40,8 +40,8 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     }
 
     public IFilterBuilder<TEntity, TFilter> GreaterThan<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -55,8 +55,8 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     }
 
     public IFilterBuilder<TEntity, TFilter> LessThan<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
-        Func<TFilter, TProperty?> filterFunc,
+        Expression<Func<TEntity, TProperty>> dataExpression,
+        Func<TFilter, TProperty> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => filterFunc(filter) != null;
@@ -70,7 +70,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     }
 
     public IFilterBuilder<TEntity, TFilter> In<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, IEnumerable<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -89,7 +89,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     }
 
     public IFilterBuilder<TEntity, TFilter> NotIn<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, IEnumerable<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -108,7 +108,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     }
 
     public IFilterBuilder<TEntity, TFilter> Range<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, RangeFilter<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -127,7 +127,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
     }
 
     public IFilterBuilder<TEntity, TFilter> OutOfRange<TProperty>(
-        Expression<Func<TEntity, TProperty?>> dataExpression,
+        Expression<Func<TEntity, TProperty>> dataExpression,
         Func<TFilter, RangeFilter<TProperty>?> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
@@ -147,7 +147,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> StartsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;
@@ -163,7 +163,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> DoesntStartWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;
@@ -180,7 +180,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> EndsWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;
@@ -196,7 +196,7 @@ internal class FilterBuilder<TEntity, TFilter> : IFilterBuilder<TEntity, TFilter
 
     public IFilterBuilder<TEntity, TFilter> DoesntEndWith(
         Expression<Func<TEntity, string>> dataExpression,
-        Func<TFilter, string?> filterFunc,
+        Func<TFilter, string> filterFunc,
         Func<TFilter, bool>? shouldRun = null)
     {
         shouldRun ??= filter => string.IsNullOrEmpty(filterFunc(filter)) == false;

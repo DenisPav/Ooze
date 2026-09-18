@@ -20,7 +20,7 @@ public interface IAsyncOperationResolver
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
     ValueTask<IQueryable<TEntity>> SortAsync<TEntity, TSorter>(
         IQueryable<TEntity> query,
-        IEnumerable<TSorter> sorters);
+        IEnumerable<TSorter>? sorters);
 
     /// <summary>
     /// Applies valid filters over <see cref="IQueryable"/> instance. Filter application is based of filter provider
@@ -33,7 +33,7 @@ public interface IAsyncOperationResolver
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
     ValueTask<IQueryable<TEntity>> FilterAsync<TEntity, TFilters>(
         IQueryable<TEntity> query,
-        TFilters filters);
+        TFilters? filters);
 
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance.
@@ -44,7 +44,7 @@ public interface IAsyncOperationResolver
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
     ValueTask<IQueryable<TEntity>> PageAsync<TEntity>(
         IQueryable<TEntity> query,
-        PagingOptions pagingOptions);
+        PagingOptions? pagingOptions);
 
     /// <summary>
     /// Applies valid cursor paging options over <see cref="IQueryable"/> instance. 
@@ -84,7 +84,7 @@ public interface IAsyncOperationResolver<TEntity, in TFilters, in TSorters>
     /// </summary>
     /// <param name="sorters">Sorter definitions to apply over <see cref="IQueryable"/> instance</param>
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
-    IAsyncOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters> sorters);
+    IAsyncOperationResolver<TEntity, TFilters, TSorters> Sort(IEnumerable<TSorters>? sorters);
 
     /// <summary>
     /// Applies valid filters over <see cref="IQueryable"/> instance. Filter application is based of filter provider
@@ -92,14 +92,14 @@ public interface IAsyncOperationResolver<TEntity, in TFilters, in TSorters>
     /// </summary>
     /// <param name="filters">Filter definitions to apply over <see cref="IQueryable"/> instance</param>
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
-    IAsyncOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters filters);
+    IAsyncOperationResolver<TEntity, TFilters, TSorters> Filter(TFilters? filters);
 
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance.
     /// </summary>
     /// <param name="pagingOptions">Instance of paging options</param>
     /// <returns>Updated <see cref="IQueryable"/> instance</returns>
-    IAsyncOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions pagingOptions);
+    IAsyncOperationResolver<TEntity, TFilters, TSorters> Page(PagingOptions? pagingOptions);
 
     /// <summary>
     /// Apply and return update <see cref="IQueryable"/> instance asynchronously

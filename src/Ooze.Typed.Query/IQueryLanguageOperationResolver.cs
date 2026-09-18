@@ -61,7 +61,7 @@ public interface IQueryLanguageOperationResolver<TEntity, in TFilters, in TSorte
     /// </summary>
     /// <param name="query">Query language query to apply over <see cref="IQueryable"/> instance</param>
     /// <returns>Resolver fluent instance</returns>
-    IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string query);
+    IQueryLanguageOperationResolver<TEntity, TFilters, TSorters> FilterWithQueryLanguage(string? query);
 
     /// <summary>
     /// Applies valid paging options over <see cref="IQueryable"/> instance.

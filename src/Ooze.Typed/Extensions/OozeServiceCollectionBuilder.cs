@@ -73,7 +73,7 @@ internal class OozeServiceCollectionBuilder(IServiceCollection services) : IOoze
         services.AddScoped(typeof(IOperationResolver<,,>), typeof(OperationResolver<,,>));
         services.AddScoped(typeof(IFilterHandler<,>), typeof(FilterHandler<,>));
         services.AddScoped(typeof(ISorterHandler<,>), typeof(SorterHandler<,>));
-        services.AddScoped(typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>));
+        services.AddScoped(typeof(IPagingHandler<>), typeof(PagingHandler<>));
 
         return this;
     }

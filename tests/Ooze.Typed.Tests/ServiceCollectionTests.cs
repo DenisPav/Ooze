@@ -19,7 +19,7 @@ public class ServiceCollectionTests
             (typeof(IOperationResolver<,,>), typeof(OperationResolver<,,>)),
             (typeof(IFilterHandler<,>), typeof(FilterHandler<,>)),
             (typeof(ISorterHandler<,>), typeof(SorterHandler<,>)),
-            (typeof(IOozePagingHandler<>), typeof(OozePagingHandler<>))
+            (typeof(IPagingHandler<>), typeof(PagingHandler<>))
         };
 
         foreach (var (contractType, implementationType) in requiredInterfaces)
