@@ -2,7 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Ooze.Typed.Tests.Base;
 using Ooze.Typed.Tests.MySql;
+#if NET10_0
+using Microting.EntityFrameworkCore.MySql.Infrastructure;
+#endif
+#if NET8_0 || NET9_0
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+#endif
 using Testcontainers.MariaDb;
 
 [assembly: AssemblyFixture(typeof(MySqlFixture))]
