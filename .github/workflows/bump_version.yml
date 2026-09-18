@@ -27,7 +27,7 @@ jobs:
       - name: Run tests
         run: |
           dotnet test -- --coverage --coverage-output-format cobertura --ignore-exit-code 8
-          dotnet reportgenerator "-reports:tests/**/TestResults/**/*.cobertura.xml" -targetdir:CoverageReport -reporttypes:Html_Dark,Badges
+          dotnet reportgenerator "-reports:**/TestResults/**/*.cobertura.xml" -targetdir:CoverageReport -reporttypes:Html_Dark,Badges
       - name: Bump version
         id: bump
         shell: pwsh
