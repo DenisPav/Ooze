@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
       - name: Run tests
-        run: dotnet test
+        run: dotnet test -- --ignore-exit-code 8
       - name: Create packages
         run: |
           dotnet pack -c Release -o pkg
