@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <PackageId>Ooze.Typed.EntityFrameworkCore.MySql</PackageId>
     <Version>1.0.89</Version>
     <Description>
