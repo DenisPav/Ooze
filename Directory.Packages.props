@@ -16,6 +16,7 @@
 
     <!-- Ooze.Typed.EntityFrameworkCore.MySql -->
     <PackageVersion Include="Microting.EntityFrameworkCore.MySql" Version="10.0.12" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <PackageVersion Include="Microting.EntityFrameworkCore.MySql" Version="11.0.0" Condition=" '$(TargetFramework)' == 'net11.0' " />
     <!-- Ooze.Typed.EntityFrameworkCore.MySql -->
 
     <!-- Ooze.Typed.EntityFrameworkCore.Npgsql -->
