@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Ooze.Typed.EntityFrameworkCore.Npgsql</PackageId>
-    <TargetFrameworks>net10.0</TargetFrameworks>  
     <Version>1.0.89</Version>
     <Description>
       This package provides simple mechanism for applying filters, sorters, paging to your IQueryable queries. Contains additional extensions for PostgreSQL.

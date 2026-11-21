@@ -20,7 +20,8 @@
     <!-- Ooze.Typed.EntityFrameworkCore.MySql -->
 
     <!-- Ooze.Typed.EntityFrameworkCore.Npgsql -->
-      <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" Condition=" '$(TargetFramework)' == 'net10.0' " />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0" Condition=" '$(TargetFramework)' == 'net11.0' " />
     <!-- Ooze.Typed.EntityFrameworkCore.Npgsql -->
 
     <!-- Ooze.Typed.EntityFrameworkCore.SqlServer -->   
