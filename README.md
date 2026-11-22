@@ -1,8 +1,7 @@
 # Ooze.Typed 🌳💧🔧
 [![Nuget](https://img.shields.io/nuget/v/Ooze.Typed)](https://www.nuget.org/packages/Ooze.Typed/)
-![framework](https://img.shields.io/badge/framework-.net%208.0-green)
-![framework](https://img.shields.io/badge/framework-.net%209.0-green)
 ![framework](https://img.shields.io/badge/framework-.net%2010.0-green)
+![framework](https://img.shields.io/badge/framework-.net%2011.0-green)
 ![GitHub Repo stars](https://img.shields.io/github/stars/DenisPav/Ooze)
 ![Nuget](https://img.shields.io/nuget/dt/Ooze.Typed)
 ![Coverage](CoverageReport/badge_combined.svg)

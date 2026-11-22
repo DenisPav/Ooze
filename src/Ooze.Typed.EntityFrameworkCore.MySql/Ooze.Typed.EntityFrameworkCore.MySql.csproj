@@ -1,18 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Ooze.Typed.EntityFrameworkCore.MySql</PackageId>
-    <Version>1.0.89</Version>
+    <Version>1.0.90</Version>
     <Description>
       This package provides simple mechanism for applying filters, sorters, paging to your IQueryable queries. Contains additional extensions for MySql/MariaDB.
     </Description>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ooze.Typed.EntityFrameworkCore\Ooze.Typed.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0' ">
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
     <PackageReference Include="Microting.EntityFrameworkCore.MySql" />
   </ItemGroup>
   <ItemGroup>

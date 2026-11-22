@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
 
     steps:
       - uses: actions/checkout@v3
@@ -15,9 +17,8 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: |
-            8.0.x
-            9.0.x
             10.0.x
+            11.0.x
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
@@ -27,9 +28,12 @@ jobs:
       - name: Create packages
         run: |
           dotnet pack -c Release -o pkg
+      - name: NuGet login (fetch temp API key via OIDC)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
       - name: Push package to Nuget registry
         run: |
           cd ./pkg
-          dotnet nuget push *.nupkg -k ${NUGET_KEY} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
-        env:
-          NUGET_KEY: ${{ secrets.NUGET_KEY }}
+          dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols --api-key ${{steps.login.outputs.NUGET_API_KEY}}
